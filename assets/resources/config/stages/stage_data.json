@@ -1,0 +1,292 @@
+{
+  "version": "1.0.0",
+  "name": "stage_data",
+  "data": [
+    {
+      "id": "STAGE_001",
+      "name": "云海踏浪",
+      "nameKey": "stage_name_001",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 1,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_001", "ENEMY_002"],
+      "recommendedPower": 500,
+      "staminaCost": 5,
+      "dropId": "DROP_001",
+      "firstDropId": "DROP_F001",
+      "unlockCondition": {
+        "type": "always"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_002",
+      "name": "云端试剑",
+      "nameKey": "stage_name_002",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 2,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_002", "ENEMY_003"],
+      "recommendedPower": 800,
+      "staminaCost": 5,
+      "dropId": "DROP_002",
+      "firstDropId": "DROP_F002",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_001"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_003",
+      "name": "灵气淬体",
+      "nameKey": "stage_name_003",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 3,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_003", "ENEMY_004", "ENEMY_005"],
+      "recommendedPower": 1200,
+      "staminaCost": 5,
+      "dropId": "DROP_003",
+      "firstDropId": "DROP_F003",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_002"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_004",
+      "name": "云海·精英",
+      "nameKey": "stage_name_004",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 4,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_006", "ENEMY_007", "ENEMY_008"],
+      "recommendedPower": 1800,
+      "staminaCost": 8,
+      "dropId": "DROP_004",
+      "firstDropId": "DROP_F004",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_003"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_005",
+      "name": "云海守护者",
+      "nameKey": "stage_name_005",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 5,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": ["ENEMY_BOSS_001", "ENEMY_009"],
+      "recommendedPower": 2500,
+      "staminaCost": 10,
+      "dropId": "DROP_005",
+      "firstDropId": "DROP_F005",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_004"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_006",
+      "name": "灵山脚下",
+      "nameKey": "stage_name_006",
+      "chapterId": "CHAPTER_002",
+      "stageIndex": 1,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_010", "ENEMY_011"],
+      "recommendedPower": 3500,
+      "staminaCost": 6,
+      "dropId": "DROP_006",
+      "firstDropId": "DROP_F006",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_005",
+        "playerLevel": 10
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_007",
+      "name": "石阶古道",
+      "nameKey": "stage_name_007",
+      "chapterId": "CHAPTER_002",
+      "stageIndex": 2,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_011", "ENEMY_012"],
+      "recommendedPower": 5000,
+      "staminaCost": 6,
+      "dropId": "DROP_007",
+      "firstDropId": "DROP_F007",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_006"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_008",
+      "name": "灵山·精英",
+      "nameKey": "stage_name_008",
+      "chapterId": "CHAPTER_002",
+      "stageIndex": 3,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_013", "ENEMY_014", "ENEMY_015"],
+      "recommendedPower": 7000,
+      "staminaCost": 8,
+      "dropId": "DROP_008",
+      "firstDropId": "DROP_F008",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_007"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_009",
+      "name": "山巅寒风",
+      "nameKey": "stage_name_009",
+      "chapterId": "CHAPTER_002",
+      "stageIndex": 4,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_016", "ENEMY_017", "ENEMY_018"],
+      "recommendedPower": 9500,
+      "staminaCost": 6,
+      "dropId": "DROP_009",
+      "firstDropId": "DROP_F009",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_008"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_010",
+      "name": "灵山守护者",
+      "nameKey": "stage_name_010",
+      "chapterId": "CHAPTER_002",
+      "stageIndex": 5,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": ["ENEMY_BOSS_002", "ENEMY_019", "ENEMY_020"],
+      "recommendedPower": 13000,
+      "staminaCost": 10,
+      "dropId": "DROP_010",
+      "firstDropId": "DROP_F010",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_009"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_011",
+      "name": "仙府外围",
+      "nameKey": "stage_name_011",
+      "chapterId": "CHAPTER_003",
+      "stageIndex": 1,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_021", "ENEMY_022"],
+      "recommendedPower": 17000,
+      "staminaCost": 6,
+      "dropId": "DROP_011",
+      "firstDropId": "DROP_F011",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_010",
+        "playerLevel": 25
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_012",
+      "name": "仙府·精英",
+      "nameKey": "stage_name_012",
+      "chapterId": "CHAPTER_003",
+      "stageIndex": 2,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_023", "ENEMY_024", "ENEMY_025"],
+      "recommendedPower": 22000,
+      "staminaCost": 8,
+      "dropId": "DROP_012",
+      "firstDropId": "DROP_F012",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_011"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_013",
+      "name": "秘境长廊",
+      "nameKey": "stage_name_013",
+      "chapterId": "CHAPTER_003",
+      "stageIndex": 3,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_025", "ENEMY_026", "ENEMY_027"],
+      "recommendedPower": 28000,
+      "staminaCost": 6,
+      "dropId": "DROP_013",
+      "firstDropId": "DROP_F013",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_012"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_014",
+      "name": "仙府·精英二",
+      "nameKey": "stage_name_014",
+      "chapterId": "CHAPTER_003",
+      "stageIndex": 4,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_027", "ENEMY_028", "ENEMY_029", "ENEMY_030"],
+      "recommendedPower": 36000,
+      "staminaCost": 8,
+      "dropId": "DROP_014",
+      "firstDropId": "DROP_F014",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_013"
+      },
+      "battleWave": 2
+    },
+    {
+      "id": "STAGE_015",
+      "name": "仙府守护者",
+      "nameKey": "stage_name_015",
+      "chapterId": "CHAPTER_003",
+      "stageIndex": 5,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": ["ENEMY_BOSS_003", "ENEMY_029", "ENEMY_030"],
+      "recommendedPower": 50000,
+      "staminaCost": 10,
+      "dropId": "DROP_015",
+      "firstDropId": "DROP_F015",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_014"
+      },
+      "battleWave": 3
+    }
+  ]
+}

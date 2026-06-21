@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "738b4f7d-832a-4c35-a7b7-f0197afb3239",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "DungeonPanel",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.794Z",
+    "syncNodeName": "DungeonPanel"
+  }
+}

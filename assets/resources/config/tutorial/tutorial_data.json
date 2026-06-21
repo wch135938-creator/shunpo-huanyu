@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "groups": [
+    {
+      "groupId": "tutorial_intro",
+      "nameKey": "tutorial.intro.name",
+      "description": "新手引导：认识基本界面和操作",
+      "priority": 100,
+      "dependencies": [],
+      "triggerEvent": "game:firstLaunch",
+      "steps": [
+        {
+          "stepId": "tutorial_intro_01",
+          "groupId": "tutorial_intro",
+          "order": 0,
+          "titleKey": "tutorial.intro.step01.title",
+          "descriptionKey": "tutorial.intro.step01.desc",
+          "highlightTarget": "UI/MainPanel/HeroButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_intro_02",
+          "groupId": "tutorial_intro",
+          "order": 1,
+          "titleKey": "tutorial.intro.step02.title",
+          "descriptionKey": "tutorial.intro.step02.desc",
+          "highlightTarget": "UI/MainPanel/BattleButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_intro_03",
+          "groupId": "tutorial_intro",
+          "order": 2,
+          "titleKey": "tutorial.intro.step03.title",
+          "descriptionKey": "tutorial.intro.step03.desc",
+          "highlightTarget": "UI/MainPanel/GachaButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_intro_04",
+          "groupId": "tutorial_intro",
+          "order": 3,
+          "titleKey": "tutorial.intro.step04.title",
+          "descriptionKey": "tutorial.intro.step04.desc",
+          "highlightTarget": "UI/MainPanel/FormationButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_intro_05",
+          "groupId": "tutorial_intro",
+          "order": 4,
+          "titleKey": "tutorial.intro.step05.title",
+          "descriptionKey": "tutorial.intro.step05.desc",
+          "highlightTarget": "UI/MainPanel/InventoryButton",
+          "requiredAction": "tap_target"
+        }
+      ]
+    },
+    {
+      "groupId": "tutorial_battle",
+      "nameKey": "tutorial.battle.name",
+      "description": "战斗引导：了解回合制自动战斗机制",
+      "priority": 90,
+      "dependencies": ["tutorial_intro"],
+      "triggerEvent": "battle:firstEnter",
+      "steps": [
+        {
+          "stepId": "tutorial_battle_01",
+          "groupId": "tutorial_battle",
+          "order": 0,
+          "titleKey": "tutorial.battle.step01.title",
+          "descriptionKey": "tutorial.battle.step01.desc",
+          "highlightTarget": "UI/BattlePanel/EnemyArea",
+          "requiredAction": "any_tap"
+        },
+        {
+          "stepId": "tutorial_battle_02",
+          "groupId": "tutorial_battle",
+          "order": 1,
+          "titleKey": "tutorial.battle.step02.title",
+          "descriptionKey": "tutorial.battle.step02.desc",
+          "highlightTarget": "UI/BattlePanel/HeroArea",
+          "requiredAction": "any_tap"
+        },
+        {
+          "stepId": "tutorial_battle_03",
+          "groupId": "tutorial_battle",
+          "order": 2,
+          "titleKey": "tutorial.battle.step03.title",
+          "descriptionKey": "tutorial.battle.step03.desc",
+          "highlightTarget": "UI/BattlePanel/SkillBar",
+          "requiredAction": "any_tap"
+        },
+        {
+          "stepId": "tutorial_battle_04",
+          "groupId": "tutorial_battle",
+          "order": 3,
+          "titleKey": "tutorial.battle.step04.title",
+          "descriptionKey": "tutorial.battle.step04.desc",
+          "highlightTarget": "UI/BattlePanel/SpeedButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_battle_05",
+          "groupId": "tutorial_battle",
+          "order": 4,
+          "titleKey": "tutorial.battle.step05.title",
+          "descriptionKey": "tutorial.battle.step05.desc",
+          "highlightTarget": "UI/BattlePanel/AutoButton",
+          "requiredAction": "tap_target"
+        }
+      ]
+    },
+    {
+      "groupId": "tutorial_equipment",
+      "nameKey": "tutorial.equipment.name",
+      "description": "装备引导：了解装备穿戴、强化和卸下",
+      "priority": 80,
+      "dependencies": ["tutorial_intro"],
+      "triggerEvent": "equipment:firstOpen",
+      "steps": [
+        {
+          "stepId": "tutorial_equipment_01",
+          "groupId": "tutorial_equipment",
+          "order": 0,
+          "titleKey": "tutorial.equipment.step01.title",
+          "descriptionKey": "tutorial.equipment.step01.desc",
+          "highlightTarget": "UI/EquipmentPanel/HeroSlot",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_equipment_02",
+          "groupId": "tutorial_equipment",
+          "order": 1,
+          "titleKey": "tutorial.equipment.step02.title",
+          "descriptionKey": "tutorial.equipment.step02.desc",
+          "highlightTarget": "UI/EquipmentPanel/BagButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_equipment_03",
+          "groupId": "tutorial_equipment",
+          "order": 2,
+          "titleKey": "tutorial.equipment.step03.title",
+          "descriptionKey": "tutorial.equipment.step03.desc",
+          "highlightTarget": "UI/EquipmentPanel/EquipButton",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_equipment_04",
+          "groupId": "tutorial_equipment",
+          "order": 3,
+          "titleKey": "tutorial.equipment.step04.title",
+          "descriptionKey": "tutorial.equipment.step04.desc",
+          "highlightTarget": "UI/EquipmentPanel/EnhanceButton",
+          "requiredAction": "tap_target"
+        }
+      ]
+    },
+    {
+      "groupId": "tutorial_dungeon",
+      "nameKey": "tutorial.dungeon.name",
+      "description": "地牢引导：了解地牢探索、节点选择和奖励获取",
+      "priority": 70,
+      "dependencies": ["tutorial_intro"],
+      "triggerEvent": "dungeon:firstEnter",
+      "steps": [
+        {
+          "stepId": "tutorial_dungeon_01",
+          "groupId": "tutorial_dungeon",
+          "order": 0,
+          "titleKey": "tutorial.dungeon.step01.title",
+          "descriptionKey": "tutorial.dungeon.step01.desc",
+          "highlightTarget": "UI/DungeonPanel/NodeMap",
+          "requiredAction": "any_tap"
+        },
+        {
+          "stepId": "tutorial_dungeon_02",
+          "groupId": "tutorial_dungeon",
+          "order": 1,
+          "titleKey": "tutorial.dungeon.step02.title",
+          "descriptionKey": "tutorial.dungeon.step02.desc",
+          "highlightTarget": "UI/DungeonPanel/ForkChoice",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_dungeon_03",
+          "groupId": "tutorial_dungeon",
+          "order": 2,
+          "titleKey": "tutorial.dungeon.step03.title",
+          "descriptionKey": "tutorial.dungeon.step03.desc",
+          "highlightTarget": "UI/DungeonPanel/EventPanel",
+          "requiredAction": "tap_target"
+        },
+        {
+          "stepId": "tutorial_dungeon_04",
+          "groupId": "tutorial_dungeon",
+          "order": 3,
+          "titleKey": "tutorial.dungeon.step04.title",
+          "descriptionKey": "tutorial.dungeon.step04.desc",
+          "highlightTarget": "UI/DungeonPanel/RewardPanel",
+          "requiredAction": "any_tap"
+        },
+        {
+          "stepId": "tutorial_dungeon_05",
+          "groupId": "tutorial_dungeon",
+          "order": 4,
+          "titleKey": "tutorial.dungeon.step05.title",
+          "descriptionKey": "tutorial.dungeon.step05.desc",
+          "highlightTarget": "UI/DungeonPanel/BossNode",
+          "requiredAction": "tap_target"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "name": "运营活动配置表",
+  "data": [
+    {
+      "id": "LIVEOPS_001",
+      "version": 1,
+      "startTime": 1716508800000,
+      "endTime": 1800000000000,
+      "eventPoolRefs": ["EVENT_POOL_LIVEOPS_NEWBIE"],
+      "rewardPoolRefs": ["REWARD_POOL_NEWBIE"],
+      "tags": ["newbie", "permanent"]
+    },
+    {
+      "id": "LIVEOPS_002",
+      "version": 1,
+      "startTime": 1716508800000,
+      "endTime": 1800000000000,
+      "eventPoolRefs": ["EVENT_POOL_LIVEOPS_WEEKEND"],
+      "rewardPoolRefs": ["REWARD_POOL_WEEKEND"],
+      "tags": ["weekly", "double"]
+    },
+    {
+      "id": "LIVEOPS_003",
+      "version": 1,
+      "startTime": 1716508800000,
+      "endTime": 1800000000000,
+      "eventPoolRefs": ["EVENT_POOL_LIVEOPS_FESTIVAL"],
+      "rewardPoolRefs": ["REWARD_POOL_FESTIVAL"],
+      "tags": ["festival", "limited"]
+    },
+    {
+      "id": "LIVEOPS_004",
+      "version": 1,
+      "startTime": 1716508800000,
+      "endTime": 1800000000000,
+      "eventPoolRefs": ["EVENT_POOL_LIVEOPS_DAILY"],
+      "rewardPoolRefs": ["REWARD_POOL_DAILY_BONUS"],
+      "tags": ["daily", "login"]
+    }
+  ]
+}

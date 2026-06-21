@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "name": "skill_combo_config",
+  "data": [
+    {
+      "comboId": "COMBO_001",
+      "comboName": "雷火连击",
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_002"
+      ],
+      "effectType": "bonusDamage",
+      "effectValue": 0.3,
+      "description": "雷与火交融，额外造成30%伤害"
+    },
+    {
+      "comboId": "COMBO_002",
+      "comboName": "冰封万里",
+      "skillIds": [
+        "SKILL_002",
+        "SKILL_003"
+      ],
+      "effectType": "bonusDamage",
+      "effectValue": 0.25,
+      "description": "冰霜与风暴结合，额外造成25%伤害并减速"
+    },
+    {
+      "comboId": "COMBO_003",
+      "comboName": "光暗交织",
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_003"
+      ],
+      "effectType": "bonusDamage",
+      "effectValue": 0.35,
+      "description": "光与暗的碰撞，额外造成35%伤害"
+    }
+  ]
+}

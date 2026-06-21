@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "name": "特殊事件配置表",
+  "data": [
+    {
+      "id": "SPEVENT_001",
+      "version": 1,
+      "triggerType": "login",
+      "rewardSourceRefs": ["DROP_TABLE_LOGIN_REWARD"],
+      "conditions": [
+        {
+          "type": "loginCount",
+          "params": { "count": 1 }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_002",
+      "version": 1,
+      "triggerType": "login",
+      "rewardSourceRefs": ["DROP_TABLE_DAILY_LOGIN"],
+      "conditions": [
+        {
+          "type": "loginCount",
+          "params": { "count": 1 }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_003",
+      "version": 1,
+      "triggerType": "battle",
+      "rewardSourceRefs": ["DROP_TABLE_POWER_MILESTONE"],
+      "conditions": [
+        {
+          "type": "minPower",
+          "params": { "power": 5000 }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_004",
+      "version": 1,
+      "triggerType": "dungeon",
+      "rewardSourceRefs": ["DROP_TABLE_FIRST_CLEAR"],
+      "conditions": [
+        {
+          "type": "dungeonClear",
+          "params": { "dungeonId": "DUNGEON_V2_001" }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_005",
+      "version": 1,
+      "triggerType": "boss",
+      "rewardSourceRefs": ["DROP_TABLE_BOSS_FIRST_KILL"],
+      "conditions": [
+        {
+          "type": "dungeonClear",
+          "params": { "bossId": "BOSS_001" }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_006",
+      "version": 1,
+      "triggerType": "liveops",
+      "rewardSourceRefs": ["DROP_TABLE_LIVEOPS_SPECIAL"],
+      "conditions": [
+        {
+          "type": "custom",
+          "params": { "liveOpsActive": "LIVEOPS_003" }
+        }
+      ]
+    },
+    {
+      "id": "SPEVENT_007",
+      "version": 1,
+      "triggerType": "battle",
+      "rewardSourceRefs": ["DROP_TABLE_LEVEL_MILESTONE"],
+      "conditions": [
+        {
+          "type": "minLevel",
+          "params": { "level": 30 }
+        }
+      ]
+    }
+  ]
+}

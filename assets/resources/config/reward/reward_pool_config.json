@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "name": "奖励池配置表（奖励系统专用）",
+  "pools": [
+    {
+      "id": "REWARD_POOL_CHAPTER_BONUS",
+      "mode": "weighted_one",
+      "entries": [
+        { "itemId": "ITEM_MAT_BREAK_001", "itemType": "material", "count": 3, "weight": 60 },
+        { "itemId": "ITEM_MAT_STAR_001", "itemType": "material", "count": 1, "weight": 25 },
+        { "itemId": "ITEM_EQUIP_R_001", "itemType": "equip", "count": 1, "weight": 10 },
+        { "itemId": "ITEM_GACHA_FRAG", "itemType": "gachaFragment", "count": 2, "weight": 5 }
+      ]
+    },
+    {
+      "id": "REWARD_POOL_EVENT_BONUS",
+      "mode": "weighted_one",
+      "entries": [
+        { "itemId": "ITEM_GOLD", "itemType": "gold", "count": 500, "weight": 50 },
+        { "itemId": "ITEM_MAT_BREAK_001", "itemType": "material", "count": 2, "weight": 30 },
+        { "itemId": "ITEM_GACHA_FRAG", "itemType": "gachaFragment", "count": 1, "weight": 15 },
+        { "itemId": "ITEM_EQUIP_R_001", "itemType": "equip", "count": 1, "weight": 5 }
+      ]
+    },
+    {
+      "id": "REWARD_POOL_ENEMY_BONUS",
+      "mode": "weighted_many",
+      "entries": [
+        { "itemId": "ITEM_GOLD", "itemType": "gold", "count": 100, "weight": 60 },
+        { "itemId": "ITEM_EXP", "itemType": "exp", "count": 50, "weight": 40 }
+      ]
+    }
+  ]
+}

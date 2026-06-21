@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "name": "dungeon_config",
+  "data": [
+    {
+      "dungeonId": 1,
+      "name": "试炼洞窟",
+      "difficulty": "Normal",
+      "staminaCost": 10,
+      "maxAttemptsPerDay": 5,
+      "dropTableId": 1,
+      "rewardType": ["Gold", "Exp", "Equipment"],
+      "totalLayers": 5
+    },
+    {
+      "dungeonId": 2,
+      "name": "幽暗深渊",
+      "difficulty": "Hard",
+      "staminaCost": 20,
+      "maxAttemptsPerDay": 3,
+      "dropTableId": 2,
+      "rewardType": ["Gold", "Exp", "Equipment"],
+      "totalLayers": 8,
+      "bossConfig": {
+        "bossId": "BOSS_001",
+        "bossName": "暗渊魔君",
+        "bossLevel": 10
+      }
+    },
+    {
+      "dungeonId": 3,
+      "name": "天劫秘境",
+      "difficulty": "Expert",
+      "staminaCost": 30,
+      "maxAttemptsPerDay": 2,
+      "dropTableId": 3,
+      "rewardType": ["Gold", "Exp", "Equipment"],
+      "totalLayers": 10,
+      "bossConfig": {
+        "bossId": "BOSS_002",
+        "bossName": "天劫之主",
+        "bossLevel": 20
+      },
+      "specialEventConfig": {
+        "eventId": "EVENT_001",
+        "eventName": "天降神兵",
+        "triggerProbability": 0.15
+      }
+    }
+  ]
+}

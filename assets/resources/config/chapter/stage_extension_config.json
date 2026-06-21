@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "name": "stage_extension_config",
+  "stages": [
+    {
+      "stageId": "chapter_001_stage_02",
+      "eventPool": ["EVENT_001", "EVENT_002"],
+      "enemyPool": ["ENEMY_DYNAMIC_001"]
+    },
+    {
+      "stageId": "chapter_001_stage_03",
+      "eventPool": ["EVENT_001", "EVENT_002", "EVENT_003"],
+      "enemyPool": ["ENEMY_DYNAMIC_001", "ENEMY_DYNAMIC_002"]
+    },
+    {
+      "stageId": "chapter_001_stage_04",
+      "eventPool": ["EVENT_001", "EVENT_002", "EVENT_003"],
+      "enemyPool": ["ENEMY_DYNAMIC_002", "ENEMY_DYNAMIC_003"]
+    },
+    {
+      "stageId": "chapter_001_stage_05",
+      "eventPool": ["EVENT_002", "EVENT_003"],
+      "enemyPool": ["ENEMY_DYNAMIC_003", "ENEMY_DYNAMIC_004"]
+    },
+    {
+      "stageId": "chapter_001_stage_06",
+      "eventPool": ["EVENT_003"],
+      "enemyPool": ["ENEMY_DYNAMIC_005"]
+    },
+    {
+      "stageId": "chapter_002_stage_02",
+      "eventPool": ["EVENT_004", "EVENT_005"],
+      "enemyPool": ["ENEMY_DYNAMIC_001"]
+    },
+    {
+      "stageId": "chapter_002_stage_03",
+      "eventPool": ["EVENT_004", "EVENT_005"],
+      "enemyPool": ["ENEMY_DYNAMIC_002", "ENEMY_DYNAMIC_003"]
+    },
+    {
+      "stageId": "chapter_002_stage_06",
+      "eventPool": ["EVENT_004"],
+      "enemyPool": ["ENEMY_DYNAMIC_006", "ENEMY_DYNAMIC_007"]
+    },
+    {
+      "stageId": "chapter_003_stage_02",
+      "eventPool": ["EVENT_007"],
+      "enemyPool": ["ENEMY_DYNAMIC_001"]
+    },
+    {
+      "stageId": "chapter_003_stage_06",
+      "eventPool": ["EVENT_006", "EVENT_007"],
+      "enemyPool": ["ENEMY_DYNAMIC_005", "ENEMY_DYNAMIC_007"]
+    }
+  ]
+}

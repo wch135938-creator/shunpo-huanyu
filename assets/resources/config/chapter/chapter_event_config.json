@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "name": "chapter_event_config",
+  "events": [
+    {
+      "id": "EVENT_001",
+      "chapterId": "chapter_001",
+      "name": "神秘商人",
+      "description": "一位神秘商人突然出现，出售稀有物品",
+      "weight": 100,
+      "type": "shop",
+      "iconPath": "icons/event_shop",
+      "triggerCondition": {
+        "minChapterCompletions": 0,
+        "bossOnlyStages": false
+      }
+    },
+    {
+      "id": "EVENT_002",
+      "chapterId": "chapter_001",
+      "name": "灵气涌动",
+      "description": "天地灵气汇聚，获得额外经验奖励",
+      "weight": 150,
+      "type": "buff",
+      "iconPath": "icons/event_buff",
+      "triggerCondition": {
+        "minChapterCompletions": 0,
+        "bossOnlyStages": false
+      }
+    },
+    {
+      "id": "EVENT_003",
+      "chapterId": "chapter_001",
+      "name": "妖兽突袭",
+      "description": "突然遭遇妖兽袭击，战胜可获得稀有掉落",
+      "weight": 80,
+      "type": "boss",
+      "iconPath": "icons/event_boss",
+      "triggerCondition": {
+        "minChapterCompletions": 1,
+        "bossOnlyStages": false
+      }
+    },
+    {
+      "id": "EVENT_004",
+      "chapterId": "chapter_002",
+      "name": "龙族试炼",
+      "description": "远古龙族的试炼，完成可获得龙裔装备",
+      "weight": 100,
+      "type": "elite",
+      "iconPath": "icons/event_elite",
+      "triggerCondition": {
+        "minChapterCompletions": 0,
+        "bossOnlyStages": false
+      }
+    },
+    {
+      "id": "EVENT_005",
+      "chapterId": "chapter_002",
+      "name": "秘境宝箱",
+      "description": "发现一个古老的龙族宝箱",
+      "weight": 120,
+      "type": "reward",
+      "iconPath": "icons/event_reward",
+      "triggerCondition": {
+        "minChapterCompletions": 0,
+        "bossOnlyStages": false
+      }
+    },
+    {
+      "id": "EVENT_006",
+      "chapterId": "chapter_003",
+      "name": "轮回幻境",
+      "description": "进入轮回幻境，获得轮回之力",
+      "weight": 100,
+      "type": "buff",
+      "iconPath": "icons/event_buff",
+      "triggerCondition": {
+        "minChapterCompletions": 1,
+        "bossOnlyStages": true
+      }
+    },
+    {
+      "id": "EVENT_007",
+      "chapterId": "chapter_003",
+      "name": "鬼域祭坛",
+      "description": "激活上古祭坛，选择一种祝福",
+      "weight": 90,
+      "type": "shop",
+      "iconPath": "icons/event_shop",
+      "triggerCondition": {
+        "minChapterCompletions": 0,
+        "bossOnlyStages": false
+      }
+    }
+  ]
+}

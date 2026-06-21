@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "name": "equipment_config",
+  "data": [
+    {
+      "id": "weapon_001",
+      "name": "青锋剑",
+      "type": "Weapon",
+      "quality": "Common",
+      "levelRequirement": 1,
+      "hp": 0,
+      "attack": 20,
+      "defense": 0,
+      "power": 40
+    },
+    {
+      "id": "weapon_002",
+      "name": "寒铁重剑",
+      "type": "Weapon",
+      "quality": "Rare",
+      "levelRequirement": 5,
+      "hp": 0,
+      "attack": 55,
+      "defense": 0,
+      "power": 120
+    },
+    {
+      "id": "weapon_003",
+      "name": "紫电仙剑",
+      "type": "Weapon",
+      "quality": "Epic",
+      "levelRequirement": 10,
+      "hp": 30,
+      "attack": 120,
+      "defense": 0,
+      "power": 300
+    },
+    {
+      "id": "weapon_004",
+      "name": "盘古开天斧",
+      "type": "Weapon",
+      "quality": "Legendary",
+      "levelRequirement": 20,
+      "hp": 100,
+      "attack": 280,
+      "defense": 0,
+      "power": 800
+    },
+    {
+      "id": "armor_001",
+      "name": "布衣",
+      "type": "Armor",
+      "quality": "Common",
+      "levelRequirement": 1,
+      "hp": 80,
+      "attack": 0,
+      "defense": 10,
+      "power": 30
+    },
+    {
+      "id": "armor_002",
+      "name": "玄铁护甲",
+      "type": "Armor",
+      "quality": "Rare",
+      "levelRequirement": 5,
+      "hp": 220,
+      "attack": 0,
+      "defense": 28,
+      "power": 100
+    },
+    {
+      "id": "armor_003",
+      "name": "天蚕宝甲",
+      "type": "Armor",
+      "quality": "Epic",
+      "levelRequirement": 10,
+      "hp": 500,
+      "attack": 0,
+      "defense": 60,
+      "power": 260
+    },
+    {
+      "id": "armor_004",
+      "name": "不灭金身",
+      "type": "Armor",
+      "quality": "Legendary",
+      "levelRequirement": 20,
+      "hp": 1200,
+      "attack": 0,
+      "defense": 150,
+      "power": 700
+    },
+    {
+      "id": "acc_001",
+      "name": "铜戒",
+      "type": "Accessory",
+      "quality": "Common",
+      "levelRequirement": 1,
+      "hp": 40,
+      "attack": 8,
+      "defense": 4,
+      "power": 35
+    },
+    {
+      "id": "acc_002",
+      "name": "灵玉坠",
+      "type": "Accessory",
+      "quality": "Rare",
+      "levelRequirement": 5,
+      "hp": 110,
+      "attack": 22,
+      "defense": 11,
+      "power": 110
+    },
+    {
+      "id": "acc_003",
+      "name": "凤凰翎",
+      "type": "Accessory",
+      "quality": "Epic",
+      "levelRequirement": 10,
+      "hp": 250,
+      "attack": 50,
+      "defense": 25,
+      "power": 280
+    },
+    {
+      "id": "acc_004",
+      "name": "混沌珠",
+      "type": "Accessory",
+      "quality": "Legendary",
+      "levelRequirement": 20,
+      "hp": 600,
+      "attack": 120,
+      "defense": 60,
+      "power": 750
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "name": "奖励池配置表",
+  "data": [
+    {
+      "id": "REWARD_POOL_TIER1_BATTLE",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_TIER1"]
+    },
+    {
+      "id": "REWARD_POOL_TIER1_EVENT",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_TIER1"]
+    },
+    {
+      "id": "REWARD_POOL_TIER1_BONUS",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_TIER1"]
+    },
+    {
+      "id": "REWARD_POOL_SHOP_TIER1",
+      "version": 1,
+      "mode": "sequence",
+      "tableRefs": ["DROP_TABLE_SHOP_TIER1"]
+    },
+    {
+      "id": "REWARD_POOL_BOSS_001",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_BOSS_001"]
+    },
+    {
+      "id": "REWARD_POOL_TIER2_BATTLE",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_TIER2"]
+    },
+    {
+      "id": "REWARD_POOL_TIER2_EVENT",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_TIER2"]
+    },
+    {
+      "id": "REWARD_POOL_TIER2_BONUS",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_TIER2"]
+    },
+    {
+      "id": "REWARD_POOL_SHOP_TIER2",
+      "version": 1,
+      "mode": "sequence",
+      "tableRefs": ["DROP_TABLE_SHOP_TIER2"]
+    },
+    {
+      "id": "REWARD_POOL_BOSS_002",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_BOSS_002"]
+    },
+    {
+      "id": "REWARD_POOL_BOSS_004",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_BOSS_004"]
+    },
+    {
+      "id": "REWARD_POOL_BLESSING_TIER2",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_BLESSING"]
+    },
+    {
+      "id": "REWARD_POOL_CURSE_TIER2",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_CURSE"]
+    },
+    {
+      "id": "REWARD_POOL_STORY_TIER2",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_STORY"]
+    },
+    {
+      "id": "REWARD_POOL_TIER3_BATTLE",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_TIER3"]
+    },
+    {
+      "id": "REWARD_POOL_TIER3_EVENT",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_TIER3"]
+    },
+    {
+      "id": "REWARD_POOL_TIER3_BONUS",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_TIER3"]
+    },
+    {
+      "id": "REWARD_POOL_SHOP_TIER3",
+      "version": 1,
+      "mode": "sequence",
+      "tableRefs": ["DROP_TABLE_SHOP_TIER3"]
+    },
+    {
+      "id": "REWARD_POOL_BOSS_003",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_BOSS_003"]
+    },
+    {
+      "id": "REWARD_POOL_BOSS_005",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_BOSS_005"]
+    },
+    {
+      "id": "REWARD_POOL_STORY_CHAIN",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_RARE"]
+    },
+    {
+      "id": "REWARD_POOL_RARE_TIER3",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_RARE"]
+    },
+    {
+      "id": "REWARD_POOL_SPECIAL_TIER3",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_SPECIAL"]
+    },
+    {
+      "id": "REWARD_POOL_CURSE_TIER3",
+      "version": 1,
+      "mode": "weighted_one",
+      "tableRefs": ["DROP_TABLE_CURSE"]
+    },
+    {
+      "id": "REWARD_POOL_DUNGEON_CLEAR_001",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_DUNGEON_CLEAR_001"]
+    },
+    {
+      "id": "REWARD_POOL_DUNGEON_CLEAR_002",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_DUNGEON_CLEAR_002"]
+    },
+    {
+      "id": "REWARD_POOL_DUNGEON_CLEAR_003",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_DUNGEON_CLEAR_003"]
+    },
+    {
+      "id": "REWARD_POOL_NEWBIE",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_NEWBIE"]
+    },
+    {
+      "id": "REWARD_POOL_WEEKEND",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_WEEKEND"]
+    },
+    {
+      "id": "REWARD_POOL_FESTIVAL",
+      "version": 1,
+      "mode": "weighted_many",
+      "tableRefs": ["DROP_TABLE_FESTIVAL"]
+    },
+    {
+      "id": "REWARD_POOL_DAILY_BONUS",
+      "version": 1,
+      "mode": "all",
+      "tableRefs": ["DROP_TABLE_DAILY_BONUS"]
+    }
+  ]
+}

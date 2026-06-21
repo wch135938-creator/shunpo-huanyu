@@ -29,14 +29,15 @@ import type { BattlePosition } from '../battle/BattleTypes';
 import type { BattleData } from '../battle/BattleData';
 import type { BattleUnit } from '../battle/BattleUnit';
 import { BattleUnitFactory } from '../battle/BattleUnitFactory';
-import type { HeroConfig, HeroListData } from '../config/hero_config';
-import type { Faction } from '../config/hero_config';
-import type { EnemyEntry, EnemyDataConfig, Element } from '../config/enemy_config';
+import type { EnemyEntry, EnemyDataConfig } from '../config/enemy_config';
 import type { StageEntry, StageDataConfig } from '../config/stage_config';
 import type { SkillConfig, SkillDataConfig } from '../config/skill_config';
 import type { DropTableConfig, DropItem } from '../config/drop_config';
 import type { GlobalBattleEntry, GlobalConstConfig } from '../config/global_config';
 import type { TeamSnapshot, FormationSlot } from '../formation/FormationTypes';
+import { InventoryService } from '../inventory/InventoryService';
+import { mapDropItemIdToEquipItemId } from '../inventory/InventoryDomain';
+import type { AddAssetRequest } from '../inventory/InventoryTransaction';
 
 // ==================== 事件名常量 ====================
 
@@ -82,39 +83,12 @@ export interface StageBattleFinishedEvent {
 
 /** 需要预加载的配置路径列表 */
 const REQUIRED_CONFIG_PATHS: string[] = [
-  'config/cards/hero_list',
   'config/stages/enemy_data',
   'config/stages/stage_data',
   'config/skills/skill_data',
   'config/drops/drop_table',
   'config/systems/global_const',
 ];
-
-/** 阵型槽位定义 */
-interface SlotDef {
-  row: number;
-  column: number;
-  index: number;
-}
-
-/** 前排槽位（2 个） */
-const FRONT_SLOTS: ReadonlyArray<SlotDef> = [
-  { row: 0, column: 0, index: 0 },
-  { row: 0, column: 1, index: 1 },
-];
-
-/** 后排槽位（3 个） */
-const BACK_SLOTS: ReadonlyArray<SlotDef> = [
-  { row: 1, column: 0, index: 2 },
-  { row: 1, column: 1, index: 3 },
-  { row: 1, column: 2, index: 4 },
-];
-
-/** 默认测试阵容等级 */
-const DEFAULT_HERO_LEVEL = 1;
-
-/** 默认测试阵容数量（前排 2 + 后排 3） */
-const DEFAULT_TEAM_SIZE = 5;
 
 // ==================== BattleManager ====================
 
@@ -332,11 +306,11 @@ export class BattleManager extends BaseManager {
   /**
    * 注入 Phase9 玩家阵容数据（HeroSystem / SkillSystem / FormationSystem 快照）。
    *
-   * 调用此方法后，startStageBattle() 将使用 BattleUnitFactory 消费
-   * HeroSnapshot / SkillRuntimeSnapshot / TeamSnapshot 生成 BattleUnit，
-   * 而非从 hero_list 配置直接构建。
+   * 调用此方法后，startStageBattle() 将通过 BattleUnitFactory 消费
+   * HeroSnapshot / SkillRuntimeSnapshot / TeamSnapshot 生成 BattleUnit[]。
    *
-   * 这是 Phase9 系统族进入 BattleSystem 的唯一入口。
+   * 这是 HeroSystem / SkillSystem / FormationSystem 进入 BattleSystem 的
+   * **唯一入口**。未注入阵容时 startStageBattle() 将失败。
    *
    * @param teamSnapshot — FormationSystem.generateTeamSnapshot() 的输出
    * @param slots        — FormationPreset.slots（含站位信息）
@@ -346,15 +320,6 @@ export class BattleManager extends BaseManager {
     this._playerFormationSlots = [...slots];
   }
 
-  /**
-   * 清除已注入的 Phase9 阵容数据。
-   *
-   * 清除后，startStageBattle() 将回退到从 hero_list 配置构建的默认测试阵容。
-   */
-  clearPlayerFormation(): void {
-    this._playerTeamSnapshot = null;
-    this._playerFormationSlots = null;
-  }
 
   // ================================================================
   // 内部 — BattleUnit 构建（我方）
@@ -363,201 +328,48 @@ export class BattleManager extends BaseManager {
   /**
    * 构建我方战斗单元阵容。
    *
-   * **Phase9 路径（优先）**：
-   *   当通过 setPlayerFormation() 注入了 TeamSnapshot + FormationSlot[] 时，
+   * **Phase9 路径（唯一）**：
+   *   通过 setPlayerFormation() 注入 TeamSnapshot + FormationSlot[] 后，
    *   委托 BattleUnitFactory 消费 HeroSnapshot / SkillRuntimeSnapshot / TeamSnapshot
    *   生成 BattleUnit[]。这是 HeroSystem / SkillSystem / FormationSystem 进入
-   *   BattleSystem 的唯一适配层。
+   *   BattleSystem 的**唯一适配层**。
    *
-   * **Legacy 路径（回退）**：
-   *   当未注入 Phase9 数据时，从 hero_list 配置中取前 DEFAULT_TEAM_SIZE 个英雄
-   *   作为测试阵容。后续替换为从存档读取玩家实际阵容。
+   * 如果未注入 Phase9 阵容数据，返回空数组并报错。
    *
-   * 站位分配规则：
-   *   - position = 'front' → 优先填入前排（最多 2 个）
-   *   - position = 'back'  → 填入后排（最多 3 个）
-   *   - 前排满 → 剩余 'front' 英雄补到后排空缺位置
-   *   - 后排满 → 剩余 'back' 英雄补到前排空缺位置
-   *
-   * @returns BattleUnit[] — 最多 5 个我方单位
+   * @returns BattleUnit[] — 我方战斗单位数组
    */
   private _buildPlayerUnits(): BattleUnit[] {
-    // ===== Phase9 路径：使用 BattleUnitFactory（优先）=====
-    if (this._playerTeamSnapshot && this._playerFormationSlots) {
-      const factory = BattleUnitFactory.getInstance();
-      const units = factory.buildPlayerUnits(
-        this._playerTeamSnapshot,
-        this._playerFormationSlots,
+    // Phase9 路径（唯一）：使用 BattleUnitFactory
+    if (!this._playerTeamSnapshot) {
+      console.error(
+        '[BattleManager] 未注入阵容快照 (TeamSnapshot)，请先调用 setPlayerFormation()',
       );
-
-      if (units.length > 0) {
-        console.log(
-          `[BattleManager] Phase9 路径: BattleUnitFactory 构建 ${units.length} 个我方 BattleUnit`,
-        );
-        return units;
-      }
-
-      // 工厂返回空阵容 → 回退到 legacy 路径
-      console.warn(
-        '[BattleManager] BattleUnitFactory 返回空阵容，回退到 legacy 配置路径',
-      );
+      return [];
     }
-
-    // ===== Legacy 路径：从 hero_list 配置构建（回退）=====
-    const heroCfg = this._configManager.getConfig<HeroListData>(
-      'config/cards/hero_list',
-    );
-    if (!heroCfg?.data || heroCfg.data.length === 0) {
-      console.error('[BattleManager] hero_list 配置为空，无法构建我方阵容');
+    if (!this._playerFormationSlots || this._playerFormationSlots.length === 0) {
+      console.error(
+        '[BattleManager] 未注入阵容槽位 (FormationSlot[])，请先调用 setPlayerFormation()',
+      );
       return [];
     }
 
-    // MVP：取前 N 个英雄作为测试阵容
-    const selectedHeroes = heroCfg.data.slice(0, DEFAULT_TEAM_SIZE);
-    if (selectedHeroes.length === 0) return [];
-
-    // 按 position 分组
-    const frontHeroes = selectedHeroes.filter(
-      (h) => h.position === 'front',
-    );
-    const backHeroes = selectedHeroes.filter(
-      (h) => h.position === 'back',
+    const factory = BattleUnitFactory.getInstance();
+    const units = factory.buildPlayerUnits(
+      this._playerTeamSnapshot,
+      this._playerFormationSlots,
     );
 
-    // 分配站位
-    const positionMap = this._assignPlayerPositions(
-      frontHeroes.length,
-      backHeroes.length,
-    );
-
-    // 构建 BattleUnit 数组
-    const units: BattleUnit[] = [];
-    const allHeroes = [...frontHeroes, ...backHeroes];
-
-    for (let i = 0; i < allHeroes.length; i++) {
-      const slot = positionMap[i];
-      if (!slot) break; // 超出阵型容量
-
-      const hero = allHeroes[i];
-      const unit = this._heroConfigToBattleUnit(hero, slot, i);
-      units.push(unit);
+    if (units.length === 0) {
+      console.error(
+        '[BattleManager] BattleUnitFactory 返回空阵容 — 检查 Formation 中是否有已解锁英雄',
+      );
+      return [];
     }
 
+    console.log(
+      `[BattleManager] Phase9 路径: BattleUnitFactory 构建 ${units.length} 个我方 BattleUnit`,
+    );
     return units;
-  }
-
-  /**
-   * 分配我方站位
-   *
-   * @param frontCount — position='front' 的英雄数量
-   * @param backCount  — position='back' 的英雄数量
-   * @returns 每个英雄的 BattlePosition（按 [fronts..., backs...] 顺序）
-   */
-  private _assignPlayerPositions(
-    frontCount: number,
-    backCount: number,
-  ): BattlePosition[] {
-    const positions: BattlePosition[] = [];
-    const usedFrontSlots = new Set<number>();
-    const usedBackSlots = new Set<number>();
-
-    // 1. 分配前排英雄到前排槽位
-    for (let i = 0; i < frontCount; i++) {
-      if (i < FRONT_SLOTS.length) {
-        const slot = FRONT_SLOTS[i];
-        usedFrontSlots.add(i);
-        positions.push({
-          row: slot.row,
-          column: slot.column,
-          index: slot.index,
-        });
-      } else {
-        // 前排满 → 补到后排空缺
-        const backSlot = this._findAvailableSlot(
-          BACK_SLOTS,
-          usedBackSlots,
-        );
-        if (backSlot) {
-          usedBackSlots.add(backSlot.column);
-          positions.push({
-            row: backSlot.row,
-            column: backSlot.column,
-            index: backSlot.index,
-          });
-        }
-      }
-    }
-
-    // 2. 分配后排英雄到后排槽位
-    for (let i = 0; i < backCount; i++) {
-      if (i < BACK_SLOTS.length) {
-        const slot = BACK_SLOTS[i];
-        usedBackSlots.add(i);
-        positions.push({
-          row: slot.row,
-          column: slot.column,
-          index: slot.index,
-        });
-      } else {
-        // 后排满 → 补到前排空缺
-        const frontSlot = this._findAvailableSlot(
-          FRONT_SLOTS,
-          usedFrontSlots,
-        );
-        if (frontSlot) {
-          usedFrontSlots.add(frontSlot.column);
-          positions.push({
-            row: frontSlot.row,
-            column: frontSlot.column,
-            index: frontSlot.index,
-          });
-        }
-      }
-    }
-
-    return positions;
-  }
-
-  /** 从槽位数组中找一个未被占用的槽位 */
-  private _findAvailableSlot(
-    slots: ReadonlyArray<SlotDef>,
-    usedColumns: Set<number>,
-  ): SlotDef | null {
-    for (const slot of slots) {
-      if (!usedColumns.has(slot.column)) {
-        return slot;
-      }
-    }
-    return null;
-  }
-
-  /** 将单条 HeroConfig 转换为 BattleUnit */
-  private _heroConfigToBattleUnit(
-    hero: HeroConfig,
-    slot: BattlePosition,
-    unitIndex: number,
-  ): BattleUnit {
-    const level = DEFAULT_HERO_LEVEL;
-
-    return {
-      unitId: `p_${unitIndex}`,
-      configId: hero.id,
-      unitType: BattleUnitType.Hero,
-      // MVP: 使用 configId 作为显示名（本地化系统尚未实现）
-      name: hero.id,
-      faction: hero.faction,
-      // TODO: HeroConfig 缺少 element 字段，MVP 使用 faction→element 映射
-      element: this._factionToElement(hero.faction),
-      level,
-      maxHp: hero.baseHp + hero.growthHp * (level - 1),
-      currentHp: hero.baseHp + hero.growthHp * (level - 1),
-      attack: hero.baseAtk + hero.growthAtk * (level - 1),
-      defense: hero.baseDef + hero.growthDef * (level - 1),
-      speed: hero.baseSpeed,
-      skillIds: [...hero.skillIds],
-      position: { ...slot },
-      isAlive: true,
-    };
   }
 
   // ================================================================
@@ -602,18 +414,18 @@ export class BattleManager extends BaseManager {
     return units;
   }
 
-  /** 为敌人分配站位（目前全部放入前排，从左到右填充） */
+  /** 为敌人分配站位（前排从左到右，后排从左到右填充） */
   private _assignEnemyPosition(index: number): BattlePosition {
-    // 2 个前排槽位 + 3 个后排槽位 = 总共 5 个敌人位置
-    // 先填前排 (0,0), (0,1)，再填后排 (1,0), (1,1), (1,2)
-    const allSlots: SlotDef[] = [...FRONT_SLOTS, ...BACK_SLOTS];
-    const slot = allSlots[index] ?? allSlots[allSlots.length - 1];
-
-    return {
-      row: slot.row,
-      column: slot.column,
-      index: slot.index,
-    };
+    // 5 个敌人位置：先填前排 (row=0)，再填后排 (row=1)
+    const ALL_SLOTS: ReadonlyArray<BattlePosition> = [
+      { row: 0, column: 0, index: 0 },
+      { row: 0, column: 1, index: 1 },
+      { row: 1, column: 0, index: 2 },
+      { row: 1, column: 1, index: 3 },
+      { row: 1, column: 2, index: 4 },
+    ];
+    const slot = ALL_SLOTS[Math.min(index, ALL_SLOTS.length - 1)];
+    return { row: slot.row, column: slot.column, index: slot.index };
   }
 
   /** 将单条 EnemyEntry 转换为 BattleUnit */
@@ -685,6 +497,9 @@ export class BattleManager extends BaseManager {
           expGain += reward.count;
         } else if (reward.itemType === 'gold') {
           goldGain += reward.count;
+        } else if (reward.itemType === 'equip') {
+          // Phase10-Step11AA: 装备奖励进入 InventoryService
+          this._grantEquipReward(reward);
         }
       }
 
@@ -850,28 +665,63 @@ export class BattleManager extends BaseManager {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  // ================================================================
-  // 内部 — 临时映射（TODO: 后续补齐 HeroConfig.element）
-  // ================================================================
-
   /**
-   * 阵营 → 元素 临时映射
+   * Phase10-Step11AA: 将装备掉落奖励通过 InventoryService 入库。
    *
-   * 原因：HeroConfig 当前无 element 字段，但 BattleUnit 需要 element。
-   * 后续应在 HeroConfig 中增加 element 字段并从此处移除映射逻辑。
+   * 流程：
+   *   1. 将掉落 itemId（如 ITEM_EQUIP_N_001）映射为 Inventory 装备 itemId（如 ITEM_EQ_WEAPON_001）
+   *   2. 通过 InventoryService.addAssets() 创建装备 InstanceItem
    *
-   * 映射表：
-   *   青龙 → 雷  |  白虎 → 冰  |  朱雀 → 火
-   *   玄武 → 毒  |  混沌 → 暗
+   * @param reward  装备类型掉落奖励
+   * @returns       是否成功入库
    */
-  private _factionToElement(faction: Faction): Element {
-    const MAP: Readonly<Record<Faction, Element>> = {
-      '青龙': '雷',
-      '白虎': '冰',
-      '朱雀': '火',
-      '玄武': '毒',
-      '混沌': '暗',
-    };
-    return MAP[faction];
+  private _grantEquipReward(reward: BattleReward): boolean {
+    const equipItemId = mapDropItemIdToEquipItemId(reward.itemId);
+    if (!equipItemId) {
+      console.warn(
+        `[BattleManager] 无法识别的装备掉落 itemId: ${reward.itemId}，跳过`,
+      );
+      return false;
+    }
+
+    try {
+      const inventoryService = InventoryService.getInstance();
+      const transactionId = `battle_equip_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+
+      const request: AddAssetRequest = {
+        itemId: equipItemId,
+        count: reward.count,
+        source: 'battle_drop',
+        reason: 'reward_grant',
+      };
+
+      const result = inventoryService.addAssets(
+        transactionId,
+        [request],
+        'reward_grant',
+        'battle_drop',
+      );
+
+      if (result.success) {
+        console.log(
+          `[BattleManager] 装备入库: ${equipItemId} ×${reward.count} (来源: ${reward.itemId})`,
+        );
+        return true;
+      }
+
+      if (!result.isDuplicate) {
+        console.warn(
+          `[BattleManager] 装备入库失败: ${equipItemId}, errorCode=${result.errorCode}, message=${result.message}`,
+        );
+      }
+      return result.isDuplicate; // 重复也算成功
+    } catch (err) {
+      console.error(
+        `[BattleManager] 装备入库异常: ${equipItemId}`,
+        err,
+      );
+      return false;
+    }
   }
+
 }

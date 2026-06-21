@@ -1,0 +1,589 @@
+{
+  "version": "1.0.0",
+  "name": "enemy_data",
+  "data": [
+    {
+      "id": "ENEMY_001",
+      "name": "雾气精魄",
+      "enemyType": "normal",
+      "element": "冰",
+      "level": 1,
+      "hp": 200,
+      "attack": 30,
+      "defense": 15,
+      "speed": 60,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_001",
+      "isBoss": false,
+      "faction": "白虎"
+    },
+    {
+      "id": "ENEMY_002",
+      "name": "岩甲龟",
+      "enemyType": "normal",
+      "element": "光",
+      "level": 2,
+      "hp": 350,
+      "attack": 35,
+      "defense": 25,
+      "speed": 55,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_001",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_003",
+      "name": "毒刺蜂",
+      "enemyType": "normal",
+      "element": "毒",
+      "level": 2,
+      "hp": 280,
+      "attack": 45,
+      "defense": 18,
+      "speed": 70,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_002",
+      "isBoss": false,
+      "faction": "玄武"
+    },
+    {
+      "id": "ENEMY_004",
+      "name": "风刃雀",
+      "enemyType": "normal",
+      "element": "雷",
+      "level": 3,
+      "hp": 400,
+      "attack": 50,
+      "defense": 22,
+      "speed": 75,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_003",
+      "isBoss": false,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_005",
+      "name": "火尾狐",
+      "enemyType": "normal",
+      "element": "火",
+      "level": 4,
+      "hp": 500,
+      "attack": 55,
+      "defense": 28,
+      "speed": 72,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_003",
+      "isBoss": false,
+      "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_006",
+      "name": "云海守卫",
+      "enemyType": "elite",
+      "element": "冰",
+      "level": 5,
+      "hp": 900,
+      "attack": 80,
+      "defense": 45,
+      "speed": 80,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_601"
+      ],
+      "dropId": "DROP_004",
+      "isBoss": false,
+      "faction": "白虎"
+    },
+    {
+      "id": "ENEMY_007",
+      "name": "暗影猎手",
+      "enemyType": "elite",
+      "element": "暗",
+      "level": 6,
+      "hp": 800,
+      "attack": 95,
+      "defense": 40,
+      "speed": 88,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_301"
+      ],
+      "dropId": "DROP_004",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_008",
+      "name": "灵气巨像",
+      "enemyType": "elite",
+      "element": "光",
+      "level": 7,
+      "hp": 1200,
+      "attack": 65,
+      "defense": 55,
+      "speed": 70,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_501"
+      ],
+      "dropId": "DROP_004",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_009",
+      "name": "云海将领",
+      "enemyType": "elite",
+      "element": "雷",
+      "level": 8,
+      "hp": 1100,
+      "attack": 100,
+      "defense": 50,
+      "speed": 85,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_101"
+      ],
+      "dropId": "DROP_004",
+      "isBoss": false,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_BOSS_001",
+      "name": "云海守护兽",
+      "enemyType": "boss",
+      "element": "雷",
+      "level": 10,
+      "hp": 4000,
+      "attack": 150,
+      "defense": 85,
+      "speed": 100,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_401",
+        "SKILL_401p"
+      ],
+      "dropId": "DROP_005",
+      "isBoss": true,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_010",
+      "name": "石阶藤妖",
+      "enemyType": "normal",
+      "element": "毒",
+      "level": 9,
+      "hp": 800,
+      "attack": 55,
+      "defense": 30,
+      "speed": 72,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_006",
+      "isBoss": false,
+      "faction": "玄武"
+    },
+    {
+      "id": "ENEMY_011",
+      "name": "山道山贼",
+      "enemyType": "normal",
+      "element": "火",
+      "level": 10,
+      "hp": 900,
+      "attack": 70,
+      "defense": 35,
+      "speed": 75,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_006",
+      "isBoss": false,
+      "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_012",
+      "name": "冰晶虫",
+      "enemyType": "normal",
+      "element": "冰",
+      "level": 11,
+      "hp": 1000,
+      "attack": 65,
+      "defense": 40,
+      "speed": 78,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_007",
+      "isBoss": false,
+      "faction": "白虎"
+    },
+    {
+      "id": "ENEMY_013",
+      "name": "灵山守卫",
+      "enemyType": "elite",
+      "element": "光",
+      "level": 13,
+      "hp": 2000,
+      "attack": 120,
+      "defense": 75,
+      "speed": 85,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_501"
+      ],
+      "dropId": "DROP_008",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_014",
+      "name": "噬灵兽",
+      "enemyType": "elite",
+      "element": "暗",
+      "level": 14,
+      "hp": 1800,
+      "attack": 150,
+      "defense": 60,
+      "speed": 95,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_301"
+      ],
+      "dropId": "DROP_008",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_015",
+      "name": "狂风鹰",
+      "enemyType": "elite",
+      "element": "雷",
+      "level": 14,
+      "hp": 1600,
+      "attack": 145,
+      "defense": 55,
+      "speed": 100,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_401"
+      ],
+      "dropId": "DROP_008",
+      "isBoss": false,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_016",
+      "name": "霜冻蛇",
+      "enemyType": "normal",
+      "element": "冰",
+      "level": 13,
+      "hp": 1300,
+      "attack": 80,
+      "defense": 45,
+      "speed": 82,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_009",
+      "isBoss": false,
+      "faction": "白虎"
+    },
+    {
+      "id": "ENEMY_017",
+      "name": "烈焰蜥",
+      "enemyType": "normal",
+      "element": "火",
+      "level": 14,
+      "hp": 1400,
+      "attack": 100,
+      "defense": 40,
+      "speed": 80,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_009",
+      "isBoss": false,
+      "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_018",
+      "name": "毒瘴花",
+      "enemyType": "normal",
+      "element": "毒",
+      "level": 15,
+      "hp": 1500,
+      "attack": 90,
+      "defense": 55,
+      "speed": 70,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_009",
+      "isBoss": false,
+      "faction": "玄武"
+    },
+    {
+      "id": "ENEMY_019",
+      "name": "山巅石魔",
+      "enemyType": "elite",
+      "element": "光",
+      "level": 17,
+      "hp": 3000,
+      "attack": 160,
+      "defense": 100,
+      "speed": 75,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_502"
+      ],
+      "dropId": "DROP_008",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_020",
+      "name": "灵山先锋",
+      "enemyType": "elite",
+      "element": "暗",
+      "level": 18,
+      "hp": 2500,
+      "attack": 200,
+      "defense": 70,
+      "speed": 100,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_101"
+      ],
+      "dropId": "DROP_008",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_BOSS_002",
+      "name": "灵山守护兽",
+      "enemyType": "boss",
+      "element": "光",
+      "level": 20,
+      "hp": 10000,
+      "attack": 300,
+      "defense": 170,
+      "speed": 115,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_401",
+        "SKILL_201p"
+      ],
+      "dropId": "DROP_010",
+      "isBoss": true,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_021",
+      "name": "仙府守卫",
+      "enemyType": "normal",
+      "element": "光",
+      "level": 19,
+      "hp": 2200,
+      "attack": 110,
+      "defense": 70,
+      "speed": 85,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_011",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_022",
+      "name": "幻影刺客",
+      "enemyType": "normal",
+      "element": "暗",
+      "level": 20,
+      "hp": 2000,
+      "attack": 160,
+      "defense": 50,
+      "speed": 105,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_011",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_023",
+      "name": "雷霆守卫",
+      "enemyType": "elite",
+      "element": "雷",
+      "level": 23,
+      "hp": 4500,
+      "attack": 240,
+      "defense": 120,
+      "speed": 105,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_401"
+      ],
+      "dropId": "DROP_012",
+      "isBoss": false,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_024",
+      "name": "烈焰使者",
+      "enemyType": "elite",
+      "element": "火",
+      "level": 24,
+      "hp": 4000,
+      "attack": 280,
+      "defense": 100,
+      "speed": 100,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_201"
+      ],
+      "dropId": "DROP_012",
+      "isBoss": false,
+      "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_025",
+      "name": "寒冰守卫",
+      "enemyType": "elite",
+      "element": "冰",
+      "level": 25,
+      "hp": 5000,
+      "attack": 220,
+      "defense": 140,
+      "speed": 90,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_601"
+      ],
+      "dropId": "DROP_012",
+      "isBoss": false,
+      "faction": "白虎"
+    },
+    {
+      "id": "ENEMY_026",
+      "name": "秘境石魔",
+      "enemyType": "normal",
+      "element": "光",
+      "level": 23,
+      "hp": 3500,
+      "attack": 140,
+      "defense": 100,
+      "speed": 80,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_013",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_027",
+      "name": "毒雾妖",
+      "enemyType": "normal",
+      "element": "毒",
+      "level": 24,
+      "hp": 3000,
+      "attack": 170,
+      "defense": 75,
+      "speed": 95,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_013",
+      "isBoss": false,
+      "faction": "玄武"
+    },
+    {
+      "id": "ENEMY_028",
+      "name": "暗影将领",
+      "enemyType": "elite",
+      "element": "暗",
+      "level": 28,
+      "hp": 5500,
+      "attack": 300,
+      "defense": 130,
+      "speed": 115,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_301"
+      ],
+      "dropId": "DROP_014",
+      "isBoss": false,
+      "faction": "混沌"
+    },
+    {
+      "id": "ENEMY_029",
+      "name": "仙府精英卫",
+      "enemyType": "elite",
+      "element": "雷",
+      "level": 30,
+      "hp": 6000,
+      "attack": 320,
+      "defense": 150,
+      "speed": 110,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_201"
+      ],
+      "dropId": "DROP_014",
+      "isBoss": false,
+      "faction": "青龙"
+    },
+    {
+      "id": "ENEMY_030",
+      "name": "仙府大将",
+      "enemyType": "elite",
+      "element": "火",
+      "level": 32,
+      "hp": 6500,
+      "attack": 350,
+      "defense": 160,
+      "speed": 105,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_101",
+        "SKILL_502"
+      ],
+      "dropId": "DROP_014",
+      "isBoss": false,
+      "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_BOSS_003",
+      "name": "仙府守护兽",
+      "enemyType": "boss",
+      "element": "暗",
+      "level": 35,
+      "hp": 25000,
+      "attack": 550,
+      "defense": 320,
+      "speed": 140,
+      "skillIds": [
+        "SKILL_001",
+        "SKILL_301",
+        "SKILL_301p"
+      ],
+      "dropId": "DROP_015",
+      "isBoss": true,
+      "faction": "混沌"
+    }
+  ]
+}

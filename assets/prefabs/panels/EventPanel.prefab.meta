@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "2767cd73-0403-46d3-a744-542bbf32f9bd",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "EventPanel",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.801Z",
+    "syncNodeName": "EventPanel"
+  }
+}

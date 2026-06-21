@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "name": "global_const",
+  "data": [
+    {
+      "id": "GLOBAL_PLAYER",
+      "initialLevel": 1,
+      "initialGold": 1000,
+      "initialDiamond": 50,
+      "initialStamina": 50,
+      "maxStamina": 120,
+      "staminaRecoverIntervalMs": 300000,
+      "initialStageId": "STAGE_001",
+      "defaultHeroSlotCount": 5,
+      "maxLevel": 100
+    },
+    {
+      "id": "GLOBAL_BATTLE",
+      "defaultBattleSpeed": 1,
+      "maxBattleSpeed": 3,
+      "criticalDamageMultiplier": 1.5,
+      "elementCounterBonus": 0.25,
+      "defaultCritRate": 0.05,
+      "damageRandomFactor": 0.1,
+      "maxBattleDurationMs": 300000,
+      "defaultEnergyPerAttack": 10,
+      "maxEnergy": 100
+    },
+    {
+      "id": "GLOBAL_IDLE",
+      "maxOfflineTimeMs": 43200000,
+      "idleRewardIntervalMs": 60000,
+      "idleGoldPerInterval": 10,
+      "idleExpPerInterval": 5,
+      "adIdleMultiplier": 2.0
+    },
+    {
+      "id": "GLOBAL_AD",
+      "adRewardMultiplier": 2.0,
+      "dailyAdLimit": 10,
+      "rewardedAdCooldownMs": 30000,
+      "adReviveEnabled": true,
+      "adDoubleRewardEnabled": true,
+      "adFreeGachaEnabled": true,
+      "adIdleBoostEnabled": true
+    },
+    {
+      "id": "GLOBAL_SYSTEM",
+      "autoSaveIntervalMs": 30000,
+      "saveVersion": 1,
+      "gameVersion": "1.0.0",
+      "maxSaveSlots": 3,
+      "enableDebugPanel": true
+    }
+  ]
+}

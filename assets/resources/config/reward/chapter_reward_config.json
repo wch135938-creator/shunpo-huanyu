@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "name": "章节奖励配置表",
+  "rewards": [
+    {
+      "chapterId": "chapter_001",
+      "gold": 500,
+      "exp": 300,
+      "itemRewards": [
+        { "itemId": "ITEM_EQUIP_R_001", "count": 1 }
+      ]
+    },
+    {
+      "chapterId": "chapter_002",
+      "gold": 1500,
+      "exp": 800,
+      "itemRewards": [
+        { "itemId": "ITEM_EQUIP_SR_001", "count": 1 },
+        { "itemId": "ITEM_GACHA_FRAG", "count": 3 }
+      ]
+    },
+    {
+      "chapterId": "chapter_003",
+      "gold": 3000,
+      "exp": 1500,
+      "itemRewards": [
+        { "itemId": "ITEM_EQUIP_SR_001", "count": 2 },
+        { "itemId": "ITEM_GACHA_FRAG", "count": 5 },
+        { "itemId": "ITEM_MAT_BREAK_001", "count": 3 }
+      ]
+    },
+    {
+      "chapterId": "chapter_004",
+      "gold": 5000,
+      "exp": 2500,
+      "itemRewards": [
+        { "itemId": "ITEM_EQUIP_SR_001", "count": 3 },
+        { "itemId": "ITEM_GACHA_FRAG", "count": 8 }
+      ]
+    },
+    {
+      "chapterId": "chapter_005",
+      "gold": 8000,
+      "exp": 4000,
+      "itemRewards": [
+        { "itemId": "ITEM_EQUIP_SSR_001", "count": 1 },
+        { "itemId": "ITEM_GACHA_FRAG", "count": 10 },
+        { "itemId": "ITEM_MAT_STAR_001", "count": 5 }
+      ]
+    }
+  ]
+}

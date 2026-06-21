@@ -1,0 +1,121 @@
+{
+  "version": 1,
+  "name": "Boss配置表",
+  "data": [
+    {
+      "id": "BOSS_001",
+      "nameKey": "boss_name_001",
+      "descKey": "boss_desc_001",
+      "level": 10,
+      "element": "暗",
+      "faction": "混沌",
+      "hp": 5000,
+      "atk": 200,
+      "def": 80,
+      "speed": 90,
+      "critRate": 0.1,
+      "critDamage": 1.8,
+      "skills": [
+        { "skillId": "SKILL_001", "weight": 10 },
+        { "skillId": "SKILL_002", "weight": 5 }
+      ],
+      "drops": [
+        { "dropTableId": 1, "descKey": "boss_drop_001" }
+      ],
+      "dungeonRefs": ["DUNGEON_V2_001"]
+    },
+    {
+      "id": "BOSS_002",
+      "nameKey": "boss_name_002",
+      "descKey": "boss_desc_002",
+      "level": 20,
+      "element": "雷",
+      "faction": "青龙",
+      "hp": 12000,
+      "atk": 450,
+      "def": 150,
+      "speed": 110,
+      "critRate": 0.12,
+      "critDamage": 2.0,
+      "skills": [
+        { "skillId": "SKILL_001", "weight": 8 },
+        { "skillId": "SKILL_003", "weight": 7 }
+      ],
+      "drops": [
+        { "dropTableId": 2, "descKey": "boss_drop_002" }
+      ],
+      "dungeonRefs": ["DUNGEON_V2_002"]
+    },
+    {
+      "id": "BOSS_003",
+      "nameKey": "boss_name_003",
+      "descKey": "boss_desc_003",
+      "level": 35,
+      "element": "火",
+      "faction": "朱雀",
+      "hp": 25000,
+      "atk": 750,
+      "def": 250,
+      "speed": 130,
+      "critRate": 0.15,
+      "critDamage": 2.2,
+      "skills": [
+        { "skillId": "SKILL_002", "weight": 10 },
+        { "skillId": "SKILL_003", "weight": 8 },
+        { "skillId": "SKILL_004", "weight": 5 }
+      ],
+      "drops": [
+        { "dropTableId": 3, "descKey": "boss_drop_003" }
+      ],
+      "dungeonRefs": ["DUNGEON_V2_003"]
+    },
+    {
+      "id": "BOSS_004",
+      "nameKey": "boss_name_004",
+      "descKey": "boss_desc_004",
+      "level": 50,
+      "element": "冰",
+      "faction": "白虎",
+      "hp": 50000,
+      "atk": 1200,
+      "def": 400,
+      "speed": 100,
+      "critRate": 0.18,
+      "critDamage": 2.5,
+      "skills": [
+        { "skillId": "SKILL_001", "weight": 6 },
+        { "skillId": "SKILL_004", "weight": 10 },
+        { "skillId": "SKILL_005", "weight": 8 }
+      ],
+      "drops": [
+        { "dropTableId": 2, "descKey": "boss_drop_004" },
+        { "dropTableId": 3, "descKey": "boss_drop_004_extra" }
+      ],
+      "dungeonRefs": ["DUNGEON_V2_001", "DUNGEON_V2_002"]
+    },
+    {
+      "id": "BOSS_005",
+      "nameKey": "boss_name_005",
+      "descKey": "boss_desc_005",
+      "level": 70,
+      "element": "光",
+      "faction": "混沌",
+      "hp": 100000,
+      "atk": 2000,
+      "def": 600,
+      "speed": 150,
+      "critRate": 0.2,
+      "critDamage": 3.0,
+      "skills": [
+        { "skillId": "SKILL_002", "weight": 5 },
+        { "skillId": "SKILL_003", "weight": 6 },
+        { "skillId": "SKILL_004", "weight": 8 },
+        { "skillId": "SKILL_005", "weight": 10 }
+      ],
+      "drops": [
+        { "dropTableId": 3, "descKey": "boss_drop_005" }
+      ],
+      "dungeonRefs": ["DUNGEON_V2_003"]
+    }
+  ]
+}

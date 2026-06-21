@@ -1,0 +1,156 @@
+{
+  "version": 1,
+  "name": "enemy_data",
+  "data": [
+    {
+      "id": "enemy_001",
+      "name": "雾气精魄",
+      "element": "冰",
+      "faction": "白虎",
+      "quality": "normal",
+      "level": 1,
+      "baseStats": {
+        "hp": 200,
+        "atk": 30,
+        "def": 15,
+        "speed": 60
+      },
+      "skillIds": ["skill_001"],
+      "dropGroup": "drop_enemy_common"
+    },
+    {
+      "id": "enemy_002",
+      "name": "岩甲龟",
+      "element": "光",
+      "faction": "混沌",
+      "quality": "normal",
+      "level": 2,
+      "baseStats": {
+        "hp": 350,
+        "atk": 35,
+        "def": 25,
+        "speed": 55
+      },
+      "skillIds": ["skill_001"],
+      "dropGroup": "drop_enemy_common"
+    },
+    {
+      "id": "enemy_003",
+      "name": "毒刺蜂",
+      "element": "毒",
+      "faction": "玄武",
+      "quality": "normal",
+      "level": 2,
+      "baseStats": {
+        "hp": 280,
+        "atk": 45,
+        "def": 18,
+        "speed": 70
+      },
+      "skillIds": ["skill_001"],
+      "dropGroup": "drop_enemy_uncommon"
+    },
+    {
+      "id": "enemy_004",
+      "name": "风刃雀",
+      "element": "雷",
+      "faction": "朱雀",
+      "quality": "normal",
+      "level": 3,
+      "baseStats": {
+        "hp": 320,
+        "atk": 55,
+        "def": 20,
+        "speed": 75
+      },
+      "skillIds": ["skill_002"],
+      "dropGroup": "drop_enemy_common"
+    },
+    {
+      "id": "enemy_005",
+      "name": "火灵蝠",
+      "element": "火",
+      "faction": "青龙",
+      "quality": "normal",
+      "level": 4,
+      "baseStats": {
+        "hp": 400,
+        "atk": 65,
+        "def": 22,
+        "speed": 65
+      },
+      "skillIds": ["skill_002"],
+      "dropGroup": "drop_enemy_uncommon"
+    },
+    {
+      "id": "enemy_006",
+      "name": "暗影斥候",
+      "element": "暗",
+      "faction": "混沌",
+      "quality": "normal",
+      "level": 5,
+      "baseStats": {
+        "hp": 450,
+        "atk": 75,
+        "def": 30,
+        "speed": 80
+      },
+      "skillIds": ["skill_003"],
+      "dropGroup": "drop_enemy_rare"
+    },
+    {
+      "id": "elite_001",
+      "name": "冰霜守卫（精英）",
+      "element": "冰",
+      "faction": "白虎",
+      "quality": "elite",
+      "level": 5,
+      "baseStats": {
+        "hp": 1200,
+        "atk": 120,
+        "def": 60,
+        "speed": 70,
+        "critRate": 0.05,
+        "critDamage": 1.5
+      },
+      "skillIds": ["skill_001", "skill_002"],
+      "dropGroup": "drop_elite"
+    },
+    {
+      "id": "elite_002",
+      "name": "雷霆战将（精英）",
+      "element": "雷",
+      "faction": "青龙",
+      "quality": "elite",
+      "level": 8,
+      "baseStats": {
+        "hp": 2000,
+        "atk": 180,
+        "def": 80,
+        "speed": 90,
+        "critRate": 0.08,
+        "critDamage": 1.6
+      },
+      "skillIds": ["skill_002", "skill_003"],
+      "dropGroup": "drop_elite"
+    },
+    {
+      "id": "elite_003",
+      "name": "地狱火魔（精英）",
+      "element": "火",
+      "faction": "朱雀",
+      "quality": "elite",
+      "level": 12,
+      "baseStats": {
+        "hp": 3500,
+        "atk": 250,
+        "def": 100,
+        "speed": 75,
+        "critRate": 0.1,
+        "critDamage": 1.8
+      },
+      "skillIds": ["skill_001", "skill_002", "skill_003"],
+      "dropGroup": "drop_elite_rare"
+    }
+  ]
+}

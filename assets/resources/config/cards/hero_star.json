@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "name": "升星配置",
+  "data": [
+    {
+      "star": 1,
+      "cardCost": 0,
+      "goldCost": 0,
+      "materialCost": {},
+      "statMultiplier": 1.0
+    },
+    {
+      "star": 2,
+      "cardCost": 1,
+      "goldCost": 500,
+      "materialCost": {"ITEM_001": 3},
+      "statMultiplier": 1.08
+    },
+    {
+      "star": 3,
+      "cardCost": 1,
+      "goldCost": 1000,
+      "materialCost": {"ITEM_001": 5},
+      "statMultiplier": 1.16
+    },
+    {
+      "star": 4,
+      "cardCost": 2,
+      "goldCost": 2000,
+      "materialCost": {"ITEM_001": 8, "ITEM_002": 2},
+      "statMultiplier": 1.25
+    },
+    {
+      "star": 5,
+      "cardCost": 2,
+      "goldCost": 5000,
+      "materialCost": {"ITEM_001": 12, "ITEM_002": 4},
+      "statMultiplier": 1.35
+    },
+    {
+      "star": 6,
+      "cardCost": 3,
+      "goldCost": 10000,
+      "materialCost": {"ITEM_001": 18, "ITEM_002": 6},
+      "statMultiplier": 1.47
+    },
+    {
+      "star": 7,
+      "cardCost": 3,
+      "goldCost": 20000,
+      "materialCost": {"ITEM_001": 25, "ITEM_002": 10, "ITEM_003": 3},
+      "statMultiplier": 1.6
+    },
+    {
+      "star": 8,
+      "cardCost": 4,
+      "goldCost": 40000,
+      "materialCost": {"ITEM_001": 35, "ITEM_002": 15, "ITEM_003": 5},
+      "statMultiplier": 1.75
+    },
+    {
+      "star": 9,
+      "cardCost": 4,
+      "goldCost": 80000,
+      "materialCost": {"ITEM_001": 50, "ITEM_002": 20, "ITEM_003": 8},
+      "statMultiplier": 1.92
+    },
+    {
+      "star": 10,
+      "cardCost": 5,
+      "goldCost": 150000,
+      "materialCost": {"ITEM_001": 70, "ITEM_002": 30, "ITEM_003": 12, "ITEM_004": 3},
+      "statMultiplier": 2.1
+    },
+    {
+      "star": 11,
+      "cardCost": 5,
+      "goldCost": 300000,
+      "materialCost": {"ITEM_001": 100, "ITEM_002": 45, "ITEM_003": 18, "ITEM_004": 5},
+      "statMultiplier": 2.3
+    },
+    {
+      "star": 12,
+      "cardCost": 6,
+      "goldCost": 500000,
+      "materialCost": {"ITEM_001": 140, "ITEM_002": 60, "ITEM_003": 25, "ITEM_004": 8},
+      "statMultiplier": 2.55
+    },
+    {
+      "star": 13,
+      "cardCost": 7,
+      "goldCost": 800000,
+      "materialCost": {"ITEM_001": 200, "ITEM_002": 80, "ITEM_003": 35, "ITEM_004": 12},
+      "statMultiplier": 2.85
+    },
+    {
+      "star": 14,
+      "cardCost": 8,
+      "goldCost": 1200000,
+      "materialCost": {"ITEM_001": 280, "ITEM_002": 110, "ITEM_003": 50, "ITEM_004": 18},
+      "statMultiplier": 3.2
+    },
+    {
+      "star": 15,
+      "cardCost": 10,
+      "goldCost": 2000000,
+      "materialCost": {"ITEM_001": 400, "ITEM_002": 150, "ITEM_003": 70, "ITEM_004": 25, "ITEM_005": 5},
+      "statMultiplier": 3.6
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "name": "power_config",
+  "data": [
+    {
+      "id": "POWER_DEFAULT",
+      "hpWeight": 0.10,
+      "atkWeight": 5.00,
+      "defWeight": 3.00,
+      "speedWeight": 2.00,
+      "qualityMultiplier": {
+        "N": 1.00,
+        "R": 1.15,
+        "SR": 1.35,
+        "SSR": 1.70,
+        "UR": 2.20
+      },
+      "equipmentQualityMultiplier": {
+        "Common": 1.0,
+        "Rare": 1.2,
+        "Epic": 1.5,
+        "Legendary": 2.0
+      }
+    }
+  ]
+}

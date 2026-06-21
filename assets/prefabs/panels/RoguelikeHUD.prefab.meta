@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "17627bf8-e3ec-464d-933d-28b6de0270d6",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "RoguelikeHUD",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.798Z",
+    "syncNodeName": "RoguelikeHUD"
+  }
+}

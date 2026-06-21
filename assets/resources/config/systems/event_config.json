@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "name": "地牢事件配置表",
+  "data": [
+    {
+      "id": "EVENT_001",
+      "version": 1,
+      "nameKey": "event_name_001",
+      "descriptionKey": "event_desc_001",
+      "category": "reward",
+      "weight": 15,
+      "rewardSourceRefs": ["REWARD_POOL_TIER1_BONUS"],
+      "tags": ["common", "tier1"]
+    },
+    {
+      "id": "EVENT_002",
+      "version": 1,
+      "nameKey": "event_name_002",
+      "descriptionKey": "event_desc_002",
+      "category": "battle",
+      "weight": 12,
+      "rewardSourceRefs": ["REWARD_POOL_TIER1_BATTLE"],
+      "tags": ["common", "tier1"]
+    },
+    {
+      "id": "EVENT_003",
+      "version": 1,
+      "nameKey": "event_name_003",
+      "descriptionKey": "event_desc_003",
+      "category": "shop",
+      "weight": 8,
+      "rewardSourceRefs": ["REWARD_POOL_SHOP_TIER1"],
+      "tags": ["common", "tier1"]
+    },
+    {
+      "id": "EVENT_004",
+      "version": 1,
+      "nameKey": "event_name_004",
+      "descriptionKey": "event_desc_004",
+      "category": "blessing",
+      "weight": 10,
+      "rewardSourceRefs": ["REWARD_POOL_BLESSING_TIER2"],
+      "nextEventRefs": ["EVENT_007"],
+      "tags": ["uncommon", "tier2", "positive"]
+    },
+    {
+      "id": "EVENT_005",
+      "version": 1,
+      "nameKey": "event_name_005",
+      "descriptionKey": "event_desc_005",
+      "category": "curse",
+      "weight": 6,
+      "rewardSourceRefs": ["REWARD_POOL_CURSE_TIER2"],
+      "tags": ["uncommon", "tier2", "negative"]
+    },
+    {
+      "id": "EVENT_006",
+      "version": 1,
+      "nameKey": "event_name_006",
+      "descriptionKey": "event_desc_006",
+      "category": "story",
+      "weight": 8,
+      "rewardSourceRefs": ["REWARD_POOL_STORY_TIER2"],
+      "nextEventRefs": ["EVENT_008"],
+      "tags": ["uncommon", "tier2", "chain"]
+    },
+    {
+      "id": "EVENT_007",
+      "version": 1,
+      "nameKey": "event_name_007",
+      "descriptionKey": "event_desc_007",
+      "category": "story",
+      "weight": 5,
+      "rewardSourceRefs": ["REWARD_POOL_STORY_CHAIN"],
+      "tags": ["rare", "tier3", "chain"],
+      "conditions": [
+        { "type": "previousEventResolved", "params": { "eventId": "EVENT_004" } }
+      ]
+    },
+    {
+      "id": "EVENT_008",
+      "version": 1,
+      "nameKey": "event_name_008",
+      "descriptionKey": "event_desc_008",
+      "category": "reward",
+      "weight": 5,
+      "rewardSourceRefs": ["REWARD_POOL_RARE_TIER3"],
+      "tags": ["rare", "tier3", "chain"],
+      "conditions": [
+        { "type": "previousEventResolved", "params": { "eventId": "EVENT_006" } }
+      ]
+    },
+    {
+      "id": "EVENT_009",
+      "version": 1,
+      "nameKey": "event_name_009",
+      "descriptionKey": "event_desc_009",
+      "category": "special",
+      "weight": 3,
+      "rewardSourceRefs": ["REWARD_POOL_SPECIAL_TIER3"],
+      "tags": ["rare", "tier3", "once_per_run"]
+    },
+    {
+      "id": "EVENT_010",
+      "version": 1,
+      "nameKey": "event_name_010",
+      "descriptionKey": "event_desc_010",
+      "category": "battle",
+      "weight": 10,
+      "rewardSourceRefs": ["REWARD_POOL_TIER2_BATTLE"],
+      "tags": ["uncommon", "tier2", "elite"]
+    },
+    {
+      "id": "EVENT_011",
+      "version": 1,
+      "nameKey": "event_name_011",
+      "descriptionKey": "event_desc_011",
+      "category": "blessing",
+      "weight": 8,
+      "rewardSourceRefs": ["REWARD_POOL_BLESSING_TIER2"],
+      "tags": ["uncommon", "tier2", "positive"]
+    },
+    {
+      "id": "EVENT_012",
+      "version": 1,
+      "nameKey": "event_name_012",
+      "descriptionKey": "event_desc_012",
+      "category": "reward",
+      "weight": 10,
+      "rewardSourceRefs": ["REWARD_POOL_TIER3_BONUS"],
+      "tags": ["rare", "tier3"]
+    },
+    {
+      "id": "EVENT_013",
+      "version": 1,
+      "nameKey": "event_name_013",
+      "descriptionKey": "event_desc_013",
+      "category": "curse",
+      "weight": 7,
+      "rewardSourceRefs": ["REWARD_POOL_CURSE_TIER3"],
+      "tags": ["rare", "tier3", "negative"]
+    },
+    {
+      "id": "EVENT_014",
+      "version": 1,
+      "nameKey": "event_name_014",
+      "descriptionKey": "event_desc_014",
+      "category": "shop",
+      "weight": 6,
+      "rewardSourceRefs": ["REWARD_POOL_SHOP_TIER3"],
+      "tags": ["rare", "tier3"]
+    },
+    {
+      "id": "EVENT_015",
+      "version": 1,
+      "nameKey": "event_name_015",
+      "descriptionKey": "event_desc_015",
+      "category": "battle",
+      "weight": 8,
+      "rewardSourceRefs": ["REWARD_POOL_TIER3_BATTLE"],
+      "tags": ["rare", "tier3", "elite"]
+    }
+  ]
+}

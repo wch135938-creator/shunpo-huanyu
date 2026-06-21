@@ -1,0 +1,414 @@
+{
+  "version": 1,
+  "name": "chapter_data",
+  "data": [
+    {
+      "id": "chapter_001",
+      "name": "初入仙途",
+      "chapterIndex": 1,
+      "description": "踏入修仙之路，在云雾山脉中磨砺意志，挑战初阶妖兽。",
+      "iconPath": "icons/chapter_001",
+      "recommendedPower": 500,
+      "unlockCondition": {
+        "prevChapterId": null,
+        "playerLevel": 1
+      },
+      "stages": [
+        {
+          "id": "chapter_001_stage_01",
+          "name": "雾隐小径",
+          "chapterId": "chapter_001",
+          "stageIndex": 1,
+          "type": "normal",
+          "recommendedPower": 100,
+          "enemyGroupId": "enemy_group_001",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 100 },
+            { "type": "exp", "id": "player_exp", "amount": 50 }
+          ],
+          "unlockCondition": {
+            "prevStageId": null,
+            "playerLevel": 1,
+            "totalPower": 0
+          },
+          "staminaCost": 5
+        },
+        {
+          "id": "chapter_001_stage_02",
+          "name": "灵石矿场",
+          "chapterId": "chapter_001",
+          "stageIndex": 2,
+          "type": "normal",
+          "recommendedPower": 150,
+          "enemyGroupId": "enemy_group_002",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 150 },
+            { "type": "exp", "id": "player_exp", "amount": 80 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_01",
+            "playerLevel": 1,
+            "totalPower": 80
+          },
+          "staminaCost": 5
+        },
+        {
+          "id": "chapter_001_stage_03",
+          "name": "灵鹤涧",
+          "chapterId": "chapter_001",
+          "stageIndex": 3,
+          "type": "normal",
+          "recommendedPower": 220,
+          "enemyGroupId": "enemy_group_003",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 200 },
+            { "type": "exp", "id": "player_exp", "amount": 120 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_02",
+            "playerLevel": 2,
+            "totalPower": 130
+          },
+          "staminaCost": 6
+        },
+        {
+          "id": "chapter_001_stage_04",
+          "name": "古剑崖",
+          "chapterId": "chapter_001",
+          "stageIndex": 4,
+          "type": "elite",
+          "recommendedPower": 320,
+          "enemyGroupId": "enemy_group_004",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 300 },
+            { "type": "exp", "id": "player_exp", "amount": 180 },
+            { "type": "equipment", "id": "equipment_common_001", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_03",
+            "playerLevel": 3,
+            "totalPower": 200
+          },
+          "staminaCost": 8
+        },
+        {
+          "id": "chapter_001_stage_05",
+          "name": "云麓峰",
+          "chapterId": "chapter_001",
+          "stageIndex": 5,
+          "type": "normal",
+          "recommendedPower": 400,
+          "enemyGroupId": "enemy_group_005",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 400 },
+            { "type": "exp", "id": "player_exp", "amount": 250 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_04",
+            "playerLevel": 4,
+            "totalPower": 300
+          },
+          "staminaCost": 8
+        },
+        {
+          "id": "chapter_001_stage_06",
+          "name": "噬渊魔窟",
+          "chapterId": "chapter_001",
+          "stageIndex": 6,
+          "type": "boss",
+          "recommendedPower": 500,
+          "enemyGroupId": "enemy_group_boss_001",
+          "bossId": "boss_001",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 800 },
+            { "type": "exp", "id": "player_exp", "amount": 500 },
+            { "type": "hero", "id": "hero_001", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_05",
+            "playerLevel": 5,
+            "totalPower": 400
+          },
+          "staminaCost": 10
+        }
+      ]
+    },
+    {
+      "id": "chapter_002",
+      "name": "龙渊秘境",
+      "chapterIndex": 2,
+      "description": "深入龙渊秘境，面对远古龙族留下的试炼与守护兽。",
+      "iconPath": "icons/chapter_002",
+      "recommendedPower": 1500,
+      "unlockCondition": {
+        "prevChapterId": "chapter_001",
+        "playerLevel": 10
+      },
+      "stages": [
+        {
+          "id": "chapter_002_stage_01",
+          "name": "龙渊入口",
+          "chapterId": "chapter_002",
+          "stageIndex": 1,
+          "type": "normal",
+          "recommendedPower": 600,
+          "enemyGroupId": "enemy_group_006",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 500 },
+            { "type": "exp", "id": "player_exp", "amount": 300 }
+          ],
+          "unlockCondition": {
+            "prevStageId": null,
+            "playerLevel": 10,
+            "totalPower": 500
+          },
+          "staminaCost": 10
+        },
+        {
+          "id": "chapter_002_stage_02",
+          "name": "龙息回廊",
+          "chapterId": "chapter_002",
+          "stageIndex": 2,
+          "type": "normal",
+          "recommendedPower": 750,
+          "enemyGroupId": "enemy_group_007",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 600 },
+            { "type": "exp", "id": "player_exp", "amount": 380 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_002_stage_01",
+            "playerLevel": 11,
+            "totalPower": 620
+          },
+          "staminaCost": 10
+        },
+        {
+          "id": "chapter_002_stage_03",
+          "name": "鳞光大厅",
+          "chapterId": "chapter_002",
+          "stageIndex": 3,
+          "type": "elite",
+          "recommendedPower": 900,
+          "enemyGroupId": "enemy_group_008",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 800 },
+            { "type": "exp", "id": "player_exp", "amount": 480 },
+            { "type": "equipment", "id": "equipment_rare_001", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_002_stage_02",
+            "playerLevel": 13,
+            "totalPower": 800
+          },
+          "staminaCost": 12
+        },
+        {
+          "id": "chapter_002_stage_04",
+          "name": "龙骨荒原",
+          "chapterId": "chapter_002",
+          "stageIndex": 4,
+          "type": "normal",
+          "recommendedPower": 1050,
+          "enemyGroupId": "enemy_group_009",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 900 },
+            { "type": "exp", "id": "player_exp", "amount": 550 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_002_stage_03",
+            "playerLevel": 15,
+            "totalPower": 950
+          },
+          "staminaCost": 12
+        },
+        {
+          "id": "chapter_002_stage_05",
+          "name": "龙语祭坛",
+          "chapterId": "chapter_002",
+          "stageIndex": 5,
+          "type": "normal",
+          "recommendedPower": 1200,
+          "enemyGroupId": "enemy_group_010",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 1100 },
+            { "type": "exp", "id": "player_exp", "amount": 650 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_002_stage_04",
+            "playerLevel": 17,
+            "totalPower": 1100
+          },
+          "staminaCost": 15
+        },
+        {
+          "id": "chapter_002_stage_06",
+          "name": "雷霆龙巢",
+          "chapterId": "chapter_002",
+          "stageIndex": 6,
+          "type": "boss",
+          "recommendedPower": 1500,
+          "enemyGroupId": "enemy_group_boss_002",
+          "bossId": "boss_002",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 2000 },
+            { "type": "exp", "id": "player_exp", "amount": 1200 },
+            { "type": "hero", "id": "hero_002", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_002_stage_05",
+            "playerLevel": 20,
+            "totalPower": 1300
+          },
+          "staminaCost": 20
+        }
+      ]
+    },
+    {
+      "id": "chapter_003",
+      "name": "幽冥鬼域",
+      "chapterIndex": 3,
+      "description": "穿越阴阳交界，在幽冥鬼域中对抗怨灵，揭开轮回之谜。",
+      "iconPath": "icons/chapter_003",
+      "recommendedPower": 3500,
+      "unlockCondition": {
+        "prevChapterId": "chapter_002",
+        "playerLevel": 25
+      },
+      "stages": [
+        {
+          "id": "chapter_003_stage_01",
+          "name": "黄泉路口",
+          "chapterId": "chapter_003",
+          "stageIndex": 1,
+          "type": "normal",
+          "recommendedPower": 1600,
+          "enemyGroupId": "enemy_group_011",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 1200 },
+            { "type": "exp", "id": "player_exp", "amount": 700 }
+          ],
+          "unlockCondition": {
+            "prevStageId": null,
+            "playerLevel": 25,
+            "totalPower": 1500
+          },
+          "staminaCost": 12
+        },
+        {
+          "id": "chapter_003_stage_02",
+          "name": "忘川河畔",
+          "chapterId": "chapter_003",
+          "stageIndex": 2,
+          "type": "normal",
+          "recommendedPower": 1850,
+          "enemyGroupId": "enemy_group_012",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 1400 },
+            { "type": "exp", "id": "player_exp", "amount": 850 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_003_stage_01",
+            "playerLevel": 26,
+            "totalPower": 1700
+          },
+          "staminaCost": 12
+        },
+        {
+          "id": "chapter_003_stage_03",
+          "name": "奈何桥",
+          "chapterId": "chapter_003",
+          "stageIndex": 3,
+          "type": "elite",
+          "recommendedPower": 2150,
+          "enemyGroupId": "enemy_group_013",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 1700 },
+            { "type": "exp", "id": "player_exp", "amount": 1000 },
+            { "type": "equipment", "id": "equipment_rare_002", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_003_stage_02",
+            "playerLevel": 28,
+            "totalPower": 2000
+          },
+          "staminaCost": 15
+        },
+        {
+          "id": "chapter_003_stage_04",
+          "name": "鬼门关",
+          "chapterId": "chapter_003",
+          "stageIndex": 4,
+          "type": "normal",
+          "recommendedPower": 2500,
+          "enemyGroupId": "enemy_group_014",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 2000 },
+            { "type": "exp", "id": "player_exp", "amount": 1200 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_003_stage_03",
+            "playerLevel": 30,
+            "totalPower": 2300
+          },
+          "staminaCost": 15
+        },
+        {
+          "id": "chapter_003_stage_05",
+          "name": "阎罗殿",
+          "chapterId": "chapter_003",
+          "stageIndex": 5,
+          "type": "normal",
+          "recommendedPower": 2900,
+          "enemyGroupId": "enemy_group_015",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 2500 },
+            { "type": "exp", "id": "player_exp", "amount": 1500 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_003_stage_04",
+            "playerLevel": 32,
+            "totalPower": 2700
+          },
+          "staminaCost": 18
+        },
+        {
+          "id": "chapter_003_stage_06",
+          "name": "轮回台",
+          "chapterId": "chapter_003",
+          "stageIndex": 6,
+          "type": "boss",
+          "recommendedPower": 3500,
+          "enemyGroupId": "enemy_group_boss_003",
+          "bossId": "boss_003",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 4000 },
+            { "type": "exp", "id": "player_exp", "amount": 2500 },
+            { "type": "hero", "id": "hero_003", "amount": 1 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_003_stage_05",
+            "playerLevel": 35,
+            "totalPower": 3200
+          },
+          "staminaCost": 25
+        }
+      ]
+    }
+  ]
+}

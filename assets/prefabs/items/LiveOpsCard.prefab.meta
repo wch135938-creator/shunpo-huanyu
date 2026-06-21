@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "0f96c17f-460d-47b2-8962-1ac103bb3c53",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "LiveOpsCard",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.807Z",
+    "syncNodeName": "LiveOpsCard"
+  }
+}

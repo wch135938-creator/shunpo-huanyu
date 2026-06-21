@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "name": "事件池配置表",
+  "data": [
+    {
+      "id": "EVENT_POOL_TIER1",
+      "version": 1,
+      "nameKey": "event_pool_tier1",
+      "eventPoolRefs": ["EVENT_001", "EVENT_002", "EVENT_003"]
+    },
+    {
+      "id": "EVENT_POOL_TIER2",
+      "version": 1,
+      "nameKey": "event_pool_tier2",
+      "eventPoolRefs": ["EVENT_004", "EVENT_005", "EVENT_006", "EVENT_010", "EVENT_011"]
+    },
+    {
+      "id": "EVENT_POOL_TIER3",
+      "version": 1,
+      "nameKey": "event_pool_tier3",
+      "eventPoolRefs": ["EVENT_007", "EVENT_008", "EVENT_009", "EVENT_012", "EVENT_013", "EVENT_014", "EVENT_015"]
+    },
+    {
+      "id": "EVENT_POOL_LIVEOPS_NEWBIE",
+      "version": 1,
+      "nameKey": "event_pool_liveops_newbie",
+      "eventPoolRefs": ["EVENT_001", "EVENT_004"]
+    },
+    {
+      "id": "EVENT_POOL_LIVEOPS_WEEKEND",
+      "version": 1,
+      "nameKey": "event_pool_liveops_weekend",
+      "eventPoolRefs": ["EVENT_002", "EVENT_005", "EVENT_010"]
+    },
+    {
+      "id": "EVENT_POOL_LIVEOPS_FESTIVAL",
+      "version": 1,
+      "nameKey": "event_pool_liveops_festival",
+      "eventPoolRefs": ["EVENT_009", "EVENT_012", "EVENT_013"]
+    },
+    {
+      "id": "EVENT_POOL_LIVEOPS_DAILY",
+      "version": 1,
+      "nameKey": "event_pool_liveops_daily",
+      "eventPoolRefs": ["EVENT_001", "EVENT_004", "EVENT_011"]
+    }
+  ]
+}

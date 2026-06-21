@@ -1,0 +1,68 @@
+
+#///////////////////////////
+# Cocos Creator 3D Project
+#///////////////////////////
+library/
+temp/
+local/
+build/
+profiles/
+native/
+.creator/
+#//////////////////////////
+# NPM
+#//////////////////////////
+node_modules/
+
+#//////////////////////////
+# VSCode
+#//////////////////////////
+.vscode/
+
+#//////////////////////////
+# WebStorm
+#//////////////////////////
+.idea/
+
+#//////////////////////////
+# OS / logs
+#//////////////////////////
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+#//////////////////////////
+# Local assistant / scratch artifacts
+#//////////////////////////
+.claude/
+CLAUDE.md
+memory/
+prompts/
+reports/
+
+#//////////////////////////
+# Temporary screenshots / captures
+#//////////////////////////
+Phase8-Screenshot-*.png
+Phase8-Windows.txt
+
+#//////////////////////////
+# Local repair backups / generated scratch
+#//////////////////////////
+_assetdb_noise_backup/
+_scene_repair_backup/
+_runtime_test/
+_mocks/
+_tools/
+_fix_prefabs.js
+
+#//////////////////////////
+# Local backup files
+#//////////////////////////
+docs/backups/
+*.bak
+*.backup.*
+*.corrupt.*

@@ -1,0 +1,171 @@
+{
+  "version": "1.0.0",
+  "name": "hero_talent_config",
+  "data": [
+    {
+      "talentId": "TALENT_001",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_ATK",
+      "talentName": "破势一击",
+      "unlockLevel": 1,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_002"
+    },
+    {
+      "talentId": "TALENT_002",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_ATK",
+      "talentName": "锋芒毕露",
+      "unlockLevel": 5,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.08,
+      "nextTalentId": "TALENT_003"
+    },
+    {
+      "talentId": "TALENT_003",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_ATK",
+      "talentName": "剑意通明",
+      "unlockLevel": 10,
+      "cost": 2,
+      "effectType": "attackPercent",
+      "effectValue": 0.10,
+      "nextTalentId": ""
+    },
+    {
+      "talentId": "TALENT_004",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_DEF",
+      "talentName": "铁壁",
+      "unlockLevel": 10,
+      "cost": 1,
+      "effectType": "defensePercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_005"
+    },
+    {
+      "talentId": "TALENT_005",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_DEF",
+      "talentName": "不动如山",
+      "unlockLevel": 15,
+      "cost": 1,
+      "effectType": "defensePercent",
+      "effectValue": 0.08,
+      "nextTalentId": "TALENT_006"
+    },
+    {
+      "talentId": "TALENT_006",
+      "heroId": "hero_001",
+      "routeId": "ROUTE_DEF",
+      "talentName": "金刚不坏",
+      "unlockLevel": 20,
+      "cost": 2,
+      "effectType": "hpPercent",
+      "effectValue": 0.05,
+      "nextTalentId": ""
+    },
+    {
+      "talentId": "TALENT_007",
+      "heroId": "hero_002",
+      "routeId": "ROUTE_ATK",
+      "talentName": "冰晶刺",
+      "unlockLevel": 1,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_008"
+    },
+    {
+      "talentId": "TALENT_008",
+      "heroId": "hero_002",
+      "routeId": "ROUTE_ATK",
+      "talentName": "寒霜之力",
+      "unlockLevel": 5,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.08,
+      "nextTalentId": ""
+    },
+    {
+      "talentId": "TALENT_009",
+      "heroId": "hero_003",
+      "routeId": "ROUTE_ATK",
+      "talentName": "暗影突袭",
+      "unlockLevel": 1,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_010"
+    },
+    {
+      "talentId": "TALENT_010",
+      "heroId": "hero_003",
+      "routeId": "ROUTE_ATK",
+      "talentName": "致命一击",
+      "unlockLevel": 5,
+      "cost": 1,
+      "effectType": "critRate",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_011"
+    },
+    {
+      "talentId": "TALENT_011",
+      "heroId": "hero_003",
+      "routeId": "ROUTE_ATK",
+      "talentName": "影杀",
+      "unlockLevel": 10,
+      "cost": 2,
+      "effectType": "critDamage",
+      "effectValue": 0.15,
+      "nextTalentId": ""
+    },
+    {
+      "talentId": "TALENT_012",
+      "heroId": "hero_004",
+      "routeId": "ROUTE_DEF",
+      "talentName": "龟甲术",
+      "unlockLevel": 1,
+      "cost": 1,
+      "effectType": "defensePercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_013"
+    },
+    {
+      "talentId": "TALENT_013",
+      "heroId": "hero_004",
+      "routeId": "ROUTE_DEF",
+      "talentName": "玄盾",
+      "unlockLevel": 5,
+      "cost": 1,
+      "effectType": "hpPercent",
+      "effectValue": 0.05,
+      "nextTalentId": ""
+    },
+    {
+      "talentId": "TALENT_014",
+      "heroId": "hero_005",
+      "routeId": "ROUTE_ATK",
+      "talentName": "圣光裁决",
+      "unlockLevel": 1,
+      "cost": 1,
+      "effectType": "attackPercent",
+      "effectValue": 0.05,
+      "nextTalentId": "TALENT_015"
+    },
+    {
+      "talentId": "TALENT_015",
+      "heroId": "hero_005",
+      "routeId": "ROUTE_ATK",
+      "talentName": "灵光普照",
+      "unlockLevel": 5,
+      "cost": 2,
+      "effectType": "attackPercent",
+      "effectValue": 0.10,
+      "nextTalentId": ""
+    }
+  ]
+}

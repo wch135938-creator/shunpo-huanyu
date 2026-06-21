@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "name": "boss_data",
+  "data": [
+    {
+      "id": "boss_001",
+      "name": "噬渊魔君",
+      "element": "暗",
+      "faction": "混沌",
+      "level": 10,
+      "baseStats": {
+        "hp": 5000,
+        "atk": 200,
+        "def": 80,
+        "speed": 90,
+        "critRate": 0.1,
+        "critDamage": 1.8
+      },
+      "skillIds": ["skill_001", "skill_002"],
+      "dropGroup": "drop_boss_001",
+      "dungeonRefs": ["dungeon_001"]
+    },
+    {
+      "id": "boss_002",
+      "name": "雷霆龙王",
+      "element": "雷",
+      "faction": "青龙",
+      "level": 20,
+      "baseStats": {
+        "hp": 12000,
+        "atk": 450,
+        "def": 150,
+        "speed": 110,
+        "critRate": 0.12,
+        "critDamage": 2.0
+      },
+      "skillIds": ["skill_001", "skill_003"],
+      "dropGroup": "drop_boss_002",
+      "dungeonRefs": ["dungeon_002"]
+    },
+    {
+      "id": "boss_003",
+      "name": "朱雀焚天凤",
+      "element": "火",
+      "faction": "朱雀",
+      "level": 35,
+      "baseStats": {
+        "hp": 25000,
+        "atk": 750,
+        "def": 250,
+        "speed": 130,
+        "critRate": 0.15,
+        "critDamage": 2.2
+      },
+      "skillIds": ["skill_002", "skill_003"],
+      "dropGroup": "drop_boss_003",
+      "dungeonRefs": ["dungeon_003"]
+    },
+    {
+      "id": "boss_004",
+      "name": "冰霜古龙",
+      "element": "冰",
+      "faction": "白虎",
+      "level": 50,
+      "baseStats": {
+        "hp": 50000,
+        "atk": 1200,
+        "def": 400,
+        "speed": 100,
+        "critRate": 0.18,
+        "critDamage": 2.5
+      },
+      "skillIds": ["skill_001", "skill_004"],
+      "dropGroup": "drop_boss_004",
+      "dungeonRefs": ["dungeon_001", "dungeon_002"]
+    },
+    {
+      "id": "boss_005",
+      "name": "光耀圣使",
+      "element": "光",
+      "faction": "混沌",
+      "level": 70,
+      "baseStats": {
+        "hp": 100000,
+        "atk": 2000,
+        "def": 600,
+        "speed": 150,
+        "critRate": 0.2,
+        "critDamage": 3.0
+      },
+      "skillIds": ["skill_002", "skill_003", "skill_004"],
+      "dropGroup": "drop_boss_005",
+      "dungeonRefs": ["dungeon_003"]
+    }
+  ]
+}

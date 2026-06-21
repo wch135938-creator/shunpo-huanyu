@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "3402dc2c-e5a7-46ab-89b9-c620ace53d1b",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "LiveOpsPanel",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.800Z",
+    "syncNodeName": "LiveOpsPanel"
+  }
+}

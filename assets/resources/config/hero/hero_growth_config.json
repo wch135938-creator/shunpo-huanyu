@@ -1,0 +1,97 @@
+{
+  "version": "1.0.0",
+  "name": "hero_growth_config",
+  "data": [
+    {
+      "heroId": "hero_001",
+      "growthRoutes": [
+        {
+          "routeId": "ROUTE_ATK",
+          "routeName": "破军",
+          "unlockLevel": 1,
+          "mainStat": "attack"
+        },
+        {
+          "routeId": "ROUTE_DEF",
+          "routeName": "玄御",
+          "unlockLevel": 10,
+          "mainStat": "defense"
+        }
+      ]
+    },
+    {
+      "heroId": "hero_002",
+      "growthRoutes": [
+        {
+          "routeId": "ROUTE_ATK",
+          "routeName": "破军",
+          "unlockLevel": 1,
+          "mainStat": "attack"
+        },
+        {
+          "routeId": "ROUTE_SPD",
+          "routeName": "疾风",
+          "unlockLevel": 15,
+          "mainStat": "speed"
+        }
+      ]
+    },
+    {
+      "heroId": "hero_003",
+      "growthRoutes": [
+        {
+          "routeId": "ROUTE_ATK",
+          "routeName": "破军",
+          "unlockLevel": 1,
+          "mainStat": "attack"
+        },
+        {
+          "routeId": "ROUTE_CRIT",
+          "routeName": "裂空",
+          "unlockLevel": 10,
+          "mainStat": "critRate"
+        }
+      ]
+    },
+    {
+      "heroId": "hero_004",
+      "growthRoutes": [
+        {
+          "routeId": "ROUTE_DEF",
+          "routeName": "玄御",
+          "unlockLevel": 1,
+          "mainStat": "defense"
+        },
+        {
+          "routeId": "ROUTE_HP",
+          "routeName": "长生",
+          "unlockLevel": 10,
+          "mainStat": "hp"
+        }
+      ]
+    },
+    {
+      "heroId": "hero_005",
+      "growthRoutes": [
+        {
+          "routeId": "ROUTE_ATK",
+          "routeName": "破军",
+          "unlockLevel": 1,
+          "mainStat": "attack"
+        },
+        {
+          "routeId": "ROUTE_HP",
+          "routeName": "长生",
+          "unlockLevel": 10,
+          "mainStat": "hp"
+        },
+        {
+          "routeId": "ROUTE_SPD",
+          "routeName": "疾风",
+          "unlockLevel": 20,
+          "mainStat": "speed"
+        }
+      ]
+    }
+  ]
+}

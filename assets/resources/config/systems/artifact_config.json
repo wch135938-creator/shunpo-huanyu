@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "name": "神器配置表",
+  "data": [
+    {
+      "id": "ARTIFACT_001",
+      "version": 1,
+      "nameKey": "artifact_name_001",
+      "rarity": "common",
+      "effectRefs": ["EFFECT_ATK_BOOST_5"],
+      "tags": ["starter", "offensive"]
+    },
+    {
+      "id": "ARTIFACT_002",
+      "version": 1,
+      "nameKey": "artifact_name_002",
+      "rarity": "common",
+      "effectRefs": ["EFFECT_DEF_BOOST_5"],
+      "tags": ["starter", "defensive"]
+    },
+    {
+      "id": "ARTIFACT_003",
+      "version": 1,
+      "nameKey": "artifact_name_003",
+      "rarity": "rare",
+      "effectRefs": ["EFFECT_ATK_BOOST_10", "EFFECT_CRIT_RATE_5"],
+      "tags": ["offensive", "critical"]
+    },
+    {
+      "id": "ARTIFACT_004",
+      "version": 1,
+      "nameKey": "artifact_name_004",
+      "rarity": "rare",
+      "effectRefs": ["EFFECT_HP_BOOST_15", "EFFECT_HEAL_5"],
+      "tags": ["defensive", "survival"]
+    },
+    {
+      "id": "ARTIFACT_005",
+      "version": 1,
+      "nameKey": "artifact_name_005",
+      "rarity": "epic",
+      "effectRefs": ["EFFECT_ATK_BOOST_20", "EFFECT_SPEED_BOOST_10", "EFFECT_DODGE_5"],
+      "tags": ["offensive", "speed"]
+    },
+    {
+      "id": "ARTIFACT_006",
+      "version": 1,
+      "nameKey": "artifact_name_006",
+      "rarity": "epic",
+      "effectRefs": ["EFFECT_ALL_STATS_10", "EFFECT_DAMAGE_REDUCE_10"],
+      "tags": ["balanced", "survival"]
+    },
+    {
+      "id": "ARTIFACT_007",
+      "version": 1,
+      "nameKey": "artifact_name_007",
+      "rarity": "legendary",
+      "effectRefs": ["EFFECT_ATK_BOOST_30", "EFFECT_CRIT_RATE_15", "EFFECT_CRIT_DMG_30", "EFFECT_LIFESTEAL_10"],
+      "tags": ["offensive", "ultimate"]
+    },
+    {
+      "id": "ARTIFACT_008",
+      "version": 1,
+      "nameKey": "artifact_name_008",
+      "rarity": "legendary",
+      "effectRefs": ["EFFECT_ALL_STATS_20", "EFFECT_REVIVE_ONCE", "EFFECT_DAMAGE_REDUCE_20"],
+      "tags": ["defensive", "ultimate"]
+    },
+    {
+      "id": "ARTIFACT_009",
+      "version": 1,
+      "nameKey": "artifact_name_009",
+      "rarity": "epic",
+      "effectRefs": ["EFFECT_GOLD_BONUS_25", "EFFECT_EXP_BONUS_25"],
+      "tags": ["utility", "farming"]
+    }
+  ]
+}

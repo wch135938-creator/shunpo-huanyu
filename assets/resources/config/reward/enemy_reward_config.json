@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "name": "动态敌人奖励配置表",
+  "rewards": [
+    {
+      "enemyId": "ENEMY_DYNAMIC_001",
+      "gold": 50,
+      "exp": 30
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_002",
+      "gold": 100,
+      "exp": 60
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_003",
+      "gold": 80,
+      "exp": 50
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_004",
+      "gold": 120,
+      "exp": 70
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_005",
+      "gold": 200,
+      "exp": 100
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_006",
+      "gold": 150,
+      "exp": 90
+    },
+    {
+      "enemyId": "ENEMY_DYNAMIC_007",
+      "gold": 500,
+      "exp": 250
+    }
+  ]
+}

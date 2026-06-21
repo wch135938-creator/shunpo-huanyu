@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "3191b70d-61b6-4c38-abcd-b88b29fa03a5",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "ArtifactItem",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.806Z",
+    "syncNodeName": "ArtifactItem"
+  }
+}

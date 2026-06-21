@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "name": "Phase8 UI Icon Mapping",
+  "description": "Runtime icon metadata used by Phase8 UI.",
+  "data": {
+    "node_icons": {
+      "textures/icons/node_battle": { "emoji": "B", "color": "#FF5252", "label": "Battle Node" },
+      "textures/icons/node_event": { "emoji": "E", "color": "#FFD740", "label": "Event Node" },
+      "textures/icons/node_boss": { "emoji": "X", "color": "#FF1744", "label": "Boss Node" },
+      "textures/icons/node_reward": { "emoji": "R", "color": "#69F0AE", "label": "Reward Node" },
+      "textures/icons/node_shop": { "emoji": "S", "color": "#40C4FF", "label": "Shop Node" },
+      "textures/icons/node_empty": { "emoji": "-", "color": "#9E9E9E", "label": "Empty Node" }
+    },
+    "reward_icons": {
+      "textures/icons/reward_gold": { "emoji": "G", "color": "#FFD700", "label": "Gold" },
+      "textures/icons/reward_exp": { "emoji": "XP", "color": "#B388FF", "label": "EXP" },
+      "textures/icons/reward_equipment": { "emoji": "EQ", "color": "#FF9800", "label": "Equipment" },
+      "textures/icons/reward_item": { "emoji": "I", "color": "#8D6E63", "label": "Item" },
+      "textures/icons/reward_currency": { "emoji": "C", "color": "#00BCD4", "label": "Currency" }
+    },
+    "rarity_frames": {
+      "textures/frames/frame_common": { "color": "#9E9E9E", "border": 2, "label": "Common Frame" },
+      "textures/frames/frame_rare": { "color": "#42A5F5", "border": 3, "label": "Rare Frame" },
+      "textures/frames/frame_epic": { "color": "#AB47BC", "border": 4, "label": "Epic Frame" },
+      "textures/frames/frame_legendary": { "color": "#FFD700", "border": 5, "label": "Legendary Frame" }
+    },
+    "ui_icons": {
+      "textures/icons/btn_close": { "emoji": "X", "color": "#FFFFFF", "label": "Close Button" },
+      "textures/icons/btn_enter": { "emoji": ">", "color": "#69F0AE", "label": "Enter Button" },
+      "textures/icons/btn_activate": { "emoji": "A", "color": "#FFD740", "label": "Activate Button" },
+      "textures/icons/btn_pause": { "emoji": "P", "color": "#FFFFFF", "label": "Pause Button" },
+      "textures/icons/btn_skip": { "emoji": "S", "color": "#9E9E9E", "label": "Skip Button" },
+      "textures/icons/btn_continue": { "emoji": "C", "color": "#69F0AE", "label": "Continue Button" },
+      "textures/icons/btn_return": { "emoji": "<", "color": "#FFFFFF", "label": "Return Button" },
+      "textures/icons/indicator_active": { "emoji": "*", "color": "#69F0AE", "label": "Active Indicator" },
+      "textures/icons/indicator_locked": { "emoji": "L", "color": "#9E9E9E", "label": "Locked Indicator" },
+      "textures/icons/indicator_risk": { "emoji": "!", "color": "#FF5252", "label": "Risk Indicator" },
+      "textures/icons/progress_fill": { "color": "#69F0AE", "label": "Progress Fill" },
+      "textures/icons/progress_bg": { "color": "#424242", "label": "Progress Background" }
+    }
+  }
+}

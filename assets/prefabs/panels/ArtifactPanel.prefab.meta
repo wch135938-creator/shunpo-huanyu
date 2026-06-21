@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "f8103ed8-6dca-44dc-8269-8393df2c7fc7",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "ArtifactPanel",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.799Z",
+    "syncNodeName": "ArtifactPanel"
+  }
+}

@@ -1,0 +1,503 @@
+{
+  "version": 1,
+  "name": "地牢V2配置表（节点图模式）",
+  "data": [
+    {
+      "id": "DUNGEON_V2_001",
+      "version": 1,
+      "nameKey": "dungeon_v2_name_001",
+      "layers": [
+        {
+          "id": "DUNGEON_V2_001_LAYER_1",
+          "order": 0,
+          "nodeGraph": [
+            {
+              "id": "NODE_001_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_001_B1", "NODE_001_E1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_001_R1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER1_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER1"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER1_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_001_R1"],
+              "eventRefs": ["EVENT_001", "EVENT_002", "EVENT_003"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER1_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_001_B2", "NODE_001_S1"],
+              "dropSourceRefs": ["DROP_TABLE_TIER1"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER1_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_001_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER1_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER1"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER1_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_S1",
+              "type": "shop",
+              "nextNodeIds": ["NODE_001_BOSS"],
+              "rewardPoolRefs": ["REWARD_POOL_SHOP_TIER1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_001_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_001",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_001"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_001"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_001" }
+          ]
+        },
+        {
+          "id": "DUNGEON_V2_001_LAYER_2",
+          "order": 1,
+          "nodeGraph": [
+            {
+              "id": "NODE_002_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_002_B1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_002_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_002_E1", "NODE_002_R1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER2_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_002_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_002_B2"],
+              "eventRefs": ["EVENT_004", "EVENT_005", "EVENT_006"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_002_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_002_B2"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_002_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_002_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER2_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_002_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_002",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_002"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_002"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_002" }
+          ]
+        },
+        {
+          "id": "DUNGEON_V2_001_LAYER_3",
+          "order": 2,
+          "nodeGraph": [
+            {
+              "id": "NODE_003_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_003_B1", "NODE_003_E1", "NODE_003_R1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_003_MID"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_003_MID"],
+              "eventRefs": ["EVENT_007", "EVENT_008", "EVENT_009"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_003_MID"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_MID",
+              "type": "battle",
+              "nextNodeIds": ["NODE_003_S1", "NODE_003_B2"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_S1",
+              "type": "shop",
+              "nextNodeIds": ["NODE_003_BOSS"],
+              "rewardPoolRefs": ["REWARD_POOL_SHOP_TIER2"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_003_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_C"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_003_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_004",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_004"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_004"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_004" }
+          ]
+        }
+      ],
+      "entryRules": [
+        { "type": "minPlayerLevel", "params": { "level": 1 } }
+      ],
+      "rewardPoolRefs": ["REWARD_POOL_DUNGEON_CLEAR_001"],
+      "eventPoolRefs": ["EVENT_POOL_TIER1"],
+      "bossRefs": ["BOSS_001", "BOSS_002", "BOSS_004"],
+      "tags": ["starter", "normal"]
+    },
+    {
+      "id": "DUNGEON_V2_002",
+      "version": 1,
+      "nameKey": "dungeon_v2_name_002",
+      "layers": [
+        {
+          "id": "DUNGEON_V2_002_LAYER_1",
+          "order": 0,
+          "nodeGraph": [
+            {
+              "id": "NODE_101_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_101_B1", "NODE_101_E1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_101_R1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER2_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_101_R1"],
+              "eventRefs": ["EVENT_010", "EVENT_011"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_101_B2", "NODE_101_S1"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_101_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER2_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER2"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER2_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_S1",
+              "type": "shop",
+              "nextNodeIds": ["NODE_101_BOSS"],
+              "rewardPoolRefs": ["REWARD_POOL_SHOP_TIER2"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_101_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_002",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_002"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_002"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_002" }
+          ]
+        },
+        {
+          "id": "DUNGEON_V2_002_LAYER_2",
+          "order": 1,
+          "nodeGraph": [
+            {
+              "id": "NODE_102_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_102_B1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_102_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_102_E1", "NODE_102_R1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_102_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_102_B2"],
+              "eventRefs": ["EVENT_012", "EVENT_013", "EVENT_014"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_102_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_102_B2"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_102_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_102_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_102_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_004",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_004"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_004"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_004" }
+          ]
+        }
+      ],
+      "entryRules": [
+        { "type": "minPlayerLevel", "params": { "level": 15 } },
+        { "type": "requireClear", "params": { "dungeonId": "DUNGEON_V2_001" } }
+      ],
+      "rewardPoolRefs": ["REWARD_POOL_DUNGEON_CLEAR_002"],
+      "eventPoolRefs": ["EVENT_POOL_TIER2"],
+      "bossRefs": ["BOSS_002", "BOSS_004"],
+      "tags": ["intermediate", "hard"]
+    },
+    {
+      "id": "DUNGEON_V2_003",
+      "version": 1,
+      "nameKey": "dungeon_v2_name_003",
+      "layers": [
+        {
+          "id": "DUNGEON_V2_003_LAYER_1",
+          "order": 0,
+          "nodeGraph": [
+            {
+              "id": "NODE_201_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_201_B1", "NODE_201_E1", "NODE_201_R1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_201_MID"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_A"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_201_MID"],
+              "eventRefs": ["EVENT_015", "EVENT_006"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_201_MID"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_MID",
+              "type": "battle",
+              "nextNodeIds": ["NODE_201_B2", "NODE_201_S1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_C"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_201_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_BOSS_GUARD"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_S1",
+              "type": "shop",
+              "nextNodeIds": ["NODE_201_BOSS"],
+              "rewardPoolRefs": ["REWARD_POOL_SHOP_TIER3"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_201_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_003",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_003"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_003"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_003" }
+          ]
+        },
+        {
+          "id": "DUNGEON_V2_003_LAYER_2",
+          "order": 1,
+          "nodeGraph": [
+            {
+              "id": "NODE_202_ENTRY",
+              "type": "empty",
+              "nextNodeIds": ["NODE_202_B1"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_202_B1",
+              "type": "battle",
+              "nextNodeIds": ["NODE_202_E1", "NODE_202_R1"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_B"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_202_E1",
+              "type": "event",
+              "nextNodeIds": ["NODE_202_B2"],
+              "eventRefs": ["EVENT_010", "EVENT_011", "EVENT_013"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_EVENT"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_202_R1",
+              "type": "reward",
+              "nextNodeIds": ["NODE_202_B2"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BONUS"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_202_B2",
+              "type": "battle",
+              "nextNodeIds": ["NODE_202_BOSS"],
+              "eventRefs": ["ENEMY_SQUAD_TIER3_C"],
+              "dropSourceRefs": ["DROP_TABLE_TIER3"],
+              "rewardPoolRefs": ["REWARD_POOL_TIER3_BATTLE"],
+              "conditions": []
+            },
+            {
+              "id": "NODE_202_BOSS",
+              "type": "boss",
+              "nextNodeIds": [],
+              "bossRef": "BOSS_005",
+              "dropSourceRefs": ["DROP_TABLE_BOSS_005"],
+              "rewardPoolRefs": ["REWARD_POOL_BOSS_005"],
+              "conditions": []
+            }
+          ],
+          "completionRules": [
+            { "type": "defeatBoss", "target": "BOSS_005" }
+          ]
+        }
+      ],
+      "entryRules": [
+        { "type": "minPlayerLevel", "params": { "level": 30 } },
+        { "type": "minPower", "params": { "power": 10000 } },
+        { "type": "requireClear", "params": { "dungeonId": "DUNGEON_V2_002" } }
+      ],
+      "rewardPoolRefs": ["REWARD_POOL_DUNGEON_CLEAR_003"],
+      "eventPoolRefs": ["EVENT_POOL_TIER3"],
+      "bossRefs": ["BOSS_003", "BOSS_005"],
+      "tags": ["expert", "endgame"]
+    }
+  ]
+}

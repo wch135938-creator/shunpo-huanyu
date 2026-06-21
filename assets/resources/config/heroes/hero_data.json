@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "name": "hero_data",
+  "data": [
+    {
+      "id": "hero_001",
+      "name": "剑无极",
+      "quality": "R",
+      "faction": "青龙",
+      "profession": "战士",
+      "element": "雷",
+      "baseStats": {
+        "hp": 500,
+        "atk": 60,
+        "def": 40,
+        "speed": 20
+      },
+      "growthStats": {
+        "hp": 80,
+        "atk": 12,
+        "def": 6
+      },
+      "defaultSkillIds": ["skill_001", "skill_002"],
+      "maxLevel": 100
+    },
+    {
+      "id": "hero_002",
+      "name": "冰清",
+      "quality": "SR",
+      "faction": "白虎",
+      "profession": "法师",
+      "element": "冰",
+      "baseStats": {
+        "hp": 350,
+        "atk": 85,
+        "def": 25,
+        "speed": 30
+      },
+      "growthStats": {
+        "hp": 50,
+        "atk": 16,
+        "def": 4
+      },
+      "defaultSkillIds": ["skill_003", "skill_004"],
+      "maxLevel": 100
+    },
+    {
+      "id": "hero_003",
+      "name": "影刺",
+      "quality": "R",
+      "faction": "朱雀",
+      "profession": "刺客",
+      "element": "火",
+      "baseStats": {
+        "hp": 300,
+        "atk": 90,
+        "def": 20,
+        "speed": 50
+      },
+      "growthStats": {
+        "hp": 40,
+        "atk": 18,
+        "def": 3
+      },
+      "defaultSkillIds": ["skill_005", "skill_006"],
+      "maxLevel": 100
+    },
+    {
+      "id": "hero_004",
+      "name": "玄武盾",
+      "quality": "SR",
+      "faction": "玄武",
+      "profession": "坦克",
+      "element": "毒",
+      "baseStats": {
+        "hp": 800,
+        "atk": 30,
+        "def": 70,
+        "speed": 10
+      },
+      "growthStats": {
+        "hp": 120,
+        "atk": 5,
+        "def": 12
+      },
+      "defaultSkillIds": ["skill_007", "skill_008"],
+      "maxLevel": 100
+    },
+    {
+      "id": "hero_005",
+      "name": "灵光",
+      "quality": "SSR",
+      "faction": "混沌",
+      "profession": "辅助",
+      "element": "光",
+      "baseStats": {
+        "hp": 450,
+        "atk": 40,
+        "def": 35,
+        "speed": 40
+      },
+      "growthStats": {
+        "hp": 70,
+        "atk": 7,
+        "def": 5
+      },
+      "defaultSkillIds": ["skill_009", "skill_010"],
+      "maxLevel": 100
+    }
+  ]
+}

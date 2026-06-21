@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "d705a2b4-30ac-47e7-926c-866289d5eaa5",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "NodeMapItem",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.805Z",
+    "syncNodeName": "NodeMapItem"
+  }
+}

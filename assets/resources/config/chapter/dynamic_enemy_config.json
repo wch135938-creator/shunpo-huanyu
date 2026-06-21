@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "name": "dynamic_enemy_config",
+  "enemies": [
+    {
+      "id": "ENEMY_DYNAMIC_001",
+      "baseEnemyId": "enemy_001",
+      "nameSuffix": "(强化)",
+      "hpMultiplier": 1.2,
+      "atkMultiplier": 1.1,
+      "defMultiplier": 1.1,
+      "speedMultiplier": 1.0,
+      "levelBonus": 1,
+      "dropGroupOverride": "drop_enemy_common"
+    },
+    {
+      "id": "ENEMY_DYNAMIC_002",
+      "baseEnemyId": "enemy_002",
+      "nameSuffix": "(精英强化)",
+      "hpMultiplier": 1.5,
+      "atkMultiplier": 1.3,
+      "defMultiplier": 1.2,
+      "speedMultiplier": 1.0,
+      "levelBonus": 2,
+      "dropGroupOverride": "drop_enemy_uncommon"
+    },
+    {
+      "id": "ENEMY_DYNAMIC_003",
+      "baseEnemyId": "enemy_003",
+      "nameSuffix": "(暴怒)",
+      "hpMultiplier": 1.0,
+      "atkMultiplier": 1.6,
+      "defMultiplier": 0.8,
+      "speedMultiplier": 1.2,
+      "levelBonus": 1,
+      "dropGroupOverride": null
+    },
+    {
+      "id": "ENEMY_DYNAMIC_004",
+      "baseEnemyId": "enemy_004",
+      "nameSuffix": "(坚韧)",
+      "hpMultiplier": 1.8,
+      "atkMultiplier": 0.9,
+      "defMultiplier": 1.5,
+      "speedMultiplier": 0.8,
+      "levelBonus": 1,
+      "dropGroupOverride": null
+    },
+    {
+      "id": "ENEMY_DYNAMIC_005",
+      "baseEnemyId": "enemy_005",
+      "nameSuffix": "(精英)",
+      "hpMultiplier": 2.0,
+      "atkMultiplier": 1.4,
+      "defMultiplier": 1.3,
+      "speedMultiplier": 1.1,
+      "levelBonus": 3,
+      "dropGroupOverride": "drop_enemy_rare"
+    },
+    {
+      "id": "ENEMY_DYNAMIC_006",
+      "baseEnemyId": "enemy_006",
+      "nameSuffix": "(暗影)",
+      "hpMultiplier": 1.3,
+      "atkMultiplier": 1.5,
+      "defMultiplier": 1.0,
+      "speedMultiplier": 1.4,
+      "levelBonus": 2,
+      "dropGroupOverride": null
+    },
+    {
+      "id": "ENEMY_DYNAMIC_007",
+      "baseEnemyId": "elite_001",
+      "nameSuffix": "(领主)",
+      "hpMultiplier": 3.0,
+      "atkMultiplier": 1.8,
+      "defMultiplier": 1.5,
+      "speedMultiplier": 1.2,
+      "levelBonus": 5,
+      "dropGroupOverride": "drop_elite_rare"
+    }
+  ]
+}

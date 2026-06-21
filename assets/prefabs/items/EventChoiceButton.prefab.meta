@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "fd351a3b-96ad-4475-b909-1ff3f3b583c7",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "EventChoiceButton",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.808Z",
+    "syncNodeName": "EventChoiceButton"
+  }
+}

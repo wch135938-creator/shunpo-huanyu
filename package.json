@@ -1,0 +1,11 @@
+{
+  "name": "TestGame",
+  "uuid": "926162e5-e036-4c9c-aec0-2baa271ea276",
+  "creator": {
+    "version": "3.8.8"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0",
+    "playwright-core": "^1.60.0"
+  }
+}

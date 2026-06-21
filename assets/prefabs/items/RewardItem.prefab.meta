@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "39899e28-183c-4475-b5ca-9b7fabb4fec1",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "RewardItem",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.809Z",
+    "syncNodeName": "RewardItem"
+  }
+}

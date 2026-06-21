@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "name": "level_config",
+  "data": [
+    { "level": 1, "requiredExp": 40, "hpGrowthRate": 1.00, "atkGrowthRate": 1.00, "defGrowthRate": 1.00, "speedGrowthRate": 1.00 },
+    { "level": 2, "requiredExp": 55, "hpGrowthRate": 1.10, "atkGrowthRate": 1.10, "defGrowthRate": 1.08, "speedGrowthRate": 1.01 },
+    { "level": 3, "requiredExp": 75, "hpGrowthRate": 1.20, "atkGrowthRate": 1.20, "defGrowthRate": 1.16, "speedGrowthRate": 1.02 },
+    { "level": 4, "requiredExp": 100, "hpGrowthRate": 1.30, "atkGrowthRate": 1.30, "defGrowthRate": 1.24, "speedGrowthRate": 1.03 },
+    { "level": 5, "requiredExp": 130, "hpGrowthRate": 1.42, "atkGrowthRate": 1.42, "defGrowthRate": 1.34, "speedGrowthRate": 1.04 },
+    { "level": 6, "requiredExp": 165, "hpGrowthRate": 1.54, "atkGrowthRate": 1.54, "defGrowthRate": 1.44, "speedGrowthRate": 1.05 },
+    { "level": 7, "requiredExp": 205, "hpGrowthRate": 1.66, "atkGrowthRate": 1.66, "defGrowthRate": 1.54, "speedGrowthRate": 1.06 },
+    { "level": 8, "requiredExp": 250, "hpGrowthRate": 1.78, "atkGrowthRate": 1.78, "defGrowthRate": 1.64, "speedGrowthRate": 1.07 },
+    { "level": 9, "requiredExp": 300, "hpGrowthRate": 1.90, "atkGrowthRate": 1.90, "defGrowthRate": 1.74, "speedGrowthRate": 1.08 },
+    { "level": 10, "requiredExp": 360, "hpGrowthRate": 2.05, "atkGrowthRate": 2.05, "defGrowthRate": 1.88, "speedGrowthRate": 1.09 },
+    { "level": 11, "requiredExp": 430, "hpGrowthRate": 2.20, "atkGrowthRate": 2.20, "defGrowthRate": 2.02, "speedGrowthRate": 1.10 },
+    { "level": 12, "requiredExp": 510, "hpGrowthRate": 2.35, "atkGrowthRate": 2.35, "defGrowthRate": 2.16, "speedGrowthRate": 1.11 },
+    { "level": 13, "requiredExp": 600, "hpGrowthRate": 2.50, "atkGrowthRate": 2.50, "defGrowthRate": 2.30, "speedGrowthRate": 1.12 },
+    { "level": 14, "requiredExp": 700, "hpGrowthRate": 2.65, "atkGrowthRate": 2.65, "defGrowthRate": 2.44, "speedGrowthRate": 1.13 },
+    { "level": 15, "requiredExp": 815, "hpGrowthRate": 2.82, "atkGrowthRate": 2.82, "defGrowthRate": 2.60, "speedGrowthRate": 1.14 },
+    { "level": 16, "requiredExp": 945, "hpGrowthRate": 2.99, "atkGrowthRate": 2.99, "defGrowthRate": 2.76, "speedGrowthRate": 1.15 },
+    { "level": 17, "requiredExp": 1090, "hpGrowthRate": 3.16, "atkGrowthRate": 3.16, "defGrowthRate": 2.92, "speedGrowthRate": 1.16 },
+    { "level": 18, "requiredExp": 1250, "hpGrowthRate": 3.33, "atkGrowthRate": 3.33, "defGrowthRate": 3.08, "speedGrowthRate": 1.17 },
+    { "level": 19, "requiredExp": 1425, "hpGrowthRate": 3.50, "atkGrowthRate": 3.50, "defGrowthRate": 3.24, "speedGrowthRate": 1.18 },
+    { "level": 20, "requiredExp": 1620, "hpGrowthRate": 3.70, "atkGrowthRate": 3.70, "defGrowthRate": 3.42, "speedGrowthRate": 1.19 },
+    { "level": 21, "requiredExp": 1835, "hpGrowthRate": 3.90, "atkGrowthRate": 3.90, "defGrowthRate": 3.60, "speedGrowthRate": 1.20 },
+    { "level": 22, "requiredExp": 2070, "hpGrowthRate": 4.10, "atkGrowthRate": 4.10, "defGrowthRate": 3.78, "speedGrowthRate": 1.21 },
+    { "level": 23, "requiredExp": 2330, "hpGrowthRate": 4.30, "atkGrowthRate": 4.30, "defGrowthRate": 3.96, "speedGrowthRate": 1.22 },
+    { "level": 24, "requiredExp": 2615, "hpGrowthRate": 4.50, "atkGrowthRate": 4.50, "defGrowthRate": 4.14, "speedGrowthRate": 1.23 },
+    { "level": 25, "requiredExp": 2930, "hpGrowthRate": 4.72, "atkGrowthRate": 4.72, "defGrowthRate": 4.34, "speedGrowthRate": 1.24 },
+    { "level": 26, "requiredExp": 3275, "hpGrowthRate": 4.94, "atkGrowthRate": 4.94, "defGrowthRate": 4.54, "speedGrowthRate": 1.25 },
+    { "level": 27, "requiredExp": 3655, "hpGrowthRate": 5.16, "atkGrowthRate": 5.16, "defGrowthRate": 4.74, "speedGrowthRate": 1.26 },
+    { "level": 28, "requiredExp": 4075, "hpGrowthRate": 5.38, "atkGrowthRate": 5.38, "defGrowthRate": 4.94, "speedGrowthRate": 1.27 },
+    { "level": 29, "requiredExp": 4535, "hpGrowthRate": 5.60, "atkGrowthRate": 5.60, "defGrowthRate": 5.14, "speedGrowthRate": 1.28 },
+    { "level": 30, "requiredExp": 0, "hpGrowthRate": 5.85, "atkGrowthRate": 5.85, "defGrowthRate": 5.36, "speedGrowthRate": 1.30 }
+  ]
+}
+

@@ -1,0 +1,16 @@
+{
+  "ver": "1.1.50",
+  "importer": "prefab",
+  "imported": true,
+  "uuid": "d13d9f6f-f033-4e06-95ad-8575991fae8c",
+  "files": [
+    ".json"
+  ],
+  "subMetas": {},
+  "userData": {
+    "prefabName": "ResultPanel",
+    "phase8Generated": true,
+    "generatedAt": "2026-06-04T04:16:58.802Z",
+    "syncNodeName": "ResultPanel"
+  }
+}

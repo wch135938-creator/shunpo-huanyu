@@ -1,0 +1,1366 @@
+{
+  "version": "1.0.0",
+  "name": "drop_table",
+  "data": [
+    {
+      "id": "DROP_001",
+      "name": "云海·初探掉落",
+      "description": "第一章第一关常规掉落，基础金币与修为",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 100,
+          "maxCount": 200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 50,
+          "maxCount": 100,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_002",
+      "name": "云端·试剑掉落",
+      "description": "第一章第二关常规掉落",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 120,
+          "maxCount": 250,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 60,
+          "maxCount": 120,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_003",
+      "name": "淬体·灵气掉落",
+      "description": "第一章第三关常规掉落",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 150,
+          "maxCount": 300,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 80,
+          "maxCount": 150,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_004",
+      "name": "云海·精英掉落",
+      "description": "第一章精英关卡掉落，概率产出稀有装备与突破石",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 300,
+          "maxCount": 500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 150,
+          "maxCount": 250,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_005",
+      "name": "云海·Boss掉落",
+      "description": "第一章Boss关卡掉落，必掉稀有装备，概率产出升星石",
+      "dropType": "boss",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 500,
+          "maxCount": 800,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 250,
+          "maxCount": 400,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_006",
+      "name": "灵山·脚下掉落",
+      "description": "第二章第一关常规掉落",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 300,
+          "maxCount": 500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 150,
+          "maxCount": 250,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_007",
+      "name": "古道·石阶掉落",
+      "description": "第二章第二关常规掉落，稀有装备开始出现",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 400,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 200,
+          "maxCount": 300,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.25,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.05,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_008",
+      "name": "灵山·精英掉落",
+      "description": "第二章精英关卡掉落，较高概率产出稀有装备",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 400,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.4,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_009",
+      "name": "山巅·寒风掉落",
+      "description": "第二章第四关常规掉落，奖励渐丰",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 600,
+          "maxCount": 900,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 300,
+          "maxCount": 450,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.08,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_010",
+      "name": "灵山·Boss掉落",
+      "description": "第二章Boss关卡掉落，必掉稀有装备，概率产出史诗装备",
+      "dropType": "boss",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1200,
+          "maxCount": 1800,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 600,
+          "maxCount": 900,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.4,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_011",
+      "name": "仙府·外围掉落",
+      "description": "第三章第一关常规掉落",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 400,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_012",
+      "name": "仙府·精英掉落",
+      "description": "第三章精英关卡掉落，史诗装备开始出现",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1000,
+          "maxCount": 1500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.5,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_013",
+      "name": "秘境·长廊掉落",
+      "description": "第三章第三关常规掉落",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1000,
+          "maxCount": 1500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 500,
+          "maxCount": 750,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.12,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_014",
+      "name": "仙府·精英二掉落",
+      "description": "第三章精英关卡二掉落，史诗装备概率更高",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2500,
+          "maxCount": 3500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1200,
+          "maxCount": 1800,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.5,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.35,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_015",
+      "name": "仙府·Boss掉落",
+      "description": "第三章Boss关卡掉落，必掉史诗装备，概率产出抽卡券碎片",
+      "dropType": "boss",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 3000,
+          "maxCount": 5000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1500,
+          "maxCount": 2500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 0.5,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ]
+    },
+    {
+      "id": "DROP_F001",
+      "name": "云海·初探首通奖励",
+      "description": "第一章第一关首次通关奖励",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 10,
+          "maxCount": 10,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 200,
+          "maxCount": 500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 100,
+          "maxCount": 200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F002",
+      "name": "云端·试剑首通奖励",
+      "description": "第一章第二关首次通关奖励",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 12,
+          "maxCount": 12,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 250,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 120,
+          "maxCount": 250,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F003",
+      "name": "淬体·灵气首通奖励",
+      "description": "第一章第三关首次通关奖励，额外保底普通装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 15,
+          "maxCount": 15,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 300,
+          "maxCount": 700,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 150,
+          "maxCount": 300,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F004",
+      "name": "云海·精英首通奖励",
+      "description": "第一章精英关卡首次通关奖励，保底稀有装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 20,
+          "maxCount": 20,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 2,
+          "maxCount": 2,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 500,
+          "maxCount": 800,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 250,
+          "maxCount": 400,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F005",
+      "name": "云海·Boss首通奖励",
+      "description": "第一章Boss关卡首次通关奖励，保底稀有装备+突破石",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 30,
+          "maxCount": 30,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 3,
+          "maxCount": 3,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 400,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F006",
+      "name": "灵山·脚下首通奖励",
+      "description": "第二章第一关首次通关奖励",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 20,
+          "maxCount": 20,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 500,
+          "maxCount": 800,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 250,
+          "maxCount": 400,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F007",
+      "name": "古道·石阶首通奖励",
+      "description": "第二章第二关首次通关奖励",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 25,
+          "maxCount": 25,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 600,
+          "maxCount": 1000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 300,
+          "maxCount": 500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F008",
+      "name": "灵山·精英首通奖励",
+      "description": "第二章精英关卡首次通关奖励，保底稀有装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 40,
+          "maxCount": 40,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 2,
+          "maxCount": 2,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1200,
+          "maxCount": 2000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 600,
+          "maxCount": 1000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F009",
+      "name": "山巅·寒风首通奖励",
+      "description": "第二章第四关首次通关奖励，保底普通装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 25,
+          "maxCount": 25,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 400,
+          "maxCount": 600,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_N_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F010",
+      "name": "灵山·Boss首通奖励",
+      "description": "第二章Boss关卡首次通关奖励，保底史诗装备+突破石",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 60,
+          "maxCount": 60,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 3,
+          "maxCount": 3,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1000,
+          "maxCount": 1500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F011",
+      "name": "仙府·外围首通奖励",
+      "description": "第三章第一关首次通关奖励",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 40,
+          "maxCount": 40,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1500,
+          "maxCount": 2500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 750,
+          "maxCount": 1250,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F012",
+      "name": "仙府·精英首通奖励",
+      "description": "第三章精英关卡首次通关奖励，保底稀有装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 80,
+          "maxCount": 80,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 2,
+          "maxCount": 2,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 3000,
+          "maxCount": 5000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1500,
+          "maxCount": 2500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F013",
+      "name": "秘境·长廊首通奖励",
+      "description": "第三章第三关首次通关奖励，保底稀有装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 50,
+          "maxCount": 50,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 1000,
+          "maxCount": 1500,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_R_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F014",
+      "name": "仙府·精英二首通奖励",
+      "description": "第三章精英关卡二首次通关奖励，保底史诗装备",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 100,
+          "maxCount": 100,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 2,
+          "maxCount": 2,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 4000,
+          "maxCount": 6000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    },
+    {
+      "id": "DROP_F015",
+      "name": "仙府·Boss首通奖励",
+      "description": "第三章Boss关卡首次通关奖励，保底史诗装备+突破石+大量钻石",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 150,
+          "maxCount": 150,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GACHA_FRAG",
+          "itemType": "gachaFragment",
+          "minCount": 5,
+          "maxCount": 5,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 5000,
+          "maxCount": 8000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EXP",
+          "itemType": "exp",
+          "minCount": 2500,
+          "maxCount": 4000,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIP_SR_001",
+          "itemType": "equip",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 5,
+          "maxCount": 10,
+          "dropRate": 1.0,
+          "isGuaranteed": true
+        }
+      ]
+    }
+  ]
+}
