@@ -431,9 +431,6 @@ export class EquipmentBagPanel extends BasePanel {
     if (this.panelRoot) {
       this._ensureBlock(this.panelRoot, '__EquipmentBagPanelBg', 720, 1200, new Color(25, 25, 35, 230));
     }
-    if (this.contentNode) {
-      this._ensureBlock(this.contentNode, '__EquipmentBagContentBg', 680, 700, new Color(38, 44, 58, 120));
-    }
     if (this.closeButton) {
       this._ensureBlock(this.closeButton.node, '__BagCloseButtonBg', 60, 60, new Color(70, 85, 110, 255));
     }

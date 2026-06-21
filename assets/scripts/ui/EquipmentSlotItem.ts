@@ -90,6 +90,7 @@ export class EquipmentSlotItem extends Component {
 
   onLoad(): void {
     this._recoverBindings();
+    this._applyCompactLayout();
 
     if (this.clickButton) {
       this.clickButton.node.on(Button.EventType.CLICK, this._handleClick, this);
@@ -149,6 +150,9 @@ export class EquipmentSlotItem extends Component {
   // ==================== 内部刷新 ====================
 
   private _refreshUI(): void {
+    this._recoverBindings();
+    this._applyCompactLayout();
+
     const quality = this._viewModel?.quality;
     const colorHex = quality !== undefined
       ? (QUALITY_COLOR_BY_NUM[quality] ?? '#555555')
@@ -177,9 +181,11 @@ export class EquipmentSlotItem extends Component {
       }
       if (this.qualityLabel) {
         this.qualityLabel.string = '';
+        this.qualityLabel.node.active = false;
       }
       if (this.powerLabel) {
         this.powerLabel.string = '';
+        this.powerLabel.node.active = false;
       }
       // 图标变灰
       if (this.iconNode) {
@@ -202,6 +208,7 @@ export class EquipmentSlotItem extends Component {
       if (vm.baseAtk > 0) statParts.push(`ATK+${vm.baseAtk}`);
       if (vm.baseDef > 0) statParts.push(`DEF+${vm.baseDef}`);
       if (this.statsLabel) {
+        this.statsLabel.node.active = true;
         this.statsLabel.string = statParts.join(' ');
       }
 
@@ -210,6 +217,8 @@ export class EquipmentSlotItem extends Component {
         const qualityName = QUALITY_LABEL_BY_NUM[vm.quality] ?? '未知';
         this.qualityLabel.string = qualityName;
         this.qualityLabel.color = this._hexToColor(colorHex);
+        this.qualityLabel.string = '';
+        this.qualityLabel.node.active = false;
       }
 
       // 战力
@@ -244,6 +253,46 @@ export class EquipmentSlotItem extends Component {
     if (!this.qualityLabel) this.qualityLabel = this._findNode('qualityLabel')?.getComponent(Label) ?? null;
     if (!this.powerLabel) this.powerLabel = this._findNode('powerLabel')?.getComponent(Label) ?? null;
     if (!this.clickButton) this.clickButton = this._findNode('clickButton')?.getComponent(Button) ?? null;
+  }
+
+  private _applyCompactLayout(): void {
+    this._setNodeSize(this.node, 120, 120);
+    this._setNodeSize(this.borderNode, 120, 120);
+    this._setNodeSize(this.clickButton?.node ?? null, 120, 120);
+
+    this.iconNode?.setPosition(0, 28, 0);
+    this._setNodeSize(this.iconNode, 48, 48);
+
+    this.slotNameLabel?.node.setPosition(0, -10, 0);
+    this._setLabelStyle(this.slotNameLabel, 13, 18, 100, 20);
+
+    this.equipmentNameLabel?.node.setPosition(0, -32, 0);
+    this._setLabelStyle(this.equipmentNameLabel, 15, 20, 112, 22);
+
+    this.statsLabel?.node.setPosition(0, -52, 0);
+    this._setLabelStyle(this.statsLabel, 12, 16, 116, 18);
+
+    if (this.qualityLabel) this.qualityLabel.node.active = false;
+    if (this.powerLabel) this.powerLabel.node.active = false;
+  }
+
+  private _setNodeSize(node: Node | null, width: number, height: number): void {
+    node?.getComponent(UITransform)?.setContentSize(width, height);
+  }
+
+  private _setLabelStyle(
+    label: Label | null,
+    fontSize: number,
+    lineHeight: number,
+    width: number,
+    height: number,
+  ): void {
+    if (!label) return;
+    label.fontSize = fontSize;
+    label.lineHeight = lineHeight;
+    label.enableWrapText = false;
+    label.overflow = Label.Overflow.SHRINK;
+    label.getComponent(UITransform)?.setContentSize(width, height);
   }
 
   private _findNode(name: string, root: Node = this.node): Node | null {

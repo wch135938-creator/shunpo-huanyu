@@ -319,13 +319,13 @@ export class EquipmentDetailPanel extends BasePanel {
     // Upgrade 按钮：可升级
     if (this.upgradeBtn) {
       this.upgradeBtn.node.active = dvm.canUpgrade;
-      this.upgradeBtn.interactable = dvm.canUpgrade && dvm.upgradeMaterialSufficient;
+      this.upgradeBtn.interactable = dvm.canUpgrade;
     }
 
     // Enhance 按钮：可强化
     if (this.enhanceBtn) {
       this.enhanceBtn.node.active = dvm.canEnhance;
-      this.enhanceBtn.interactable = dvm.canEnhance && dvm.enhanceMaterialSufficient;
+      this.enhanceBtn.interactable = dvm.canEnhance;
     }
 
     // Decompose 按钮：可分解
@@ -573,9 +573,9 @@ export class EquipmentDetailPanel extends BasePanel {
   }
 
   private _ensureVisualBlocks(): void {
-    this._ensureBlock(this.node.getChildByName('panelRoot'), '__EquipmentDetailPanelBg', 720, 1100, new Color(25, 25, 35, 230));
+    this._ensureBlock(this.node.getChildByName('panelRoot'), '__EquipmentDetailPanelBg', 720, 1100, new Color(25, 25, 35, 255));
     this._ensureBlock(this.previewContainer, '__PreviewContainerBg', 500, 80, new Color(40, 40, 50, 200));
-    this._ensureBlock(this.confirmDialog, '__ConfirmDialogBg', 500, 220, new Color(20, 20, 30, 240));
+    this._ensureBlock(this.confirmDialog, '__ConfirmDialogBg', 500, 220, new Color(20, 20, 30, 255));
     this._ensureBlock(this.slotPickerContainer, '__SlotPickerBg', 400, 60, new Color(30, 30, 40, 220));
     if (this.closeButton) {
       this._ensureBlock(this.closeButton.node, '__DetailCloseButtonBg', 60, 60, new Color(70, 85, 110, 255));

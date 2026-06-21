@@ -153,7 +153,7 @@ export class EventManager {
       const item = snapshot[i];
       if (!item) continue;
 
-      item.callback(...args);
+      item.callback.apply(item.target, args);
 
       if (item.once && this._listeners.has(event)) {
         // 一次性监听：派发后移除（从原数组中删除）

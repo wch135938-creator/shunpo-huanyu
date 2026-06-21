@@ -349,9 +349,6 @@ private _flushInitialData() {
     if (this.panelRoot) {
       this._ensureBlock(this.panelRoot, '__EquipmentPanelBg', 720, 1280, new Color(25, 25, 35, 230));
     }
-    if (this.slotContainer) {
-      this._ensureBlock(this.slotContainer, '__SlotContainerBg', 640, 360, new Color(38, 44, 58, 180));
-    }
     if (this.closeButton) {
       this._ensureBlock(this.closeButton.node, '__CloseButtonBg', 80, 56, new Color(70, 85, 110, 255));
     }

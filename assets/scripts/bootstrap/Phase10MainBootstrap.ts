@@ -13,12 +13,13 @@ console.trace("BOOTSTRAP CALL STACK");
 
 console.log("🔥 BOOTSTRAP SCRIPT LOADED");
 
-import { _decorator, Component } from 'cc';
+import { _decorator, Component, ResolutionPolicy, view } from 'cc';
 import { SaveManager } from '../save/SaveManager';
 import { LocalStorageAdapter } from '../save/LocalStorageAdapter';
 import { Phase9Bootstrap } from '../systems/Phase9Bootstrap';
 import { InventoryService } from '../inventory/InventoryService';
 import { EquipmentService } from '../equipment/EquipmentService';
+import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
 import { UIDiagnosticCore } from '../diagnostic/UIDiagnosticCore';
 import { UIEngine } from '../ui/UIEngine';
 
@@ -30,6 +31,15 @@ type PrefabRegistryHost = typeof globalThis & {
 
 const prefabRegistryHost = globalThis as PrefabRegistryHost;
 prefabRegistryHost.__PREFAB_REGISTRY__ = prefabRegistryHost.__PREFAB_REGISTRY__ ?? {};
+
+const DEFAULT_EQUIPMENT_HERO_ID = '0';
+const DESIGN_RESOLUTION_WIDTH = 720;
+const DESIGN_RESOLUTION_HEIGHT = 1280;
+const INITIAL_EQUIPMENT_AUTO_EQUIP: Array<{ itemId: string; slotId: EquipmentSlotId }> = [
+  { itemId: 'ITEM_EQ_WEAPON_001', slotId: 'Weapon' },
+  { itemId: 'ITEM_EQ_ARMOR_001', slotId: 'Armor' },
+  { itemId: 'ITEM_EQ_ACCESSORY_001', slotId: 'Accessory' },
+];
 
 @ccclass('Phase10MainBootstrap')
 export class Phase10MainBootstrap extends Component {
@@ -45,6 +55,8 @@ export class Phase10MainBootstrap extends Component {
    * 的 initialize() 内部依赖 SaveManager.getData()。
    */
   onLoad(): void {
+    this._applyPortraitDesignResolution();
+
     // Step 1: SaveManager.init(adapter) — 同步完成，init() 内部幂等
     SaveManager.getInstance().init(new LocalStorageAdapter());
     console.log('[Phase10MainBootstrap] SaveManager Ready');
@@ -104,6 +116,7 @@ export class Phase10MainBootstrap extends Component {
       // ---- Step 5: 加载装备配置 ----
       await equipment.loadConfigs();
       console.log('[Phase10MainBootstrap] Configs Loaded');
+      this._autoEquipInitialEquipment(inventory, equipment);
 
       // ---- Step 6: Phase9 恢复完成 ----
       console.log('[Phase10MainBootstrap] Restore Complete');
@@ -129,5 +142,54 @@ export class Phase10MainBootstrap extends Component {
       phase9.destroy();
     }
     console.log('[Phase10MainBootstrap] Destroyed');
+  }
+
+  private _applyPortraitDesignResolution(): void {
+    view.setDesignResolutionSize(
+      DESIGN_RESOLUTION_WIDTH,
+      DESIGN_RESOLUTION_HEIGHT,
+      ResolutionPolicy.SHOW_ALL,
+    );
+
+    console.log(
+      `[Phase10MainBootstrap] Design Resolution ${DESIGN_RESOLUTION_WIDTH}x${DESIGN_RESOLUTION_HEIGHT}`,
+    );
+  }
+
+  private _autoEquipInitialEquipment(
+    inventory: InventoryService,
+    equipment: EquipmentService,
+  ): void {
+    const loadout = equipment.getHeroLoadout(DEFAULT_EQUIPMENT_HERO_ID);
+
+    for (const entry of INITIAL_EQUIPMENT_AUTO_EQUIP) {
+      if (loadout?.slots[entry.slotId]) {
+        continue;
+      }
+
+      const instance = inventory
+        .getInstancesByItemId(entry.itemId)
+        .find((item) => !equipment.isEquipped(item.uniqueId).equipped);
+
+      if (!instance) {
+        continue;
+      }
+
+      const result = equipment.equip(
+        DEFAULT_EQUIPMENT_HERO_ID,
+        entry.slotId,
+        instance.uniqueId,
+      );
+
+      if (!result.success) {
+        console.warn(
+          '[Phase10MainBootstrap] Auto equip initial equipment failed:',
+          entry.itemId,
+          entry.slotId,
+          result.errorCode,
+          result.message,
+        );
+      }
+    }
   }
 }
