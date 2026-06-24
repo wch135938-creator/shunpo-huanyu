@@ -10,7 +10,7 @@
 // 规范：继承 BasePanel / 纯 UI / 所有操作通过 Presenter
 // ============================================================
 
-import { _decorator, Node, Label, Button, Color, UITransform, Graphics } from 'cc';
+import { _decorator, Node, Label, Button, Color, UITransform, Graphics, CCObject } from 'cc';
 import { BasePanel } from '../core/BasePanel';
 import type { EquipmentUIPresenter, EquipmentDetailViewModel } from './EquipmentUIPresenter';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
@@ -19,14 +19,21 @@ import { SLOT_NAME_MAP } from '../equipment/EquipmentTypes';
 
 const { ccclass, property } = _decorator;
 
+const DETAIL_PANEL_BG_WIDTH = 720;
+const DETAIL_PANEL_BG_HEIGHT = 1280;
+const DETAIL_CLOSE_BUTTON_SIZE = 60;
+const RUNTIME_HIDE_FLAGS = CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
+
 /** 操作类型（用于确认对话框） */
 type PendingAction =
-  | { type: 'upgrade' }
-  | { type: 'enhance' }
-  | { type: 'decompose' };
+  | { type: 'upgrade'; uniqueId: string }
+  | { type: 'enhance'; uniqueId: string }
+  | { type: 'decompose'; uniqueId: string };
 
 @ccclass('EquipmentDetailPanel')
 export class EquipmentDetailPanel extends BasePanel {
+  private static _runtimeNodeSequence = 0;
+
   // ==================== 编辑器绑定：基础信息 ====================
 
   @property({ type: Label, tooltip: '装备名称' })
@@ -170,9 +177,9 @@ export class EquipmentDetailPanel extends BasePanel {
     }
 
     this._detailVM = detailVM;
-    this._currentPreview = null;
-    this._pendingAction = null;
+    this._resetTransientState();
     this._render();
+    this._bringToFront();
     this.show();
   }
 
@@ -193,6 +200,7 @@ export class EquipmentDetailPanel extends BasePanel {
 
     // 1. 恢复节点引用
     this._recoverBindings();
+    this._ensureRuntimeControls();
 
     // 2. 注册按钮事件（核心修复）
     this._bindEvents();
@@ -416,7 +424,7 @@ export class EquipmentDetailPanel extends BasePanel {
     if (!this._detailVM || !this._presenter) return;
 
     const dvm = this._detailVM;
-    this._pendingAction = { type: 'upgrade' };
+    this._pendingAction = { type: 'upgrade', uniqueId: dvm.equipment.uniqueId };
 
     const powerDelta = dvm.upgradePowerAfter - dvm.currentPower;
     const sign = powerDelta >= 0 ? '+' : '';
@@ -435,7 +443,7 @@ export class EquipmentDetailPanel extends BasePanel {
     if (!this._detailVM || !this._presenter) return;
 
     const dvm = this._detailVM;
-    this._pendingAction = { type: 'enhance' };
+    this._pendingAction = { type: 'enhance', uniqueId: dvm.equipment.uniqueId };
 
     const powerDelta = dvm.enhancePowerAfter - dvm.currentPower;
     const sign = powerDelta >= 0 ? '+' : '';
@@ -456,9 +464,9 @@ export class EquipmentDetailPanel extends BasePanel {
 
     const dvm = this._detailVM;
     const quality = dvm.equipment.quality;
+    this._pendingAction = { type: 'decompose', uniqueId: dvm.equipment.uniqueId };
 
     // 高品质装备需要二次确认
-    this._pendingAction = { type: 'decompose' };
 
     if (this.confirmTextLabel) {
       let text = `确认分解 ${dvm.equipment.name}？`;
@@ -482,25 +490,26 @@ export class EquipmentDetailPanel extends BasePanel {
   private _onConfirm(): void {
     if (!this._pendingAction || !this._presenter) return;
 
-    switch (this._pendingAction.type) {
+    const action = this._pendingAction;
+    switch (action.type) {
       case 'upgrade': {
-        const result = this._presenter.upgrade(this._currentUniqueId);
+        const result = this._presenter.upgrade(action.uniqueId);
         if (!result.success) {
           this._showError(result.message ?? '升级失败');
         }
         break;
       }
       case 'enhance': {
-        const result = this._presenter.enhance(this._currentUniqueId);
+        const result = this._presenter.enhance(action.uniqueId);
         if (!result.success) {
           this._showError(result.message ?? '强化失败');
         }
         break;
       }
       case 'decompose': {
-        const result = this._presenter.decompose(this._currentUniqueId);
+        const result = this._presenter.decompose(action.uniqueId);
         if (result.success) {
-          // 分解成功后关闭面板（装备已不存在）
+          this._resetTransientState();
           this.close();
           return;
         } else {
@@ -511,29 +520,23 @@ export class EquipmentDetailPanel extends BasePanel {
     }
 
     // 关闭确认对话框
-    if (this.confirmDialog) {
-      this.confirmDialog.active = false;
-    }
-    this._pendingAction = null;
-    this._currentPreview = null;
+    this._resetTransientState();
   }
 
   private _onCancel(): void {
-    if (this.confirmDialog) {
-      this.confirmDialog.active = false;
-    }
-    this._pendingAction = null;
+    this._resetTransientState();
   }
 
   // ==================== 关闭流程 ====================
 
   private _handleClose(): void {
-    if (this.confirmDialog) {
-      this.confirmDialog.active = false;
-    }
-    this._pendingAction = null;
-    this._currentPreview = null;
+    this._resetTransientState();
     this.close();
+  }
+
+  protected onClose(): void {
+    this._resetTransientState();
+    super.onClose();
   }
 
   // ==================== 错误提示 ====================
@@ -573,12 +576,17 @@ export class EquipmentDetailPanel extends BasePanel {
   }
 
   private _ensureVisualBlocks(): void {
-    this._ensureBlock(this.node.getChildByName('panelRoot'), '__EquipmentDetailPanelBg', 720, 1100, new Color(25, 25, 35, 255));
+    this._ensureBlock(this.node.getChildByName('panelRoot'), '__EquipmentDetailPanelBg', DETAIL_PANEL_BG_WIDTH, DETAIL_PANEL_BG_HEIGHT, new Color(25, 25, 35, 255));
     this._ensureBlock(this.previewContainer, '__PreviewContainerBg', 500, 80, new Color(40, 40, 50, 200));
     this._ensureBlock(this.confirmDialog, '__ConfirmDialogBg', 500, 220, new Color(20, 20, 30, 255));
     this._ensureBlock(this.slotPickerContainer, '__SlotPickerBg', 400, 60, new Color(30, 30, 40, 220));
     if (this.closeButton) {
-      this._ensureBlock(this.closeButton.node, '__DetailCloseButtonBg', 60, 60, new Color(70, 85, 110, 255));
+      this._ensureBlock(this.closeButton.node, '__DetailCloseButtonBg', DETAIL_CLOSE_BUTTON_SIZE, DETAIL_CLOSE_BUTTON_SIZE, new Color(70, 85, 110, 255));
+      this._ensureCloseButtonLabel(this.closeButton.node);
+      const closeParent = this.closeButton.node.parent;
+      if (closeParent) {
+        this.closeButton.node.setSiblingIndex(closeParent.children.length - 1);
+      }
     }
   }
 
@@ -609,6 +617,94 @@ export class EquipmentDetailPanel extends BasePanel {
     if (!this.slotPickerCloseBtn) this.slotPickerCloseBtn = this._findNode('slotPickerCloseBtn')?.getComponent(Button) ?? null;
   }
 
+  private _ensureRuntimeControls(): void {
+    const panelRoot = this.node.getChildByName('panelRoot');
+    if (!panelRoot) return;
+
+    if (!this.closeButton) {
+      const closeNode = this._ensureButtonNode(
+        panelRoot,
+        '__RuntimeCloseButton',
+        DETAIL_CLOSE_BUTTON_SIZE,
+        DETAIL_CLOSE_BUTTON_SIZE,
+        new Color(70, 85, 110, 255),
+      );
+      closeNode.setPosition(300, 450, 0);
+      this.closeButton = closeNode.getComponent(Button);
+    }
+
+    if (!this.confirmDialog) {
+      const dialog = this._ensurePlainNode(panelRoot, '__RuntimeConfirmDialog', 500, 220);
+      dialog.setPosition(0, 0, 0);
+      dialog.active = false;
+      this.confirmDialog = dialog;
+
+      const textNode = this._ensurePlainNode(dialog, '__RuntimeConfirmText', 460, 110);
+      textNode.setPosition(0, 50, 0);
+      this.confirmTextLabel = this._ensureLabelNode(
+        textNode,
+        '__RuntimeConfirmTextLabel',
+        '',
+        18,
+        26,
+        new Color(255, 255, 255, 255),
+      );
+
+      const confirmNode = this._ensureButtonNode(dialog, '__RuntimeConfirmBtn', 160, 48, new Color(75, 95, 130, 255));
+      confirmNode.setPosition(-100, -70, 0);
+      this._ensureLabelNode(confirmNode, '__RuntimeConfirmBtnLabel', '确认', 20, 48, new Color(255, 255, 255, 255));
+      this.confirmBtn = confirmNode.getComponent(Button);
+
+      const cancelNode = this._ensureButtonNode(dialog, '__RuntimeCancelBtn', 160, 48, new Color(70, 70, 80, 255));
+      cancelNode.setPosition(100, -70, 0);
+      this._ensureLabelNode(cancelNode, '__RuntimeCancelBtnLabel', '取消', 20, 48, new Color(255, 255, 255, 255));
+      this.cancelBtn = cancelNode.getComponent(Button);
+    }
+
+    if (this.previewContainer && !this.previewPowerLabel) {
+      const previewPowerNode = this._ensurePlainNode(this.previewContainer, '__RuntimePreviewPowerLabel', 460, 28);
+      previewPowerNode.setPosition(0, 12, 0);
+      this.previewPowerLabel = this._ensureLabelNode(
+        previewPowerNode,
+        '__RuntimePreviewPowerLabelText',
+        '',
+        18,
+        28,
+        new Color(255, 215, 0, 255),
+      );
+    }
+
+    if (this.previewContainer && !this.previewCostLabel) {
+      const previewCostNode = this._ensurePlainNode(this.previewContainer, '__RuntimePreviewCostLabel', 460, 24);
+      previewCostNode.setPosition(0, -16, 0);
+      this.previewCostLabel = this._ensureLabelNode(
+        previewCostNode,
+        '__RuntimePreviewCostLabelText',
+        '',
+        16,
+        24,
+        new Color(255, 215, 0, 255),
+      );
+    }
+  }
+
+  private _resetTransientState(): void {
+    if (this.confirmDialog) {
+      this.confirmDialog.active = false;
+    }
+    if (this.previewContainer) {
+      this.previewContainer.active = false;
+    }
+    this._pendingAction = null;
+    this._currentPreview = null;
+  }
+
+  private _bringToFront(): void {
+    const parent = this.node.parent;
+    if (!parent) return;
+    this.node.setSiblingIndex(parent.children.length - 1);
+  }
+
   private _findNode(name: string, root: Node = this.node): Node | null {
     if (root.name === name) return root;
     for (const child of root.children) {
@@ -628,14 +724,117 @@ export class EquipmentDetailPanel extends BasePanel {
       node.setSiblingIndex(0);
       node.setPosition(0, 0, 0);
     }
+    this._markRuntimeNode(node, name);
 
     const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
     transform.setContentSize(width, height);
 
     const graphics = node.getComponent(Graphics) ?? node.addComponent(Graphics);
+    this._markRuntimeObject(graphics);
     graphics.clear();
     graphics.fillColor = color;
     graphics.fillRect(-width / 2, -height / 2, width, height);
+  }
+
+  private _ensurePlainNode(parent: Node, name: string, width: number, height: number): Node {
+    let node = parent.getChildByName(name);
+    if (!node) {
+      node = new Node(name);
+      node.setParent(parent);
+      node.setPosition(0, 0, 0);
+    }
+    this._markRuntimeNode(node, name);
+
+    const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
+    transform.setContentSize(width, height);
+    return node;
+  }
+
+  private _ensureButtonNode(parent: Node, name: string, width: number, height: number, color: Color): Node {
+    const node = this._ensurePlainNode(parent, name, width, height);
+    const button = node.getComponent(Button) ?? node.addComponent(Button);
+    this._markRuntimeObject(button);
+    button.interactable = true;
+
+    const graphics = node.getComponent(Graphics) ?? node.addComponent(Graphics);
+    this._markRuntimeObject(graphics);
+    graphics.clear();
+    graphics.fillColor = color;
+    graphics.fillRect(-width / 2, -height / 2, width, height);
+    return node;
+  }
+
+  private _ensureLabelNode(parent: Node, name: string, text: string, fontSize: number, lineHeight: number, color: Color): Label {
+    let node = parent.getChildByName(name);
+    if (!node) {
+      node = new Node(name);
+      node.setParent(parent);
+      node.setPosition(0, 0, 0);
+    }
+    this._markRuntimeNode(node, name);
+
+    const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
+    const parentTransform = parent.getComponent(UITransform);
+    transform.setContentSize(
+      parentTransform?.contentSize.width ?? 160,
+      parentTransform?.contentSize.height ?? lineHeight,
+    );
+
+    const label = node.getComponent(Label) ?? node.addComponent(Label);
+    this._markRuntimeObject(label);
+    label.string = text;
+    label.fontSize = fontSize;
+    label.lineHeight = lineHeight;
+    label.color = color;
+    (label as any).horizontalAlign = 1;
+    (label as any).verticalAlign = 1;
+    return label;
+  }
+
+  private _markRuntimeObject(target: CCObject | null): void {
+    if (!target) return;
+    target.hideFlags = RUNTIME_HIDE_FLAGS;
+  }
+
+  private _markRuntimeNode(node: Node, name: string): void {
+    this._markRuntimeObject(node);
+
+    const runtimeNode = node as Node & {
+      __equipmentDetailRuntimeId?: string;
+    };
+    if (runtimeNode.__equipmentDetailRuntimeId) return;
+
+    EquipmentDetailPanel._runtimeNodeSequence += 1;
+    const safeName = name.replace(/[^a-zA-Z0-9_]/g, '_');
+    const runtimeId = `EquipmentDetailPanelRuntime_${EquipmentDetailPanel._runtimeNodeSequence}_${safeName}`;
+    runtimeNode.__equipmentDetailRuntimeId = runtimeId;
+  }
+
+  private _ensureCloseButtonLabel(parent: Node): void {
+    let node = parent.getChildByName('__DetailCloseButtonLabel');
+    if (!node) {
+      node = new Node('__DetailCloseButtonLabel');
+      node.setParent(parent);
+      node.setPosition(0, 0, 0);
+    }
+    this._markRuntimeNode(node, '__DetailCloseButtonLabel');
+    node.setSiblingIndex(parent.children.length - 1);
+
+    const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
+    transform.setContentSize(DETAIL_CLOSE_BUTTON_SIZE, DETAIL_CLOSE_BUTTON_SIZE);
+
+    const label = node.getComponent(Label) ?? node.addComponent(Label);
+    this._markRuntimeObject(label);
+    label.string = 'X';
+    label.fontSize = 28;
+    label.lineHeight = DETAIL_CLOSE_BUTTON_SIZE;
+    label.color = new Color(255, 255, 255, 255);
+    (label as any).horizontalAlign = 1;
+    (label as any).verticalAlign = 1;
   }
 
   onDestroy(): void {

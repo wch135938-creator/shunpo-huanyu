@@ -12,7 +12,7 @@
 //   · 事件从旧 equipment:heroChanged/gained → Presenter 驱动
 // ============================================================
 
-import { _decorator, Node, Label, Button, ScrollView, Prefab, instantiate, UITransform, Graphics, Color, assetManager } from 'cc';
+import { _decorator, Node, Label, Button, ScrollView, Prefab, instantiate, UITransform, Graphics, Color, assetManager, CCObject } from 'cc';
 import { BasePanel } from '../core/BasePanel';
 import type { EquipmentViewFilter } from '../equipment/EquipmentInventoryView';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
@@ -24,6 +24,10 @@ import type { EquipmentUIPresenter } from './EquipmentUIPresenter';
 const { ccclass, property } = _decorator;
 
 const EQUIPMENT_ITEM_VIEW_PREFAB_UUID = 'd2b3c4e5-f6a7-8901-bcde-f12345678901';
+const BAG_PANEL_BG_WIDTH = 720;
+const BAG_PANEL_BG_HEIGHT = 1280;
+const BAG_CLOSE_BUTTON_SIZE = 60;
+const RUNTIME_HIDE_FLAGS = CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
 
 /** 当前筛选状态 */
 interface BagFilterState {
@@ -35,6 +39,8 @@ interface BagFilterState {
 
 @ccclass('EquipmentBagPanel')
 export class EquipmentBagPanel extends BasePanel {
+  private static _runtimeNodeSequence = 0;
+
   // ==================== 编辑器绑定 ====================
 
   @property({ type: Node, tooltip: '面板根节点' })
@@ -180,6 +186,7 @@ export class EquipmentBagPanel extends BasePanel {
     // 必须先 show() 再 _refreshList()
     // 否则 EquipmentItemView.onLoad() 晚于 setData()，
     // nameLabel/qualityLabel/statsLabel/powerLabel 全部为 null
+    this._bringToFront();
     this.show();
 
     this._refreshFilterButtons();
@@ -361,6 +368,7 @@ export class EquipmentBagPanel extends BasePanel {
     }
 
     const node = instantiate(this.itemTemplate);
+    this._markRuntimeNodeTree(node, 'BagItem');
 
     const comp = node.getComponent(EquipmentItemView);
 
@@ -429,10 +437,15 @@ export class EquipmentBagPanel extends BasePanel {
 
   private _ensureVisualBlocks(): void {
     if (this.panelRoot) {
-      this._ensureBlock(this.panelRoot, '__EquipmentBagPanelBg', 720, 1200, new Color(25, 25, 35, 230));
+      this._ensureBlock(this.panelRoot, '__EquipmentBagPanelBg', BAG_PANEL_BG_WIDTH, BAG_PANEL_BG_HEIGHT, new Color(25, 25, 35, 255));
     }
     if (this.closeButton) {
-      this._ensureBlock(this.closeButton.node, '__BagCloseButtonBg', 60, 60, new Color(70, 85, 110, 255));
+      this._ensureBlock(this.closeButton.node, '__BagCloseButtonBg', BAG_CLOSE_BUTTON_SIZE, BAG_CLOSE_BUTTON_SIZE, new Color(70, 85, 110, 255));
+      this._ensureCloseButtonLabel(this.closeButton.node);
+      const closeParent = this.closeButton.node.parent;
+      if (closeParent) {
+        this.closeButton.node.setSiblingIndex(closeParent.children.length - 1);
+      }
     }
   }
 
@@ -490,13 +503,77 @@ export class EquipmentBagPanel extends BasePanel {
       node.setPosition(0, 0, 0);
     }
 
+    this._markRuntimeNodeTree(node, name);
+
     const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
     transform.setContentSize(width, height);
 
     const graphics = node.getComponent(Graphics) ?? node.addComponent(Graphics);
+    this._markRuntimeObject(graphics);
     graphics.clear();
     graphics.fillColor = color;
     graphics.fillRect(-width / 2, -height / 2, width, height);
+  }
+
+  private _markRuntimeObject(target: CCObject | null): void {
+    if (!target) return;
+    target.hideFlags = RUNTIME_HIDE_FLAGS;
+  }
+
+  private _markRuntimeNodeTree(root: Node, sourceName: string): void {
+    this._markRuntimeNode(root, sourceName);
+    for (const child of root.children) {
+      this._markRuntimeNodeTree(child, child.name);
+    }
+  }
+
+  private _markRuntimeNode(node: Node, sourceName: string): void {
+    this._markRuntimeObject(node);
+
+    const runtimeNode = node as Node & {
+      __equipmentBagPanelRuntimeId?: string;
+    };
+    if (!runtimeNode.__equipmentBagPanelRuntimeId) {
+      EquipmentBagPanel._runtimeNodeSequence += 1;
+      const safeName = sourceName.replace(/[^a-zA-Z0-9_]/g, '_');
+      const runtimeId = `EquipmentBagPanelRuntime_${EquipmentBagPanel._runtimeNodeSequence}_${safeName}`;
+      runtimeNode.__equipmentBagPanelRuntimeId = runtimeId;
+    }
+
+    for (const component of node.components) {
+      this._markRuntimeObject(component);
+    }
+  }
+
+  private _bringToFront(): void {
+    const parent = this.node.parent;
+    if (!parent) return;
+    this.node.setSiblingIndex(parent.children.length - 1);
+  }
+
+  private _ensureCloseButtonLabel(parent: Node): void {
+    let node = parent.getChildByName('__BagCloseButtonLabel');
+    if (!node) {
+      node = new Node('__BagCloseButtonLabel');
+      node.setParent(parent);
+      node.setPosition(0, 0, 0);
+    }
+    this._markRuntimeNode(node, '__BagCloseButtonLabel');
+    node.setSiblingIndex(parent.children.length - 1);
+
+    const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
+    transform.setContentSize(BAG_CLOSE_BUTTON_SIZE, BAG_CLOSE_BUTTON_SIZE);
+
+    const label = node.getComponent(Label) ?? node.addComponent(Label);
+    this._markRuntimeObject(label);
+    label.string = 'X';
+    label.fontSize = 28;
+    label.lineHeight = BAG_CLOSE_BUTTON_SIZE;
+    label.color = new Color(255, 255, 255, 255);
+    (label as any).horizontalAlign = 1;
+    (label as any).verticalAlign = 1;
   }
 
   private _handleClose(): void {

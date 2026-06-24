@@ -18,6 +18,7 @@ export class UIRenderSync {
 
   flush(): void {
     console.log('[UI-TEST] RenderSync.flush executed');
+    console.log('[SOP-UI-03] RENDER_FLUSH:', this.queue.length);
     if (this.queue.length === 0) {
       return;
     }

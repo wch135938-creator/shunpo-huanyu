@@ -659,6 +659,13 @@ export class EquipmentService extends BaseManager {
         message: 'EquipmentService 未初始化',
       };
     }
+    if (!equipmentUniqueId) {
+      return {
+        success: false,
+        errorCode: EquipmentOperationError.INSTANCE_NOT_FOUND,
+        message: '装备实例未找到: empty uniqueId',
+      };
+    }
 
     // 1. 查询实例
     const instance = this._inventoryService!.getInstanceByUniqueId(equipmentUniqueId);
@@ -709,6 +716,7 @@ export class EquipmentService extends BaseManager {
     }
 
     // 返还材料
+    const clearedHeroIds = this._clearLoadoutRefs(equipmentUniqueId);
     const returnItems = check.returns ?? [];
     if (returnItems.length > 0) {
       const addRequests: AddAssetRequest[] = returnItems.map((r) => ({
@@ -726,6 +734,9 @@ export class EquipmentService extends BaseManager {
     }
 
     // 4. 持久化
+    if (clearedHeroIds.length > 0) {
+      this._saveEquipmentData();
+    }
     this._saveManager!.markDirty();
 
     // 5. 发射事件
@@ -734,6 +745,9 @@ export class EquipmentService extends BaseManager {
       itemId: instance.itemId,
       returnItems,
     });
+    for (const heroId of clearedHeroIds) {
+      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId });
+    }
 
     // 6. Analytics（注意：equipment_consume 由 InventoryAnalyticsBridge 自动发射）
     if (this._analyticsBridge) {
@@ -912,6 +926,32 @@ export class EquipmentService extends BaseManager {
   }
 
   /** 生成事务 ID */
+  private _clearLoadoutRefs(uniqueId: string): string[] {
+    const clearedHeroIds: string[] = [];
+    if (!uniqueId) return clearedHeroIds;
+
+    for (const entry of this._equipmentData.loadouts) {
+      let changed = false;
+      for (const slotId of Object.keys(entry.slots)) {
+        if (entry.slots[slotId] === uniqueId) {
+          entry.slots[slotId] = null;
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        this._equipmentData.meta.dirtyFlags[entry.heroId] = true;
+        clearedHeroIds.push(entry.heroId);
+      }
+    }
+
+    if (clearedHeroIds.length > 0) {
+      this._equipmentData.meta.updatedAt = Date.now();
+    }
+
+    return clearedHeroIds;
+  }
+
   private _generateTransactionId(
     action: string,
     uniqueId: string,

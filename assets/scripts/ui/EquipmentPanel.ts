@@ -11,7 +11,7 @@
 
 import { UIStateStore } from "./core/UIStateStore";
 import { UIRenderAdapter } from "./core/UIRenderAdapter";
-import { _decorator, Node, Label, Button, Prefab, instantiate, UITransform, Graphics, Color, assetManager, Layout } from 'cc';
+import { _decorator, Node, Label, Button, Prefab, instantiate, UITransform, Graphics, Color, assetManager, Layout, CCObject } from 'cc';
 import { BasePanel } from '../core/BasePanel';
 import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
 import type { SlotViewModel } from '../equipment/EquipmentInventoryView';
@@ -22,9 +22,12 @@ import type { EquipmentUIPresenter } from './EquipmentUIPresenter';
 const { ccclass, property } = _decorator;
 
 const EQUIPMENT_SLOT_ITEM_PREFAB_UUID = 'c1a2b3d4-e5f6-7890-abcd-ef1234567890';
+const RUNTIME_HIDE_FLAGS = CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
 
 @ccclass('EquipmentPanel')
 export class EquipmentPanel extends BasePanel {
+  private static _runtimeNodeSequence = 0;
+
   // ==================== 编辑器绑定 ====================
 
   @property({ type: Node, tooltip: '面板根节点' })
@@ -221,6 +224,8 @@ private _flushInitialData() {
       return null;
     }
 
+    this._markRuntimeNodeTree(node, 'SlotItem');
+
     const comp = node.getComponent(EquipmentSlotItem);
     if (comp) {
       comp.setClickCallback(this._handleSlotClick.bind(this));
@@ -401,13 +406,47 @@ private _flushInitialData() {
       node.setPosition(0, 0, 0);
     }
 
+    this._markRuntimeNodeTree(node, name);
+
     const transform = node.getComponent(UITransform) ?? node.addComponent(UITransform);
+    this._markRuntimeObject(transform);
     transform.setContentSize(width, height);
 
     const graphics = node.getComponent(Graphics) ?? node.addComponent(Graphics);
+    this._markRuntimeObject(graphics);
     graphics.clear();
     graphics.fillColor = color;
     graphics.fillRect(-width / 2, -height / 2, width, height);
+  }
+
+  private _markRuntimeObject(target: CCObject | null): void {
+    if (!target) return;
+    target.hideFlags = RUNTIME_HIDE_FLAGS;
+  }
+
+  private _markRuntimeNodeTree(root: Node, sourceName: string): void {
+    this._markRuntimeNode(root, sourceName);
+    for (const child of root.children) {
+      this._markRuntimeNodeTree(child, child.name);
+    }
+  }
+
+  private _markRuntimeNode(node: Node, sourceName: string): void {
+    this._markRuntimeObject(node);
+
+    const runtimeNode = node as Node & {
+      __equipmentPanelRuntimeId?: string;
+    };
+    if (!runtimeNode.__equipmentPanelRuntimeId) {
+      EquipmentPanel._runtimeNodeSequence += 1;
+      const safeName = sourceName.replace(/[^a-zA-Z0-9_]/g, '_');
+      const runtimeId = `EquipmentPanelRuntime_${EquipmentPanel._runtimeNodeSequence}_${safeName}`;
+      runtimeNode.__equipmentPanelRuntimeId = runtimeId;
+    }
+
+    for (const component of node.components) {
+      this._markRuntimeObject(component);
+    }
   }
 
   /**

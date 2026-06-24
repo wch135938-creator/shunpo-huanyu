@@ -32,6 +32,10 @@ export class UIKernel {
     this.init();
 
     const source = data?.source ?? 'RUNTIME_UPDATE';
+    if (source === 'PREFAB_INIT') {
+      console.log('[SOP-UI-01] PREFAB_INIT:', node.name);
+    }
+
     const nodeId = this.getNodeId(node);
     const meta: UIDirtyMeta = {
       nodeId,
@@ -42,9 +46,18 @@ export class UIKernel {
     this.setDirty(nodeId, meta);
     const level = this.overrideGuard?.check(node) ?? UIOverrideLevel.LEVEL_1_WARN;
     if (level !== UIOverrideLevel.LEVEL_3_BLOCK) {
-      this.layoutEngine?.diff(node, this.dirtyMap);
+      if (source === 'PREFAB_INIT') {
+        this.layoutEngine?.compute(node);
+      } else {
+        this.layoutEngine?.diff(node, this.dirtyMap);
+      }
     }
+
     this.renderSync?.commit(node);
+    if (source === 'PREFAB_INIT') {
+      console.log('[SOP-UI-05] FRAME_0_FORCE_FLUSH');
+      this.renderSync?.flush();
+    }
     this.clearDirty(nodeId);
   }
 

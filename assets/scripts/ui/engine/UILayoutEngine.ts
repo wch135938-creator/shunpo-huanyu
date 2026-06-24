@@ -12,6 +12,7 @@ export class UILayoutEngine {
 
   compute(node: Node): void {
     console.log(`[UI-TEST] LayoutEngine.compute: ${node.name}`);
+    console.log('[SOP-UI-03] LAYOUT_COMPUTE:', node.name);
     console.log('[UILayoutEngine] compute', node.name);
   }
 
@@ -27,6 +28,7 @@ export class UILayoutEngine {
     const previousState = this.previousState.get(nodeId);
 
     if (previousState !== currentState) {
+      console.log('[SOP-UI-02] LAYOUT_DIFF:', node.name);
       console.log('[UILayoutEngine] diff', {
         nodeId,
         source: dirty.source,

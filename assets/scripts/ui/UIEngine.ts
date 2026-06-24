@@ -1,3 +1,4 @@
+import { director, Node } from 'cc';
 import { UIKernel } from '../core/UIKernel';
 import { UIDiagnosticCore } from '../diagnostic/UIDiagnosticCore';
 import { UIOverrideGuard } from './engine/UIOverrideGuard';
@@ -90,5 +91,41 @@ export class UIEngine {
         } finally {
             this._booting = false;
         }
+    }
+
+    public static forceFrame0Flush(root?: Node | null): void {
+        const target = root ?? this._findFrame0Target();
+        if (!target) {
+            console.warn('[UIEngine] FRAME_0_FORCE_FLUSH target missing');
+            return;
+        }
+
+        UIKernel.updateUI(target, { source: 'PREFAB_INIT' });
+    }
+
+    private static _findFrame0Target(): Node | null {
+        const scene = director.getScene();
+        if (!scene) {
+            return null;
+        }
+
+        return this._findNodeByName(scene, 'UIRoot')
+            ?? this._findNodeByName(scene, 'Canvas')
+            ?? scene;
+    }
+
+    private static _findNodeByName(root: Node, name: string): Node | null {
+        if (root.name === name) {
+            return root;
+        }
+
+        for (const child of root.children) {
+            const found = this._findNodeByName(child, name);
+            if (found) {
+                return found;
+            }
+        }
+
+        return null;
     }
 }

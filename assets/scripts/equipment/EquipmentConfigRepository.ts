@@ -135,7 +135,7 @@ export class EquipmentConfigRepository {
 
           // 构建 itemId ↔ configId 映射
           // 约定：Inventory itemId = "ITEM_EQ_" + configType.toUpperCase() + "_" + qualitySuffix
-          const itemId = this._configIdToItemId(entry.id);
+          const itemId = this._configIdToItemId(entry.id, entry.type);
           this._itemIdToConfigIdMap.set(itemId, entry.id);
           this._configIdToItemIdMap.set(entry.id, itemId);
         }
@@ -385,10 +385,10 @@ export class EquipmentConfigRepository {
    *
    * 约定：configId 如 "weapon_001" → itemId "ITEM_EQ_WEAPON_001"
    */
-  private _configIdToItemId(configId: string): string {
+  private _configIdToItemId(configId: string, equipmentType?: string): string {
     // 格式：type_number → TYPE_NUMBER
     const parts = configId.split('_');
-    const type = parts[0]?.toUpperCase() ?? 'UNKNOWN';
+    const type = (equipmentType ?? parts[0] ?? 'UNKNOWN').toUpperCase();
     const num = parts[1] ?? '001';
     return `ITEM_EQ_${type}_${num}`;
   }

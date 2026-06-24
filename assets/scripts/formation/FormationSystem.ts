@@ -167,7 +167,7 @@ export class FormationSystem extends BaseSystem {
     this._requireInitialized();
 
     if (!saveData || !saveData.presets) {
-      console.warn('[FormationSystem] restore: saveData 为空，自动填充默认阵容');
+      console.log('[FormationSystem] restore: saveData 为空，自动填充默认阵容');
       this._refillAllEmptyPresets();
       return;
     }
@@ -192,7 +192,7 @@ export class FormationSystem extends BaseSystem {
     // ★ 恢复后检查 default_pve 是否为空，空则自动填充
     const defaultPve = this._presets.get('default_pve');
     if (!defaultPve || defaultPve.slots.every((s) => s.heroId === null)) {
-      console.warn('[FormationSystem] restore: default_pve 预设为空，自动填充');
+      console.log('[FormationSystem] restore: default_pve 预设为空，自动填充');
       this._refillAllEmptyPresets();
     }
 
@@ -713,7 +713,7 @@ export class FormationSystem extends BaseSystem {
     const ownedHeroes = heroSystem.getUnlockedHeroes();
 
     if (ownedHeroes.length === 0) {
-      console.warn('[FormationSystem] refillAllEmptyPresets: 无已解锁英雄，阵容保持空');
+      console.log('[FormationSystem] refillAllEmptyPresets: 无已解锁英雄，阵容保持空');
       return;
     }
 
