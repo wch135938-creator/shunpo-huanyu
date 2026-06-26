@@ -31,7 +31,7 @@ import {
   trimTransactions,
   trimSnapshots,
 } from './InventorySaveData';
-import { INITIAL_EQUIPMENT_ITEM_IDS } from './InventoryDomain';
+import { INITIAL_EQUIPMENT_ITEM_IDS, INITIAL_EQUIPMENT_MATERIAL_GRANTS } from './InventoryDomain';
 import type {
   TransactionResult,
   AddAssetRequest,
@@ -153,6 +153,7 @@ export class InventoryService extends BaseManager {
       console.log('[InventoryInit] grant initial equipment');
       this._grantInitialEquipment();
     }
+    this._grantInitialEquipmentMaterialsIfNeeded();
 
     console.log(
       `[InventoryInit] initialize completed, instanceItems=${this._saveData.instanceItems.length}, initialized=${this._initialized}`,
@@ -174,10 +175,20 @@ export class InventoryService extends BaseManager {
     if (!data.transactions) data.transactions = [];
     if (!data.snapshots) data.snapshots = [];
     if (!data.meta) {
-      data.meta = { version: 1, updatedAt: Date.now(), nextCleanupAt: Date.now() + 86400000, cleanedUp: false, initialEquipmentGranted: false };
+      data.meta = {
+        version: 1,
+        updatedAt: Date.now(),
+        nextCleanupAt: Date.now() + 86400000,
+        cleanedUp: false,
+        initialEquipmentGranted: false,
+        initialEquipmentMaterialsGranted: false,
+      };
     }
     if (data.meta.initialEquipmentGranted === undefined) {
       data.meta.initialEquipmentGranted = false;
+    }
+    if (data.meta.initialEquipmentMaterialsGranted === undefined) {
+      data.meta.initialEquipmentMaterialsGranted = false;
     }
   }
 
@@ -225,6 +236,51 @@ export class InventoryService extends BaseManager {
   }
 
   // ===== Analytics 回调 =====
+
+  private _grantInitialEquipmentMaterialsIfNeeded(): void {
+    if (this._saveData.meta.initialEquipmentMaterialsGranted) {
+      return;
+    }
+
+    const requests: AddAssetRequest[] = [];
+    for (const grant of INITIAL_EQUIPMENT_MATERIAL_GRANTS) {
+      const current = this.getStackCount(grant.itemId);
+      const missing = Math.max(0, grant.count - current);
+      if (missing > 0) {
+        requests.push({
+          itemId: grant.itemId,
+          count: missing,
+          source: 'system_default' as InventorySource,
+          reason: 'reward_grant' as InventoryChangeReason,
+        });
+      }
+    }
+
+    if (requests.length === 0) {
+      this._saveData.meta.initialEquipmentMaterialsGranted = true;
+      this._saveManager.markDirty();
+      return;
+    }
+
+    const result = this.addAssets(
+      'txn_initial_equipment_material_grant',
+      requests,
+      'reward_grant',
+      'system_default',
+    );
+
+    if (result.success) {
+      this._saveData.meta.initialEquipmentMaterialsGranted = true;
+      this._saveManager.markDirty();
+      console.log(
+        `[InventoryService] 初始装备材料发放完成: ${requests.map((r) => `${r.itemId} x${r.count}`).join(', ')}`,
+      );
+    } else {
+      console.warn(
+        `[InventoryService] 初始装备材料发放失败: errorCode=${result.errorCode}, message=${result.message}`,
+      );
+    }
+  }
 
   private _analyticsEmitHandler: AnalyticsEventCallback = (eventName, payload) => {
     // 通过 EventManager 转发给 AnalyticsSystem

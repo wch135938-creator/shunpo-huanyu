@@ -408,6 +408,7 @@ export class EquipmentService extends BaseManager {
     if (check.cost) {
       for (const cost of check.cost) {
         if (!this._inventoryService!.checkSufficient(cost.itemId, cost.count)) {
+          console.warn('[EquipmentService][BLOCK] 材料不足');
           return {
             success: false,
             errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
@@ -420,10 +421,17 @@ export class EquipmentService extends BaseManager {
     // 4. 计算战力变化
     const levelBefore = instance.level;
     let powerBefore = 0;
+    let statBefore = 'HP 0 / ATK 0 / DEF 0';
     const config = this._configRepo.getEquipmentConfigByItemId(instance.itemId);
     if (config) {
-      powerBefore = calculatePower(config, instance, this._configRepo).totalPower;
+      const powerResultBefore = calculatePower(config, instance, this._configRepo);
+      powerBefore = powerResultBefore.totalPower;
+      statBefore = this._formatPowerStats(powerResultBefore);
     }
+    const wearer = findEquipmentWearer(this._equipmentData, instance.uniqueId);
+    const contributionPowerBefore = wearer.equipped && wearer.heroId
+      ? this.getHeroEquipmentContribution(wearer.heroId)?.equipmentPower ?? 0
+      : null;
 
     // 5. 消耗材料
     const transactionId = this._generateTransactionId('upgrade', equipmentUniqueId);
@@ -454,23 +462,41 @@ export class EquipmentService extends BaseManager {
 
     // 7. 战力计算
     let powerAfter = 0;
+    let statAfter = statBefore;
     if (config) {
       const preview = calculateUpgradePreview(instance, levelAfter, this._configRepo);
       powerAfter = preview?.totalPower ?? 0;
+      statAfter = this._formatPowerStats(preview);
     }
     const powerDelta = powerAfter - powerBefore;
+    const contributionPowerAfter = wearer.equipped && wearer.heroId
+      ? this.getHeroEquipmentContribution(wearer.heroId)?.equipmentPower ?? 0
+      : null;
 
     // 8. 持久化
     this._markHeroDirty(instance);
     this._saveManager!.markDirty();
 
     // 9. 发射事件
+    console.log(
+      `[EquipmentService][UPGRADE] ${equipmentUniqueId} level ${levelBefore} -> ${levelAfter}, ` +
+      `power ${powerBefore} -> ${powerAfter} (${powerDelta >= 0 ? '+' : ''}${powerDelta}), ` +
+      `stats ${statBefore} -> ${statAfter}`,
+    );
+    if (wearer.equipped && wearer.heroId) {
+      console.log(
+        `[EquipmentService][POWER_REFRESH] hero=${wearer.heroId} equipmentPower ` +
+        `${contributionPowerBefore ?? 0} -> ${contributionPowerAfter ?? 0}`,
+      );
+    }
     this._eventManager!.emit(EquipmentEvent.UPGRADE, {
       uniqueId: equipmentUniqueId,
       levelBefore,
       levelAfter,
       powerDelta,
     });
+    console.log('[EquipmentService][LOADOUT_CHANGED]');
+    this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId ?? '' });
 
     // 10. Analytics
     if (this._analyticsBridge) {
@@ -545,6 +571,7 @@ export class EquipmentService extends BaseManager {
     if (check.cost) {
       for (const cost of check.cost) {
         if (!this._inventoryService!.checkSufficient(cost.itemId, cost.count)) {
+          console.warn('[EquipmentService][BLOCK] 材料不足');
           return {
             success: false,
             errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
@@ -557,10 +584,17 @@ export class EquipmentService extends BaseManager {
     // 4. 战力 before
     const enhanceLevelBefore = (instance.extraData?.enhanceLevel as number) ?? 0;
     let powerBefore = 0;
+    let statBefore = 'HP 0 / ATK 0 / DEF 0';
     const config = this._configRepo.getEquipmentConfigByItemId(instance.itemId);
     if (config) {
-      powerBefore = calculatePower(config, instance, this._configRepo).totalPower;
+      const powerResultBefore = calculatePower(config, instance, this._configRepo);
+      powerBefore = powerResultBefore.totalPower;
+      statBefore = this._formatPowerStats(powerResultBefore);
     }
+    const wearer = findEquipmentWearer(this._equipmentData, instance.uniqueId);
+    const contributionPowerBefore = wearer.equipped && wearer.heroId
+      ? this.getHeroEquipmentContribution(wearer.heroId)?.equipmentPower ?? 0
+      : null;
 
     // 5. 消耗材料
     const transactionId = this._generateTransactionId('enhance', equipmentUniqueId);
@@ -594,23 +628,41 @@ export class EquipmentService extends BaseManager {
 
     // 7. 战力 after
     let powerAfter = 0;
+    let statAfter = statBefore;
     if (config) {
       const preview = calculateEnhancePreview(instance, enhanceLevelAfter, this._configRepo);
       powerAfter = preview?.totalPower ?? 0;
+      statAfter = this._formatPowerStats(preview);
     }
     const powerDelta = powerAfter - powerBefore;
+    const contributionPowerAfter = wearer.equipped && wearer.heroId
+      ? this.getHeroEquipmentContribution(wearer.heroId)?.equipmentPower ?? 0
+      : null;
 
     // 8. 持久化
     this._markHeroDirty(instance);
     this._saveManager!.markDirty();
 
     // 9. 事件
+    console.log(
+      `[EquipmentService][ENHANCE] ${equipmentUniqueId} enhance ${enhanceLevelBefore} -> ${enhanceLevelAfter}, ` +
+      `power ${powerBefore} -> ${powerAfter} (${powerDelta >= 0 ? '+' : ''}${powerDelta}), ` +
+      `stats ${statBefore} -> ${statAfter}`,
+    );
+    if (wearer.equipped && wearer.heroId) {
+      console.log(
+        `[EquipmentService][POWER_REFRESH] hero=${wearer.heroId} equipmentPower ` +
+        `${contributionPowerBefore ?? 0} -> ${contributionPowerAfter ?? 0}`,
+      );
+    }
     this._eventManager!.emit(EquipmentEvent.ENHANCE, {
       uniqueId: equipmentUniqueId,
       enhanceLevelBefore,
       enhanceLevelAfter,
       powerDelta,
     });
+    console.log('[EquipmentService][LOADOUT_CHANGED]');
+    this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId ?? '' });
 
     // 10. Analytics
     if (this._analyticsBridge) {
@@ -745,8 +797,13 @@ export class EquipmentService extends BaseManager {
       itemId: instance.itemId,
       returnItems,
     });
-    for (const heroId of clearedHeroIds) {
-      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId });
+    console.log('[EquipmentService][LOADOUT_CHANGED]');
+    if (clearedHeroIds.length > 0) {
+      for (const heroId of clearedHeroIds) {
+        this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId });
+      }
+    } else {
+      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: '' });
     }
 
     // 6. Analytics（注意：equipment_consume 由 InventoryAnalyticsBridge 自动发射）
@@ -893,6 +950,17 @@ export class EquipmentService extends BaseManager {
   }
 
   // ==================== 私有方法 ====================
+
+  /** 格式化装备属性日志 */
+  private _formatPowerStats(
+    result: { attributeBonus?: { hp?: number; atk?: number; def?: number } } | null,
+  ): string {
+    const bonus = result?.attributeBonus;
+    const hp = Math.round(bonus?.hp ?? 0);
+    const atk = Math.round(bonus?.atk ?? 0);
+    const def = Math.round(bonus?.def ?? 0);
+    return `HP ${hp} / ATK ${atk} / DEF ${def}`;
+  }
 
   /** 确保服务已就绪 */
   private _ensureReady(): boolean {

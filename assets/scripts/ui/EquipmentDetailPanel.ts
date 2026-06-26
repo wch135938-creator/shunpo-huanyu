@@ -124,6 +124,7 @@ export class EquipmentDetailPanel extends BasePanel {
   private _detailVM: EquipmentDetailViewModel | null = null;
   private _pendingAction: PendingAction | null = null;
   private _currentPreview: 'upgrade' | 'enhance' | null = null;
+  private _feedbackLabel: Label | null = null;
 
   /** 一次性初始化标记 — 解决 inactive prefab 节点 onLoad 不执行的问题 */
   private _initialized = false;
@@ -178,6 +179,7 @@ export class EquipmentDetailPanel extends BasePanel {
 
     this._detailVM = detailVM;
     this._resetTransientState();
+    this._hideFeedback();
     this._render();
     this._bringToFront();
     this.show();
@@ -423,7 +425,13 @@ export class EquipmentDetailPanel extends BasePanel {
   private _onUpgradeClick(): void {
     if (!this._detailVM || !this._presenter) return;
 
+    console.log('[EquipmentDetailPanel][CLICK_UPGRADE]');
     const dvm = this._detailVM;
+    if (!dvm.upgradeMaterialSufficient) {
+      console.log('[EquipmentDetailPanel][CHECK_UPGRADE] false -> return');
+      this._showMaterialBlocked('升级', dvm.upgradeCost);
+      return;
+    }
     this._pendingAction = { type: 'upgrade', uniqueId: dvm.equipment.uniqueId };
 
     const powerDelta = dvm.upgradePowerAfter - dvm.currentPower;
@@ -431,6 +439,10 @@ export class EquipmentDetailPanel extends BasePanel {
     if (this.confirmTextLabel) {
       const costTexts = dvm.upgradeCost.map((c) => `${c.itemId} x${c.count}`).join(', ');
       this.confirmTextLabel.string = `确认升级？\n等级: Lv.${dvm.equipment.level} → Lv.${dvm.equipment.level + 1}\n战力: ${dvm.currentPower} → ${dvm.upgradePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.upgradeMaterialSufficient ? '' : '\n⚠ 材料不足'}`;
+    }
+    if (this.confirmBtn) {
+      this.confirmBtn.node.active = true;
+      this.confirmBtn.interactable = true;
     }
     if (this.confirmDialog) {
       this.confirmDialog.active = true;
@@ -442,7 +454,13 @@ export class EquipmentDetailPanel extends BasePanel {
   private _onEnhanceClick(): void {
     if (!this._detailVM || !this._presenter) return;
 
+    console.log('[EquipmentDetailPanel][CLICK_ENHANCE]');
     const dvm = this._detailVM;
+    if (!dvm.enhanceMaterialSufficient) {
+      console.log('[EquipmentDetailPanel][CHECK_ENHANCE] false -> return');
+      this._showMaterialBlocked('强化', dvm.enhanceCost);
+      return;
+    }
     this._pendingAction = { type: 'enhance', uniqueId: dvm.equipment.uniqueId };
 
     const powerDelta = dvm.enhancePowerAfter - dvm.currentPower;
@@ -451,6 +469,10 @@ export class EquipmentDetailPanel extends BasePanel {
     if (this.confirmTextLabel) {
       const costTexts = dvm.enhanceCost.map((c) => `${c.itemId} x${c.count}`).join(', ');
       this.confirmTextLabel.string = `确认强化？\n强化等级: +${currentEnhance} → +${currentEnhance + 1}\n战力: ${dvm.currentPower} → ${dvm.enhancePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.enhanceMaterialSufficient ? '' : '\n⚠ 材料不足'}`;
+    }
+    if (this.confirmBtn) {
+      this.confirmBtn.node.active = true;
+      this.confirmBtn.interactable = true;
     }
     if (this.confirmDialog) {
       this.confirmDialog.active = true;
@@ -479,6 +501,10 @@ export class EquipmentDetailPanel extends BasePanel {
       }
       this.confirmTextLabel.string = text;
     }
+    if (this.confirmBtn) {
+      this.confirmBtn.node.active = true;
+      this.confirmBtn.interactable = true;
+    }
 
     if (this.confirmDialog) {
       this.confirmDialog.active = true;
@@ -493,6 +519,13 @@ export class EquipmentDetailPanel extends BasePanel {
     const action = this._pendingAction;
     switch (action.type) {
       case 'upgrade': {
+        const detailVM = this._presenter.getDetailViewModel(action.uniqueId, this._currentHeroId);
+        if (!detailVM?.upgradeMaterialSufficient) {
+          console.log('[EquipmentDetailPanel][CHECK_UPGRADE] false -> return');
+          this._showError('材料不足');
+          this._resetTransientState();
+          return;
+        }
         const result = this._presenter.upgrade(action.uniqueId);
         if (!result.success) {
           this._showError(result.message ?? '升级失败');
@@ -500,6 +533,13 @@ export class EquipmentDetailPanel extends BasePanel {
         break;
       }
       case 'enhance': {
+        const detailVM = this._presenter.getDetailViewModel(action.uniqueId, this._currentHeroId);
+        if (!detailVM?.enhanceMaterialSufficient) {
+          console.log('[EquipmentDetailPanel][CHECK_ENHANCE] false -> return');
+          this._showError('材料不足');
+          this._resetTransientState();
+          return;
+        }
         const result = this._presenter.enhance(action.uniqueId);
         if (!result.success) {
           this._showError(result.message ?? '强化失败');
@@ -542,9 +582,43 @@ export class EquipmentDetailPanel extends BasePanel {
   // ==================== 错误提示 ====================
 
   private _showError(message: string): void {
-    // 简单实现：输出到 console；后续可接入 Toast 组件
-    console.error(`[EquipmentDetailPanel] ${message}`);
+    console.warn(`[EquipmentDetailPanel] ${message}`);
+    if (!this._feedbackLabel) {
+      this._feedbackLabel = this._findNode('__RuntimeFeedbackLabel')?.getComponent(Label) ?? null;
+    }
+    if (!this._feedbackLabel) return;
+
+    this._feedbackLabel.string = message;
+    this._feedbackLabel.node.active = true;
+    this.unschedule(this._hideFeedback);
+    this.scheduleOnce(this._hideFeedback, 1.5);
   }
+
+  private _showMaterialBlocked(actionName: string, costs: { itemId: string; count: number }[]): void {
+    this._pendingAction = null;
+    const costText = costs.length > 0
+      ? costs.map((c) => `${c.itemId} x${c.count}`).join(', ')
+      : '无消耗配置';
+
+    if (this.confirmTextLabel) {
+      this.confirmTextLabel.string = `${actionName}失败\n材料不足\n需要: ${costText}`;
+    }
+    if (this.confirmBtn) {
+      this.confirmBtn.node.active = false;
+    }
+    if (this.confirmDialog) {
+      this.confirmDialog.active = true;
+      return;
+    }
+
+    this._showError('材料不足');
+  }
+
+  private _hideFeedback = (): void => {
+    if (this._feedbackLabel) {
+      this._feedbackLabel.node.active = false;
+    }
+  };
 
   // ==================== 按钮绑定 ====================
 
@@ -686,6 +760,20 @@ export class EquipmentDetailPanel extends BasePanel {
         new Color(255, 215, 0, 255),
       );
     }
+
+    if (!this._feedbackLabel) {
+      const feedbackNode = this._ensurePlainNode(panelRoot, '__RuntimeFeedback', 420, 48);
+      feedbackNode.setPosition(0, -430, 0);
+      this._feedbackLabel = this._ensureLabelNode(
+        feedbackNode,
+        '__RuntimeFeedbackLabel',
+        '',
+        22,
+        48,
+        new Color(255, 210, 80, 255),
+      );
+      feedbackNode.active = false;
+    }
   }
 
   private _resetTransientState(): void {
@@ -694,6 +782,10 @@ export class EquipmentDetailPanel extends BasePanel {
     }
     if (this.previewContainer) {
       this.previewContainer.active = false;
+    }
+    if (this.confirmBtn) {
+      this.confirmBtn.node.active = true;
+      this.confirmBtn.interactable = true;
     }
     this._pendingAction = null;
     this._currentPreview = null;

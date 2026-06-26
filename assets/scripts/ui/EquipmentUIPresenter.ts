@@ -33,10 +33,9 @@ import type {
   EquipmentEnhanceResult,
   EquipmentDecomposeResult,
   EquipmentPowerResult,
-  EquipmentOperationError,
   CostEntry,
 } from '../equipment/EquipmentTypes';
-import { SLOT_NAME_MAP, QUALITY_NAME_MAP, CORE_SLOT_IDS } from '../equipment/EquipmentTypes';
+import { SLOT_NAME_MAP, QUALITY_NAME_MAP, CORE_SLOT_IDS, EquipmentOperationError } from '../equipment/EquipmentTypes';
 import { canEquip, canUnequip, canUpgrade, canEnhance, canDecompose } from '../equipment/EquipmentSlotRules';
 import {
   calculatePower,
@@ -156,9 +155,6 @@ export class EquipmentUIPresenter {
 
     // 注册事件监听
     this._eventManager.on(EquipmentEvent.LOADOUT_CHANGED, this._onLoadoutChanged, this);
-    this._eventManager.on(EquipmentEvent.UPGRADE, this._onItemChanged, this);
-    this._eventManager.on(EquipmentEvent.ENHANCE, this._onItemChanged, this);
-    this._eventManager.on(EquipmentEvent.DECOMPOSE, this._onDecompose, this);
 
     this._initialized = true;
     console.log('[EquipmentUIPresenter] 初始化完成');
@@ -167,9 +163,6 @@ export class EquipmentUIPresenter {
   /** 销毁 Presenter，移除事件监听 */
   destroy(): void {
     this._eventManager.off(EquipmentEvent.LOADOUT_CHANGED, this._onLoadoutChanged, this);
-    this._eventManager.off(EquipmentEvent.UPGRADE, this._onItemChanged, this);
-    this._eventManager.off(EquipmentEvent.ENHANCE, this._onItemChanged, this);
-    this._eventManager.off(EquipmentEvent.DECOMPOSE, this._onDecompose, this);
     this._initialized = false;
     this._filterCache.clear();
   }
@@ -436,28 +429,35 @@ export class EquipmentUIPresenter {
   }
 
   upgrade(equipmentUniqueId: string): EquipmentUpgradeResult {
-    const result = this._equipmentService.upgrade(equipmentUniqueId);
-    if (result.success) {
-      this.markDirty();
+    const detailVM = this.getDetailViewModel(equipmentUniqueId, this._currentHeroId);
+    if (!detailVM?.upgradeMaterialSufficient) {
+      console.log('[EquipmentUIPresenter][CHECK_UPGRADE] false -> return');
+      return {
+        success: false,
+        errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
+        message: '材料不足',
+      };
     }
-    return result;
+    console.log('[EquipmentUIPresenter][CHECK_UPGRADE] true -> upgrade');
+    return this._equipmentService.upgrade(equipmentUniqueId);
   }
 
   enhance(equipmentUniqueId: string): EquipmentEnhanceResult {
-    const result = this._equipmentService.enhance(equipmentUniqueId);
-    if (result.success) {
-      this.markDirty();
+    const detailVM = this.getDetailViewModel(equipmentUniqueId, this._currentHeroId);
+    if (!detailVM?.enhanceMaterialSufficient) {
+      console.log('[EquipmentUIPresenter][CHECK_ENHANCE] false -> return');
+      return {
+        success: false,
+        errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
+        message: '材料不足',
+      };
     }
-    return result;
+    console.log('[EquipmentUIPresenter][CHECK_ENHANCE] true -> enhance');
+    return this._equipmentService.enhance(equipmentUniqueId);
   }
 
   decompose(equipmentUniqueId: string): EquipmentDecomposeResult {
-    const result = this._equipmentService.decompose(equipmentUniqueId);
-    if (result.success) {
-      this.markDirty();
-      this.invalidateFilterCache();
-    }
-    return result;
+    return this._equipmentService.decompose(equipmentUniqueId);
   }
 
   // ==================== 配置查询 ====================
@@ -486,17 +486,6 @@ export class EquipmentUIPresenter {
 
   private _onLoadoutChanged(): void {
     this.markDirty();
-    this.refreshNow();
-  }
-
-  private _onItemChanged(): void {
-    this.markDirty();
-    this.refreshNow();
-  }
-
-  private _onDecompose(): void {
-    this.markDirty();
-    this.invalidateFilterCache();
     this.refreshNow();
   }
 }

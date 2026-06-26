@@ -125,18 +125,9 @@ export class ConfigManager extends BaseManager {
   /** 执行实际的 resources.load 调用 */
   private _doLoad<T extends object>(path: string): Promise<T> {
     return this._loadJsonAsset<T>(path, true)
-      .catch((typedErr) => {
-        console.log(`[ConfigManager] JsonAsset load fallback to untyped: ${path}`, typedErr);
-        return this._loadJsonAsset<T>(path, false);
-      })
-      .catch((assetErr) => {
-        console.log(`[ConfigManager] resources load fallback to bundle: ${path}`, assetErr);
-        return this._loadJsonByBundle<T>(path);
-      })
-      .catch((bundleErr) => {
-        console.log(`[ConfigManager] bundle load fallback to preview source json: ${path}`, bundleErr);
-        return this._loadJsonByPreviewFetch<T>(path);
-      })
+      .catch(() => this._loadJsonAsset<T>(path, false))
+      .catch(() => this._loadJsonByBundle<T>(path))
+      .catch(() => this._loadJsonByPreviewFetch<T>(path))
       .then((data) => {
         this._pendingLoads.delete(path);
         this._cache.set(path, data);

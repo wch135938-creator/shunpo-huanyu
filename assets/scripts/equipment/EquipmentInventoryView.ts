@@ -274,9 +274,15 @@ export class EquipmentInventoryView {
 
     // 计算战力
     let power = 0;
+    let displayHp = config?.hp ?? 0;
+    let displayAtk = config?.attack ?? 0;
+    let displayDef = config?.defense ?? 0;
     if (config) {
       const result = calculatePower(config, instance, this._configRepo);
       power = result.totalPower;
+      displayHp = Math.round(result.attributeBonus.hp ?? 0);
+      displayAtk = Math.round(result.attributeBonus.atk ?? 0);
+      displayDef = Math.round(result.attributeBonus.def ?? 0);
     }
 
     const enhanceLevel =
@@ -297,9 +303,9 @@ export class EquipmentInventoryView {
       equippedSlotId: wearer.slotId ?? null,
       isLocked: instance.lockState === 'locked' || instance.lockState === 'soft_locked',
       bindState: instance.bindState,
-      baseHp: config?.hp ?? 0,
-      baseAtk: config?.attack ?? 0,
-      baseDef: config?.defense ?? 0,
+      baseHp: displayHp,
+      baseAtk: displayAtk,
+      baseDef: displayDef,
     };
   }
 

@@ -106,6 +106,8 @@ export interface InventoryMeta {
   cleanedUp: boolean;
   /** Phase10-Step11AA: 初始装备是否已发放 */
   initialEquipmentGranted: boolean;
+  /** Starter equipment growth materials have been granted. */
+  initialEquipmentMaterialsGranted?: boolean;
 }
 
 /** 创建默认 InventoryMeta */
@@ -116,6 +118,7 @@ export function createDefaultInventoryMeta(): InventoryMeta {
     nextCleanupAt: Date.now() + 86400000, // 24h 后
     cleanedUp: false,
     initialEquipmentGranted: false,
+    initialEquipmentMaterialsGranted: false,
   };
 }
 
