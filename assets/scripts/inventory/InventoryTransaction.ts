@@ -607,21 +607,25 @@ export class InventoryTransaction {
   }
 
   private _subtractFromStack(itemId: string, count: number): number {
+    let remaining = count;
     for (const item of this._saveData.stackItems) {
-      if (item.itemId === itemId) {
-        item.count -= count;
-        if (item.count < 0) item.count = 0;
-        return item.count;
-      }
+      if (item.itemId !== itemId || remaining <= 0) continue;
+
+      const consumed = Math.min(item.count, remaining);
+      item.count -= consumed;
+      remaining -= consumed;
     }
-    return 0;
+    return this._getStackCount(itemId);
   }
 
   private _getStackCount(itemId: string): number {
+    let total = 0;
     for (const item of this._saveData.stackItems) {
-      if (item.itemId === itemId) return item.count;
+      if (item.itemId === itemId) {
+        total += item.count;
+      }
     }
-    return 0;
+    return total;
   }
 
   private _countInstances(itemId: string): number {
@@ -726,4 +730,3 @@ export class InventoryTransaction {
     return this._saveData.snapshots.find((s) => s.transactionId === transactionId) ?? null;
   }
 }
-

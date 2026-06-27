@@ -500,6 +500,8 @@ export class BattleManager extends BaseManager {
         } else if (reward.itemType === 'equip') {
           // Phase10-Step11AA: 装备奖励进入 InventoryService
           this._grantEquipReward(reward);
+        } else if (reward.itemType === 'material') {
+          this._grantMaterialReward(reward);
         }
       }
 
@@ -724,4 +726,38 @@ export class BattleManager extends BaseManager {
     }
   }
 
+  /** 将战斗材料奖励写入 InventoryService。 */
+  private _grantMaterialReward(reward: BattleReward): boolean {
+    try {
+      const inventoryService = InventoryService.getInstance();
+      const transactionId = `battle_material_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      const request: AddAssetRequest = {
+        itemId: reward.itemId,
+        count: reward.count,
+        source: 'battle_drop',
+        reason: 'reward_grant',
+      };
+      const result = inventoryService.addAssets(
+        transactionId,
+        [request],
+        'reward_grant',
+        'battle_drop',
+      );
+
+      if (result.success) {
+        console.log(`[BattleManager] 材料入库: ${reward.itemId} ×${reward.count}`);
+        return true;
+      }
+
+      if (!result.isDuplicate) {
+        console.warn(
+          `[BattleManager] 材料入库失败: ${reward.itemId}, errorCode=${result.errorCode}, message=${result.message}`,
+        );
+      }
+      return result.isDuplicate;
+    } catch (err) {
+      console.error(`[BattleManager] 材料入库异常: ${reward.itemId}`, err);
+      return false;
+    }
+  }
 }

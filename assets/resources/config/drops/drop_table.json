@@ -31,6 +31,14 @@
           "maxCount": 1,
           "dropRate": 0.15,
           "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1.0,
+          "isGuaranteed": true
         }
       ]
     },
