@@ -15,7 +15,7 @@ import { BasePanel } from '../core/BasePanel';
 import type { EquipmentUIPresenter, EquipmentDetailViewModel } from './EquipmentUIPresenter';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
 import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
-import { SLOT_NAME_MAP } from '../equipment/EquipmentTypes';
+import { SLOT_NAME_MAP, EquipmentOperationError } from '../equipment/EquipmentTypes';
 
 const { ccclass, property } = _decorator;
 
@@ -426,7 +426,7 @@ export class EquipmentDetailPanel extends BasePanel {
     if (!this._detailVM || !this._presenter) return;
 
     console.log('[EquipmentDetailPanel][CLICK_UPGRADE]');
-    const dvm = this._detailVM;
+    const dvm = this._presenter.getDetailViewModel(this._detailVM.equipment.uniqueId, this._currentHeroId) ?? this._detailVM;
     if (!dvm.upgradeMaterialSufficient) {
       console.log('[EquipmentDetailPanel][CHECK_UPGRADE] false -> return');
       this._showMaterialBlocked('升级', dvm.upgradeCost);
@@ -455,7 +455,7 @@ export class EquipmentDetailPanel extends BasePanel {
     if (!this._detailVM || !this._presenter) return;
 
     console.log('[EquipmentDetailPanel][CLICK_ENHANCE]');
-    const dvm = this._detailVM;
+    const dvm = this._presenter.getDetailViewModel(this._detailVM.equipment.uniqueId, this._currentHeroId) ?? this._detailVM;
     if (!dvm.enhanceMaterialSufficient) {
       console.log('[EquipmentDetailPanel][CHECK_ENHANCE] false -> return');
       this._showMaterialBlocked('强化', dvm.enhanceCost);
@@ -522,12 +522,15 @@ export class EquipmentDetailPanel extends BasePanel {
         const detailVM = this._presenter.getDetailViewModel(action.uniqueId, this._currentHeroId);
         if (!detailVM?.upgradeMaterialSufficient) {
           console.log('[EquipmentDetailPanel][CHECK_UPGRADE] false -> return');
-          this._showError('材料不足');
-          this._resetTransientState();
+          this._showMaterialBlocked('升级', detailVM?.upgradeCost ?? []);
           return;
         }
         const result = this._presenter.upgrade(action.uniqueId);
         if (!result.success) {
+          if (result.errorCode === EquipmentOperationError.INSUFFICIENT_MATERIALS) {
+            this._showMaterialBlocked('升级', detailVM?.upgradeCost ?? result.costItems ?? []);
+            return;
+          }
           this._showError(result.message ?? '升级失败');
         }
         break;
@@ -536,12 +539,15 @@ export class EquipmentDetailPanel extends BasePanel {
         const detailVM = this._presenter.getDetailViewModel(action.uniqueId, this._currentHeroId);
         if (!detailVM?.enhanceMaterialSufficient) {
           console.log('[EquipmentDetailPanel][CHECK_ENHANCE] false -> return');
-          this._showError('材料不足');
-          this._resetTransientState();
+          this._showMaterialBlocked('强化', detailVM?.enhanceCost ?? []);
           return;
         }
         const result = this._presenter.enhance(action.uniqueId);
         if (!result.success) {
+          if (result.errorCode === EquipmentOperationError.INSUFFICIENT_MATERIALS) {
+            this._showMaterialBlocked('强化', detailVM?.enhanceCost ?? result.costItems ?? []);
+            return;
+          }
           this._showError(result.message ?? '强化失败');
         }
         break;
