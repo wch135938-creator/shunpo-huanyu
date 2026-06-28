@@ -32,6 +32,17 @@ export interface MailData {
   messages: MailMessageData[];
 }
 
+export interface MailCreateRequest {
+  mailId: string;
+  accountId: string;
+  title: string;
+  sender: string;
+  body: string;
+  attachments: OperationsRewardConfig[];
+  createdAt: number;
+  expiresAt: number;
+}
+
 export interface RedeemRecordData {
   accountId: string;
   codeId: string;
