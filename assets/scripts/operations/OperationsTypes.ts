@@ -69,6 +69,14 @@ export interface LoginData {
   lastClaimDate: string;
 }
 
+export interface LoginRewardStatus {
+  active: boolean;
+  claimed: boolean;
+  dateKey: string;
+  rewardDay: number;
+  rewards: OperationsRewardConfig[];
+}
+
 export interface OperationsSaveData {
   dataVersion: number;
   mailData: MailData;
