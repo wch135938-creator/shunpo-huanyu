@@ -4,6 +4,9 @@
   "creator": {
     "version": "3.8.8"
   },
+  "scripts": {
+    "validate:operations": "node tools/validate-operations.mjs"
+  },
   "devDependencies": {
     "playwright": "^1.60.0",
     "playwright-core": "^1.60.0"

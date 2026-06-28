@@ -32,3 +32,36 @@ export function ensureOperationsSaveData(container: SaveContainerV8): Operations
   data.loginData.lastClaimDate = data.loginData.lastClaimDate ?? '';
   return data;
 }
+
+export interface OperationsDataValidationResult {
+  valid: boolean;
+  issues: string[];
+}
+
+export function validateOperationsSaveData(data: unknown): OperationsDataValidationResult {
+  const issues: string[] = [];
+  if (!data || typeof data !== 'object') {
+    return { valid: false, issues: ['operationsData 不是对象'] };
+  }
+
+  const candidate = data as Partial<OperationsSaveData>;
+  if (typeof candidate.dataVersion !== 'number' || candidate.dataVersion < 1) {
+    issues.push('operationsData.dataVersion 无效');
+  }
+  if (!Array.isArray(candidate.mailData?.messages)) {
+    issues.push('operationsData.mailData.messages 不是数组');
+  }
+  if (!candidate.redeemData?.records || typeof candidate.redeemData.records !== 'object') {
+    issues.push('operationsData.redeemData.records 不是对象');
+  }
+  if (!candidate.loginData?.claimsByDate || typeof candidate.loginData.claimsByDate !== 'object') {
+    issues.push('operationsData.loginData.claimsByDate 不是对象');
+  }
+  if (
+    typeof candidate.loginData?.totalClaimDays !== 'number'
+    || candidate.loginData.totalClaimDays < 0
+  ) {
+    issues.push('operationsData.loginData.totalClaimDays 无效');
+  }
+  return { valid: issues.length === 0, issues };
+}
