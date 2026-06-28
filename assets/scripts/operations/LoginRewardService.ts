@@ -17,6 +17,7 @@ import {
 } from './OperationsRewardGrant';
 import type {
   LoginClaimRecordData,
+  LoginAccountData,
   LoginRewardStatus,
   OperationsGrantResult,
   OperationsSaveData,
@@ -69,14 +70,15 @@ export class LoginRewardService extends BaseManager {
     const config = this._requireConfig();
     this._liveOpsManager?.refreshEvents();
 
-    const dateKey = buildDateKey(this._now(), config.login.timezoneOffsetMinutes);
-    const rewardDay = (data.loginData.totalClaimDays % config.login.rewards.length) + 1;
+    const now = this._now();
+    const accountData = this._getAccountData(data);
+    const dateKey = buildDateKey(now, config.login.timezoneOffsetMinutes);
+    const rewardDay = (accountData.totalClaimDays % config.login.rewards.length) + 1;
     const rewardConfig = config.login.rewards.find((entry) => entry.day === rewardDay);
+    const liveOpsConfig = this._liveOpsManager?.getConfig(config.login.liveOpsEventId);
     return {
-      active: this._liveOpsManager?.isEventActive(config.login.liveOpsEventId) ?? false,
-      claimed: !!data.loginData.claimsByAccountDate[
-        buildLoginClaimKey(this._accountId, dateKey)
-      ],
+      active: !!liveOpsConfig && now >= liveOpsConfig.startTime && now <= liveOpsConfig.endTime,
+      claimed: !!accountData.claimsByDate[dateKey],
       dateKey,
       rewardDay,
       rewards: rewardConfig?.rewards.map((reward) => ({ ...reward })) ?? [],
@@ -85,6 +87,7 @@ export class LoginRewardService extends BaseManager {
 
   claimToday(): OperationsGrantResult {
     const data = this._requireData();
+    const accountData = this._getAccountData(data);
     const config = this._requireConfig();
     const status = this.getTodayStatus();
     const transactionId = buildLoginTransactionId(this._accountId, status.dateKey);
@@ -112,11 +115,9 @@ export class LoginRewardService extends BaseManager {
       claimedAt: this._now(),
       transactionId,
     };
-    data.loginData.claimsByAccountDate[
-      buildLoginClaimKey(this._accountId, status.dateKey)
-    ] = record;
-    data.loginData.totalClaimDays += 1;
-    data.loginData.lastClaimDate = status.dateKey;
+    accountData.claimsByDate[status.dateKey] = record;
+    accountData.totalClaimDays += 1;
+    accountData.lastClaimDate = status.dateKey;
     this._saveManager.markDirty();
     this._eventManager.emit(LoginRewardEvent.CLAIMED, record);
     console.log(`[LoginRewardService] 登录奖励领取完成: date=${status.dateKey}`);
@@ -124,9 +125,7 @@ export class LoginRewardService extends BaseManager {
   }
 
   getClaimRecord(dateKey: string): LoginClaimRecordData | null {
-    const record = this._requireData().loginData.claimsByAccountDate[
-      buildLoginClaimKey(this._accountId, dateKey)
-    ];
+    const record = this._getAccountData(this._requireData()).claimsByDate[dateKey];
     return record ? { ...record } : null;
   }
 
@@ -140,6 +139,18 @@ export class LoginRewardService extends BaseManager {
     if (!config) throw new Error('[LoginRewardService] 配置尚未加载');
     return config;
   }
+
+  private _getAccountData(data: OperationsSaveData): LoginAccountData {
+    const key = encodeURIComponent(this._accountId);
+    if (!data.loginData.accounts[key]) {
+      data.loginData.accounts[key] = {
+        claimsByDate: {},
+        totalClaimDays: 0,
+        lastClaimDate: '',
+      };
+    }
+    return data.loginData.accounts[key];
+  }
 }
 
 export function buildDateKey(timestamp: number, timezoneOffsetMinutes: number): string {
@@ -148,8 +159,4 @@ export function buildDateKey(timestamp: number, timezoneOffsetMinutes: number): 
   const month = String(shifted.getUTCMonth() + 1).padStart(2, '0');
   const day = String(shifted.getUTCDate()).padStart(2, '0');
   return `${year}${month}${day}`;
-}
-
-function buildLoginClaimKey(accountId: string, dateKey: string): string {
-  return `${encodeURIComponent(accountId)}:${dateKey}`;
 }

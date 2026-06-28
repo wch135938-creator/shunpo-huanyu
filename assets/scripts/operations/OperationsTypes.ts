@@ -63,10 +63,14 @@ export interface LoginClaimRecordData {
   transactionId: string;
 }
 
-export interface LoginData {
-  claimsByAccountDate: Record<string, LoginClaimRecordData>;
+export interface LoginAccountData {
+  claimsByDate: Record<string, LoginClaimRecordData>;
   totalClaimDays: number;
   lastClaimDate: string;
+}
+
+export interface LoginData {
+  accounts: Record<string, LoginAccountData>;
 }
 
 export interface LoginRewardStatus {
@@ -186,9 +190,7 @@ export function createDefaultOperationsSaveData(): OperationsSaveData {
     mailData: { messages: [] },
     redeemData: { records: {} },
     loginData: {
-      claimsByAccountDate: {},
-      totalClaimDays: 0,
-      lastClaimDate: '',
+      accounts: {},
     },
   };
 }

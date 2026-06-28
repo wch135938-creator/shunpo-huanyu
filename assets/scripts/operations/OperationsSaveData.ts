@@ -23,13 +23,9 @@ export function ensureOperationsSaveData(container: SaveContainerV8): Operations
   data.redeemData = data.redeemData ?? { records: {} };
   data.redeemData.records = data.redeemData.records ?? {};
   data.loginData = data.loginData ?? {
-    claimsByAccountDate: {},
-    totalClaimDays: 0,
-    lastClaimDate: '',
+    accounts: {},
   };
-  data.loginData.claimsByAccountDate = data.loginData.claimsByAccountDate ?? {};
-  data.loginData.totalClaimDays = data.loginData.totalClaimDays ?? 0;
-  data.loginData.lastClaimDate = data.loginData.lastClaimDate ?? '';
+  data.loginData.accounts = data.loginData.accounts ?? {};
   return data;
 }
 
@@ -54,17 +50,17 @@ export function validateOperationsSaveData(data: unknown): OperationsDataValidat
   if (!candidate.redeemData?.records || typeof candidate.redeemData.records !== 'object') {
     issues.push('operationsData.redeemData.records 不是对象');
   }
-  if (
-    !candidate.loginData?.claimsByAccountDate
-    || typeof candidate.loginData.claimsByAccountDate !== 'object'
-  ) {
-    issues.push('operationsData.loginData.claimsByAccountDate 不是对象');
-  }
-  if (
-    typeof candidate.loginData?.totalClaimDays !== 'number'
-    || candidate.loginData.totalClaimDays < 0
-  ) {
-    issues.push('operationsData.loginData.totalClaimDays 无效');
+  if (!candidate.loginData?.accounts || typeof candidate.loginData.accounts !== 'object') {
+    issues.push('operationsData.loginData.accounts 不是对象');
+  } else {
+    for (const [accountId, account] of Object.entries(candidate.loginData.accounts)) {
+      if (!accountId || typeof account.totalClaimDays !== 'number' || account.totalClaimDays < 0) {
+        issues.push(`operationsData.loginData.accounts.${accountId} 无效`);
+      }
+      if (!account.claimsByDate || typeof account.claimsByDate !== 'object') {
+        issues.push(`operationsData.loginData.accounts.${accountId}.claimsByDate 不是对象`);
+      }
+    }
   }
   return { valid: issues.length === 0, issues };
 }
