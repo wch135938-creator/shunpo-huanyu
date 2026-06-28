@@ -31,6 +31,8 @@ import type { InventorySaveData } from '../inventory/InventorySaveData';
 import { createDefaultInventorySaveData } from '../inventory/InventorySaveData';
 import type { EquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
 import { createDefaultEquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
+import type { OperationsSaveData } from '../operations/OperationsTypes';
+import { createDefaultOperationsSaveData } from '../operations/OperationsTypes';
 
 // ==================== SaveMetaV2 ====================
 
@@ -109,6 +111,8 @@ export interface SaveContainerV8 extends SaveContainer {
   inventoryData?: InventorySaveData;
   /** Phase10-Step6: 装备穿戴关系数据（可选，旧存档自动补全） */
   equipmentData?: EquipmentSaveDataV2;
+  /** 运营功能数据（邮箱 / 兑换码 / 登录奖励，可选，旧存档自动补全） */
+  operationsData?: OperationsSaveData;
   /** SaveV2 元数据 */
   saveMetaV2: SaveMetaV2;
 }
@@ -184,6 +188,10 @@ export function upgradeToV8(container: SaveContainer): SaveContainerV8 {
     v8.equipmentData = createDefaultEquipmentSaveDataV2();
   }
 
+  if (!v8.operationsData) {
+    v8.operationsData = createDefaultOperationsSaveData();
+  }
+
   // 更新版本号
   v8.saveVersion = CURRENT_SAVE_VERSION;
 
@@ -211,6 +219,7 @@ export function createDefaultSaveContainerV8(): SaveContainerV8 {
   base.rewardData = createDefaultRewardSaveData();
   base.inventoryData = createDefaultInventorySaveData();
   base.equipmentData = createDefaultEquipmentSaveDataV2();
+  base.operationsData = createDefaultOperationsSaveData();
   base.saveMetaV2 = createDefaultSaveMetaV2(0);
   base.saveVersion = CURRENT_SAVE_VERSION;
   base.timestamp = Date.now();

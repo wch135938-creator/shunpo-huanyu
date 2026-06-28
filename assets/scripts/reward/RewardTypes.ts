@@ -11,7 +11,15 @@ import type { ItemType } from '../config/drop_config';
 // ==================== 奖励来源 ====================
 
 /** 奖励来源标识（Step4 内部） */
-export type RewardSourceType = 'chapter' | 'event' | 'enemy' | 'battle' | 'pool';
+export type RewardSourceType =
+  | 'chapter'
+  | 'event'
+  | 'enemy'
+  | 'battle'
+  | 'pool'
+  | 'mail'
+  | 'redeem'
+  | 'login';
 
 // ==================== Phase7 兼容类型 ====================
 
@@ -43,6 +51,9 @@ export const Step4ToPhase7SourceTypeMap: Record<RewardSourceType, string> = {
   event: 'dungeon_event',
   enemy: 'dungeon_boss',
   pool: 'dungeon_node',
+  mail: 'compensation',
+  redeem: 'compensation',
+  login: 'season',
 };
 
 /**

@@ -397,6 +397,9 @@ export class InventoryService extends BaseManager {
       enemy: 'boss_reward',
       battle: 'battle_drop',
       pool: 'activity_reward',
+      mail: 'mail_compensation',
+      redeem: 'activity_reward',
+      login: 'activity_reward',
     };
     return mapping[source] ?? 'system_default';
   }

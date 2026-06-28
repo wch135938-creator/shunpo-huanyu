@@ -31,6 +31,9 @@ export class ConfigManager extends BaseManager {
   /** 系统配置目录 */
   static readonly DIR_SYSTEMS = 'config/systems';
 
+  /** 邮箱 / 兑换码 / 登录奖励配置 */
+  static readonly OPERATIONS_CONFIG = 'config/systems/operations_config';
+
   /** 本地化配置目录 */
   static readonly DIR_LOCALIZATION = 'config/localization';
 
@@ -68,6 +71,7 @@ export class ConfigManager extends BaseManager {
     'config/systems/global_const': '28137d42-2c97-4b09-94a2-465c917e8a28',
     'config/systems/level_config': '16777afd-62a5-4649-ad40-f75b46278705',
     'config/systems/liveops_config': 'e5875b72-a62f-44ea-9a19-81f18b2a97d6',
+    'config/systems/operations_config': '1fe542c5-62df-433a-a8f4-d3ab1b92779d',
     'config/systems/power_config': 'd01d9699-057b-43e7-bc3c-325594e7eb06',
     'config/systems/reward_pool_config': '5ba0b0aa-c3a5-4df9-b8fc-8fb31f74ea47',
     'config/systems/special_event_config': '958099ee-a048-4da1-8492-c554eb162d86',
