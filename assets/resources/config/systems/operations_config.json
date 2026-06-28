@@ -34,6 +34,7 @@
           { "itemId": "ITEM_EQUIPMENT_STONE", "itemType": "material", "count": 20 }
         ],
         "receiptTitle": "兑换成功回执",
+        "receiptSender": "寰宇司礼",
         "receiptBody": "兑换奖励已直接发放至资产背包，本邮件不包含附件。"
       }
     ]

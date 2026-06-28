@@ -94,6 +94,7 @@ export interface RedeemCodeConfig {
   endsAt: number;
   rewards: OperationsRewardConfig[];
   receiptTitle: string;
+  receiptSender: string;
   receiptBody: string;
 }
 
@@ -147,6 +148,8 @@ export type OperationsResultCode =
   | 'expired'
   | 'no_attachment'
   | 'not_active'
+  | 'invalid_code'
+  | 'server_required'
   | 'invalid_config'
   | 'grant_failed';
 
