@@ -11,10 +11,6 @@ import type {
 } from './OperationsTypes';
 
 export class OperationsConfigRepository extends BaseManager {
-  static getInstance(): OperationsConfigRepository {
-    return super.getInstance<OperationsConfigRepository>();
-  }
-
   private _configManager = ConfigManager.getInstance();
   private _config: OperationsConfig | null = null;
   private _loading: Promise<OperationsConfig> | null = null;

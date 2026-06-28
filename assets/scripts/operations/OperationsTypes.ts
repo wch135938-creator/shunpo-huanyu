@@ -115,14 +115,26 @@ export interface OperationsUITextConfig {
   mailTitle: string;
   mailEmpty: string;
   mailClaim: string;
+  mailClaimSuccess: string;
   mailClaimed: string;
   mailExpired: string;
+  mailSenderFormat: string;
+  mailPageFormat: string;
+  mailNoAttachment: string;
   redeemTitle: string;
   redeemPlaceholder: string;
   redeemSubmit: string;
+  redeemSuccess: string;
+  redeemDuplicate: string;
+  redeemInvalid: string;
+  redeemInactive: string;
+  redeemServerRequired: string;
   loginTitle: string;
   loginClaim: string;
   loginClaimed: string;
+  loginDayFormat: string;
+  loginInactive: string;
+  actionFailed: string;
   close: string;
   itemNames: Record<string, string>;
 }

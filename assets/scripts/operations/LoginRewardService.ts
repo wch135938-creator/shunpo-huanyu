@@ -29,10 +29,6 @@ export const LoginRewardEvent = {
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 
 export class LoginRewardService extends BaseManager {
-  static getInstance(): LoginRewardService {
-    return super.getInstance<LoginRewardService>();
-  }
-
   private _saveManager = SaveManager.getInstance();
   private _configRepository = OperationsConfigRepository.getInstance();
   private _eventManager = EventManager.getInstance();

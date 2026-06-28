@@ -28,10 +28,6 @@ export const RedeemCodeEvent = {
 } as const;
 
 export class RedeemCodeService extends BaseManager {
-  static getInstance(): RedeemCodeService {
-    return super.getInstance<RedeemCodeService>();
-  }
-
   private _saveManager = SaveManager.getInstance();
   private _configRepository = OperationsConfigRepository.getInstance();
   private _eventManager = EventManager.getInstance();

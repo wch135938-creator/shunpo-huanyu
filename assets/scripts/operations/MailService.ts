@@ -28,10 +28,6 @@ export const MailEvent = {
 const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
 export class MailService extends BaseManager {
-  static getInstance(): MailService {
-    return super.getInstance<MailService>();
-  }
-
   private _saveManager = SaveManager.getInstance();
   private _configRepository = OperationsConfigRepository.getInstance();
   private _eventManager = EventManager.getInstance();
@@ -103,6 +99,11 @@ export class MailService extends BaseManager {
   getMail(mailId: string): MailMessageData | null {
     const mail = this._findOwnedMail(mailId);
     return mail ? cloneMail(mail) : null;
+  }
+
+  isMailExpired(mailId: string): boolean {
+    const mail = this._findOwnedMail(mailId);
+    return !!mail && mail.expiresAt > 0 && this._now() > mail.expiresAt;
   }
 
   markRead(mailId: string): boolean {
