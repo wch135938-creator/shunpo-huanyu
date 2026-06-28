@@ -64,7 +64,7 @@ export interface LoginClaimRecordData {
 }
 
 export interface LoginData {
-  claimsByDate: Record<string, LoginClaimRecordData>;
+  claimsByAccountDate: Record<string, LoginClaimRecordData>;
   totalClaimDays: number;
   lastClaimDate: string;
 }
@@ -186,7 +186,7 @@ export function createDefaultOperationsSaveData(): OperationsSaveData {
     mailData: { messages: [] },
     redeemData: { records: {} },
     loginData: {
-      claimsByDate: {},
+      claimsByAccountDate: {},
       totalClaimDays: 0,
       lastClaimDate: '',
     },

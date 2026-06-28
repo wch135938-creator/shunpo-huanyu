@@ -23,11 +23,11 @@ export function ensureOperationsSaveData(container: SaveContainerV8): Operations
   data.redeemData = data.redeemData ?? { records: {} };
   data.redeemData.records = data.redeemData.records ?? {};
   data.loginData = data.loginData ?? {
-    claimsByDate: {},
+    claimsByAccountDate: {},
     totalClaimDays: 0,
     lastClaimDate: '',
   };
-  data.loginData.claimsByDate = data.loginData.claimsByDate ?? {};
+  data.loginData.claimsByAccountDate = data.loginData.claimsByAccountDate ?? {};
   data.loginData.totalClaimDays = data.loginData.totalClaimDays ?? 0;
   data.loginData.lastClaimDate = data.loginData.lastClaimDate ?? '';
   return data;
@@ -54,8 +54,11 @@ export function validateOperationsSaveData(data: unknown): OperationsDataValidat
   if (!candidate.redeemData?.records || typeof candidate.redeemData.records !== 'object') {
     issues.push('operationsData.redeemData.records 不是对象');
   }
-  if (!candidate.loginData?.claimsByDate || typeof candidate.loginData.claimsByDate !== 'object') {
-    issues.push('operationsData.loginData.claimsByDate 不是对象');
+  if (
+    !candidate.loginData?.claimsByAccountDate
+    || typeof candidate.loginData.claimsByAccountDate !== 'object'
+  ) {
+    issues.push('operationsData.loginData.claimsByAccountDate 不是对象');
   }
   if (
     typeof candidate.loginData?.totalClaimDays !== 'number'

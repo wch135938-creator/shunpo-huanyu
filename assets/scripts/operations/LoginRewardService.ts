@@ -74,7 +74,9 @@ export class LoginRewardService extends BaseManager {
     const rewardConfig = config.login.rewards.find((entry) => entry.day === rewardDay);
     return {
       active: this._liveOpsManager?.isEventActive(config.login.liveOpsEventId) ?? false,
-      claimed: !!data.loginData.claimsByDate[dateKey],
+      claimed: !!data.loginData.claimsByAccountDate[
+        buildLoginClaimKey(this._accountId, dateKey)
+      ],
       dateKey,
       rewardDay,
       rewards: rewardConfig?.rewards.map((reward) => ({ ...reward })) ?? [],
@@ -110,7 +112,9 @@ export class LoginRewardService extends BaseManager {
       claimedAt: this._now(),
       transactionId,
     };
-    data.loginData.claimsByDate[status.dateKey] = record;
+    data.loginData.claimsByAccountDate[
+      buildLoginClaimKey(this._accountId, status.dateKey)
+    ] = record;
     data.loginData.totalClaimDays += 1;
     data.loginData.lastClaimDate = status.dateKey;
     this._saveManager.markDirty();
@@ -120,7 +124,9 @@ export class LoginRewardService extends BaseManager {
   }
 
   getClaimRecord(dateKey: string): LoginClaimRecordData | null {
-    const record = this._requireData().loginData.claimsByDate[dateKey];
+    const record = this._requireData().loginData.claimsByAccountDate[
+      buildLoginClaimKey(this._accountId, dateKey)
+    ];
     return record ? { ...record } : null;
   }
 
@@ -142,4 +148,8 @@ export function buildDateKey(timestamp: number, timezoneOffsetMinutes: number): 
   const month = String(shifted.getUTCMonth() + 1).padStart(2, '0');
   const day = String(shifted.getUTCDate()).padStart(2, '0');
   return `${year}${month}${day}`;
+}
+
+function buildLoginClaimKey(accountId: string, dateKey: string): string {
+  return `${encodeURIComponent(accountId)}:${dateKey}`;
 }
