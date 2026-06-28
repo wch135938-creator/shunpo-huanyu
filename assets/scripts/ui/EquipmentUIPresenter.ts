@@ -14,7 +14,7 @@
 
 import { EventManager } from '../core/EventManager';
 import { EquipmentService, EquipmentEvent } from '../equipment/EquipmentService';
-import { InventoryService } from '../inventory/InventoryService';
+import { InventoryEvent, InventoryService } from '../inventory/InventoryService';
 import type { InstanceItem } from '../inventory/InventoryDomain';
 import { EquipmentConfigRepository } from '../equipment/EquipmentConfigRepository';
 import { EquipmentInventoryView } from '../equipment/EquipmentInventoryView';
@@ -155,6 +155,7 @@ export class EquipmentUIPresenter {
 
     // 注册事件监听
     this._eventManager.on(EquipmentEvent.LOADOUT_CHANGED, this._onLoadoutChanged, this);
+    this._eventManager.on(InventoryEvent.INVENTORY_CHANGED, this._onInventoryChanged, this);
 
     this._initialized = true;
     console.log('[EquipmentUIPresenter] 初始化完成');
@@ -163,6 +164,7 @@ export class EquipmentUIPresenter {
   /** 销毁 Presenter，移除事件监听 */
   destroy(): void {
     this._eventManager.off(EquipmentEvent.LOADOUT_CHANGED, this._onLoadoutChanged, this);
+    this._eventManager.off(InventoryEvent.INVENTORY_CHANGED, this._onInventoryChanged, this);
     this._initialized = false;
     this._filterCache.clear();
   }
@@ -482,9 +484,19 @@ export class EquipmentUIPresenter {
     return QUALITY_COLOR_MAP[quality] ?? '#9CA3AF';
   }
 
+  /** 查询 UI 成本提示所需的当前资产数量。 */
+  getAssetCount(itemId: string): number {
+    return this._inventoryService.getStackCount(itemId);
+  }
+
   // ==================== 事件处理 ====================
 
   private _onLoadoutChanged(): void {
+    this.markDirty();
+    this.refreshNow();
+  }
+
+  private _onInventoryChanged(): void {
     this.markDirty();
     this.refreshNow();
   }

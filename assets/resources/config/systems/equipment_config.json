@@ -1,6 +1,56 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "equipment_config",
+  "growth": {
+    "maxLevel": 50,
+    "maxEnhanceLevel": 20,
+    "upgradeCostRules": {
+      "Common": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 10, "countPerLevel": 5, "startLevel": 1 },
+        { "itemId": "ITEM_GOLD", "baseCount": 100, "countPerLevel": 50, "startLevel": 1 }
+      ],
+      "Rare": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 20, "countPerLevel": 10, "startLevel": 1 },
+        { "itemId": "ITEM_GOLD", "baseCount": 200, "countPerLevel": 100, "startLevel": 1 }
+      ],
+      "Epic": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 40, "countPerLevel": 20, "startLevel": 1 },
+        { "itemId": "ITEM_GOLD", "baseCount": 500, "countPerLevel": 250, "startLevel": 1 },
+        { "itemId": "ITEM_DIAMOND", "baseCount": 1, "countPerLevel": 0, "startLevel": 30 }
+      ],
+      "Legendary": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 80, "countPerLevel": 40, "startLevel": 1 },
+        { "itemId": "ITEM_GOLD", "baseCount": 1000, "countPerLevel": 500, "startLevel": 1 },
+        { "itemId": "ITEM_DIAMOND", "baseCount": 1, "countPerLevel": 0, "startLevel": 20 }
+      ]
+    },
+    "enhanceCostRules": {
+      "Common": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 5, "countPerLevel": 2, "startLevel": 0 },
+        { "itemId": "ITEM_GOLD", "baseCount": 50, "countPerLevel": 25, "startLevel": 0 }
+      ],
+      "Rare": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 10, "countPerLevel": 5, "startLevel": 0 },
+        { "itemId": "ITEM_GOLD", "baseCount": 150, "countPerLevel": 75, "startLevel": 0 }
+      ],
+      "Epic": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 20, "countPerLevel": 10, "startLevel": 0 },
+        { "itemId": "ITEM_GOLD", "baseCount": 500, "countPerLevel": 250, "startLevel": 0 },
+        { "itemId": "ITEM_DIAMOND", "baseCount": 1, "countPerLevel": 0, "startLevel": 10 }
+      ],
+      "Legendary": [
+        { "itemId": "ITEM_EQUIPMENT_STONE", "baseCount": 40, "countPerLevel": 20, "startLevel": 0 },
+        { "itemId": "ITEM_GOLD", "baseCount": 1000, "countPerLevel": 500, "startLevel": 0 },
+        { "itemId": "ITEM_DIAMOND", "baseCount": 1, "countPerLevel": 0, "startLevel": 5 }
+      ]
+    },
+    "decomposeStoneReturnRatio": {
+      "Common": 0.3,
+      "Rare": 0.5,
+      "Epic": 0.7,
+      "Legendary": 0.9
+    }
+  },
   "data": [
     {
       "id": "weapon_001",

@@ -483,11 +483,3 @@ export const INITIAL_EQUIPMENT_ITEM_IDS: string[] = [
   'ITEM_EQ_ARMOR_001',     // 布衣   (Common)
   'ITEM_EQ_ACCESSORY_001', // 铜戒   (Common)
 ];
-
-/**
- * Starter materials for the initial equipment growth loop.
- * 60 stones cover one upgrade and one enhance for each of the 3 starter items.
- */
-export const INITIAL_EQUIPMENT_MATERIAL_GRANTS: Array<{ itemId: string; count: number }> = [
-  { itemId: 'ITEM_EQUIPMENT_STONE', count: 60 },
-];

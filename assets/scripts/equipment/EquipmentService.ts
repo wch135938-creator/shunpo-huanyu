@@ -408,11 +408,12 @@ export class EquipmentService extends BaseManager {
     if (check.cost) {
       for (const cost of check.cost) {
         if (!this._inventoryService!.checkSufficient(cost.itemId, cost.count)) {
-          console.warn('[EquipmentService][BLOCK] 材料不足');
+          const current = this._inventoryService!.getStackCount(cost.itemId);
+          console.warn('[EquipmentService][BLOCK] 资源不足');
           return {
             success: false,
             errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
-            message: `材料不足: ${cost.itemId} x ${cost.count}`,
+            message: `资源不足: ${cost.itemId} 需要 ${cost.count}, 当前 ${current}`,
           };
         }
       }
@@ -571,11 +572,12 @@ export class EquipmentService extends BaseManager {
     if (check.cost) {
       for (const cost of check.cost) {
         if (!this._inventoryService!.checkSufficient(cost.itemId, cost.count)) {
-          console.warn('[EquipmentService][BLOCK] 材料不足');
+          const current = this._inventoryService!.getStackCount(cost.itemId);
+          console.warn('[EquipmentService][BLOCK] 资源不足');
           return {
             success: false,
             errorCode: EquipmentOperationError.INSUFFICIENT_MATERIALS,
-            message: `材料不足: ${cost.itemId} x ${cost.count}`,
+            message: `资源不足: ${cost.itemId} 需要 ${cost.count}, 当前 ${current}`,
           };
         }
       }

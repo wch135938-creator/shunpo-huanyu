@@ -497,11 +497,12 @@ export class BattleManager extends BaseManager {
           expGain += reward.count;
         } else if (reward.itemType === 'gold') {
           goldGain += reward.count;
+          this._grantStackReward(reward);
         } else if (reward.itemType === 'equip') {
           // Phase10-Step11AA: 装备奖励进入 InventoryService
           this._grantEquipReward(reward);
-        } else if (reward.itemType === 'material') {
-          this._grantMaterialReward(reward);
+        } else if (reward.itemType === 'material' || reward.itemType === 'diamond') {
+          this._grantStackReward(reward);
         }
       }
 
@@ -726,11 +727,11 @@ export class BattleManager extends BaseManager {
     }
   }
 
-  /** 将战斗材料奖励写入 InventoryService。 */
-  private _grantMaterialReward(reward: BattleReward): boolean {
+  /** 将战斗金币、钻石和材料奖励写入 InventoryService。 */
+  private _grantStackReward(reward: BattleReward): boolean {
     try {
       const inventoryService = InventoryService.getInstance();
-      const transactionId = `battle_material_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+      const transactionId = `battle_stack_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
       const request: AddAssetRequest = {
         itemId: reward.itemId,
         count: reward.count,
@@ -745,18 +746,18 @@ export class BattleManager extends BaseManager {
       );
 
       if (result.success) {
-        console.log(`[BattleManager] 材料入库: ${reward.itemId} ×${reward.count}`);
+        console.log(`[BattleManager] 堆叠资产入库: ${reward.itemId} ×${reward.count}`);
         return true;
       }
 
       if (!result.isDuplicate) {
         console.warn(
-          `[BattleManager] 材料入库失败: ${reward.itemId}, errorCode=${result.errorCode}, message=${result.message}`,
+          `[BattleManager] 堆叠资产入库失败: ${reward.itemId}, errorCode=${result.errorCode}, message=${result.message}`,
         );
       }
       return result.isDuplicate;
     } catch (err) {
-      console.error(`[BattleManager] 材料入库异常: ${reward.itemId}`, err);
+      console.error(`[BattleManager] 堆叠资产入库异常: ${reward.itemId}`, err);
       return false;
     }
   }

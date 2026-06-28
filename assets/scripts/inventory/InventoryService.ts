@@ -7,6 +7,7 @@
 // ============================================================
 
 import { BaseManager } from '../core/BaseManager';
+import { ConfigManager } from '../core/ConfigManager';
 import { EventManager } from '../core/EventManager';
 import { SaveManager } from '../save/SaveManager';
 import type { SaveContainerV8 } from '../save/SaveContainerV8';
@@ -31,7 +32,7 @@ import {
   trimTransactions,
   trimSnapshots,
 } from './InventorySaveData';
-import { INITIAL_EQUIPMENT_ITEM_IDS, INITIAL_EQUIPMENT_MATERIAL_GRANTS } from './InventoryDomain';
+import { INITIAL_EQUIPMENT_ITEM_IDS } from './InventoryDomain';
 import type {
   TransactionResult,
   AddAssetRequest,
@@ -43,6 +44,7 @@ import type {
   RewardSourceType,
 } from '../reward/RewardTypes';
 import { RewardEvent, type RewardGrantedEvent } from '../reward/RewardSystem';
+import type { GlobalConstConfig, GlobalPlayerEntry } from '../config/global_config';
 
 // ==================== 事件名常量 ====================
 
@@ -88,6 +90,7 @@ export class InventoryService extends BaseManager {
 
   private _initialized = false;
   private _saveData: InventorySaveData = createDefaultInventorySaveData();
+  private _initialEconomyGrantPromise: Promise<void> | null = null;
 
   constructor() {
     super();
@@ -153,7 +156,7 @@ export class InventoryService extends BaseManager {
       console.log('[InventoryInit] grant initial equipment');
       this._grantInitialEquipment();
     }
-    this._grantInitialEquipmentMaterialsIfNeeded();
+    this._scheduleInitialEconomyGrant();
 
     console.log(
       `[InventoryInit] initialize completed, instanceItems=${this._saveData.instanceItems.length}, initialized=${this._initialized}`,
@@ -237,49 +240,94 @@ export class InventoryService extends BaseManager {
 
   // ===== Analytics 回调 =====
 
-  private _grantInitialEquipmentMaterialsIfNeeded(): void {
-    if (this._saveData.meta.initialEquipmentMaterialsGranted) {
+  /**
+   * 初始经济资源依赖 global_const，配置尚未就绪时主动等待加载完成。
+   * 事务 ID 保证每份存档只发放一次；v3 用于修复旧启动时序下“日志成功但 UI 资产为 0”的测试存档。
+   */
+  private _scheduleInitialEconomyGrant(): void {
+    if (this._initialEconomyGrantPromise) return;
+
+    const configManager = ConfigManager.getInstance();
+    const cachedConfig = configManager.getConfig<GlobalConstConfig>(
+      'config/systems/global_const',
+    );
+    if (cachedConfig) {
+      this._grantInitialEconomyFromConfig(cachedConfig);
+      this._initialEconomyGrantPromise = Promise.resolve();
       return;
     }
 
-    const requests: AddAssetRequest[] = [];
-    for (const grant of INITIAL_EQUIPMENT_MATERIAL_GRANTS) {
-      const current = this.getStackCount(grant.itemId);
-      const missing = Math.max(0, grant.count - current);
-      if (missing > 0) {
-        requests.push({
-          itemId: grant.itemId,
-          count: missing,
-          source: 'system_default' as InventorySource,
-          reason: 'reward_grant' as InventoryChangeReason,
-        });
-      }
-    }
+    this._initialEconomyGrantPromise = configManager
+      .loadConfig<GlobalConstConfig>('config/systems/global_const')
+      .then((config) => {
+        this._grantInitialEconomyFromConfig(config);
+      })
+      .catch((error: unknown) => {
+        console.warn('[InventoryService] 初始经济配置加载失败:', error);
+      });
+  }
 
-    if (requests.length === 0) {
-      this._saveData.meta.initialEquipmentMaterialsGranted = true;
-      this._saveManager.markDirty();
+  /** 将 global_const 的初始强化石、金币、钻石统一写入 Inventory 真相源。 */
+  private _grantInitialEconomyFromConfig(globalConfig: GlobalConstConfig): void {
+    const playerConfig = this._getInitialPlayerConfig(globalConfig);
+    if (!playerConfig) {
+      console.warn('[InventoryService] GLOBAL_PLAYER 未找到，无法发放初始经济资源');
       return;
     }
+
+    const configuredAssets = [
+      {
+        itemId: 'ITEM_EQUIPMENT_STONE',
+        targetCount: playerConfig.initialEquipmentStone,
+      },
+      {
+        itemId: 'ITEM_GOLD',
+        targetCount: playerConfig.initialGold,
+      },
+      {
+        itemId: 'ITEM_DIAMOND',
+        targetCount: playerConfig.initialDiamond,
+      },
+    ];
+    const before = configuredAssets.map(
+      (asset) => `${asset.itemId}=${this.getStackCount(asset.itemId)}`,
+    );
+    const requests: AddAssetRequest[] = configuredAssets
+      .map((asset) => ({
+        itemId: asset.itemId,
+        count: Math.max(0, asset.targetCount - this.getStackCount(asset.itemId)),
+        source: 'system_default' as InventorySource,
+        reason: 'reward_grant' as InventoryChangeReason,
+      }))
+      .filter((request) => request.count > 0);
 
     const result = this.addAssets(
-      'txn_initial_equipment_material_grant',
+      'txn_initial_player_economy_v3',
       requests,
       'reward_grant',
       'system_default',
     );
+    const after = configuredAssets.map(
+      (asset) => `${asset.itemId}=${this.getStackCount(asset.itemId)}`,
+    );
 
-    if (result.success) {
-      this._saveData.meta.initialEquipmentMaterialsGranted = true;
-      this._saveManager.markDirty();
+    if (result.success && !result.isDuplicate) {
       console.log(
-        `[InventoryService] 初始装备材料发放完成: ${requests.map((r) => `${r.itemId} x${r.count}`).join(', ')}`,
+        `[InventoryService] 初始经济资源发放完成: before=${before.join(', ')} after=${after.join(', ')}`,
       );
-    } else {
+    } else if (!result.success) {
       console.warn(
-        `[InventoryService] 初始装备材料发放失败: errorCode=${result.errorCode}, message=${result.message}`,
+        `[InventoryService] 初始经济资源发放失败: errorCode=${result.errorCode}, message=${result.message}`,
       );
     }
+  }
+
+  private _getInitialPlayerConfig(
+    globalConfig: GlobalConstConfig,
+  ): GlobalPlayerEntry | null {
+    return globalConfig?.data.find(
+      (entry): entry is GlobalPlayerEntry => entry.id === 'GLOBAL_PLAYER',
+    ) ?? null;
   }
 
   private _analyticsEmitHandler: AnalyticsEventCallback = (eventName, payload) => {

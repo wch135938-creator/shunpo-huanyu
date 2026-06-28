@@ -23,6 +23,11 @@ const DETAIL_PANEL_BG_WIDTH = 720;
 const DETAIL_PANEL_BG_HEIGHT = 1280;
 const DETAIL_CLOSE_BUTTON_SIZE = 60;
 const RUNTIME_HIDE_FLAGS = CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
+const COST_ITEM_NAME_MAP: Record<string, string> = {
+  ITEM_EQUIPMENT_STONE: '强化石',
+  ITEM_GOLD: '金币',
+  ITEM_DIAMOND: '钻石',
+};
 
 /** 操作类型（用于确认对话框） */
 type PendingAction =
@@ -365,8 +370,7 @@ export class EquipmentDetailPanel extends BasePanel {
           `战力 ${dvm.currentPower} → ${dvm.upgradePowerAfter} (${dvm.upgradePowerAfter - dvm.currentPower >= 0 ? '+' : ''}${dvm.upgradePowerAfter - dvm.currentPower})`;
       }
       if (this.previewCostLabel) {
-        const costTexts = dvm.upgradeCost.map((c) => `${c.itemId} x${c.count}`);
-        this.previewCostLabel.string = `消耗: ${costTexts.join(', ')}`;
+        this.previewCostLabel.string = `消耗: ${this._formatCosts(dvm.upgradeCost)}`;
       }
     } else if (this._currentPreview === 'enhance') {
       if (this.previewPowerLabel) {
@@ -374,8 +378,7 @@ export class EquipmentDetailPanel extends BasePanel {
           `战力 ${dvm.currentPower} → ${dvm.enhancePowerAfter} (${dvm.enhancePowerAfter - dvm.currentPower >= 0 ? '+' : ''}${dvm.enhancePowerAfter - dvm.currentPower})`;
       }
       if (this.previewCostLabel) {
-        const costTexts = dvm.enhanceCost.map((c) => `${c.itemId} x${c.count}`);
-        this.previewCostLabel.string = `消耗: ${costTexts.join(', ')}`;
+        this.previewCostLabel.string = `消耗: ${this._formatCosts(dvm.enhanceCost)}`;
       }
     }
   }
@@ -437,8 +440,8 @@ export class EquipmentDetailPanel extends BasePanel {
     const powerDelta = dvm.upgradePowerAfter - dvm.currentPower;
     const sign = powerDelta >= 0 ? '+' : '';
     if (this.confirmTextLabel) {
-      const costTexts = dvm.upgradeCost.map((c) => `${c.itemId} x${c.count}`).join(', ');
-      this.confirmTextLabel.string = `确认升级？\n等级: Lv.${dvm.equipment.level} → Lv.${dvm.equipment.level + 1}\n战力: ${dvm.currentPower} → ${dvm.upgradePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.upgradeMaterialSufficient ? '' : '\n⚠ 材料不足'}`;
+      const costTexts = this._formatCosts(dvm.upgradeCost);
+      this.confirmTextLabel.string = `确认升级？\n等级: Lv.${dvm.equipment.level} → Lv.${dvm.equipment.level + 1}\n战力: ${dvm.currentPower} → ${dvm.upgradePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.upgradeMaterialSufficient ? '' : '\n⚠ 资源不足'}`;
     }
     if (this.confirmBtn) {
       this.confirmBtn.node.active = true;
@@ -467,8 +470,8 @@ export class EquipmentDetailPanel extends BasePanel {
     const sign = powerDelta >= 0 ? '+' : '';
     const currentEnhance = dvm.equipment.enhanceLevel;
     if (this.confirmTextLabel) {
-      const costTexts = dvm.enhanceCost.map((c) => `${c.itemId} x${c.count}`).join(', ');
-      this.confirmTextLabel.string = `确认强化？\n强化等级: +${currentEnhance} → +${currentEnhance + 1}\n战力: ${dvm.currentPower} → ${dvm.enhancePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.enhanceMaterialSufficient ? '' : '\n⚠ 材料不足'}`;
+      const costTexts = this._formatCosts(dvm.enhanceCost);
+      this.confirmTextLabel.string = `确认强化？\n强化等级: +${currentEnhance} → +${currentEnhance + 1}\n战力: ${dvm.currentPower} → ${dvm.enhancePowerAfter} (${sign}${powerDelta})\n消耗: ${costTexts}${dvm.enhanceMaterialSufficient ? '' : '\n⚠ 资源不足'}`;
     }
     if (this.confirmBtn) {
       this.confirmBtn.node.active = true;
@@ -603,11 +606,11 @@ export class EquipmentDetailPanel extends BasePanel {
   private _showMaterialBlocked(actionName: string, costs: { itemId: string; count: number }[]): void {
     this._pendingAction = null;
     const costText = costs.length > 0
-      ? costs.map((c) => `${c.itemId} x${c.count}`).join(', ')
+      ? this._formatCosts(costs, true)
       : '无消耗配置';
 
     if (this.confirmTextLabel) {
-      this.confirmTextLabel.string = `${actionName}失败\n材料不足\n需要: ${costText}`;
+      this.confirmTextLabel.string = `${actionName}失败\n资源不足\n需要: ${costText}`;
     }
     if (this.confirmBtn) {
       this.confirmBtn.node.active = false;
@@ -617,7 +620,21 @@ export class EquipmentDetailPanel extends BasePanel {
       return;
     }
 
-    this._showError('材料不足');
+    this._showError('资源不足');
+  }
+
+  private _formatCosts(
+    costs: { itemId: string; count: number }[],
+    includeOwned: boolean = false,
+  ): string {
+    return costs
+      .map((cost) => {
+        const required = `${COST_ITEM_NAME_MAP[cost.itemId] ?? cost.itemId} x${cost.count}`;
+        if (!includeOwned) return required;
+        const owned = this._presenter?.getAssetCount(cost.itemId) ?? 0;
+        return `${required}（拥有 ${owned}）`;
+      })
+      .join(', ');
   }
 
   private _hideFeedback = (): void => {

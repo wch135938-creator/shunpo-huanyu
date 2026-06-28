@@ -628,26 +628,26 @@ export class EquipmentAcceptanceTest extends Component {
 
       if (result.success && result.createdUniqueIds && result.createdUniqueIds.length > 0) {
         const uniqueId = result.createdUniqueIds[0];
+        const service = EquipmentService.getInstance();
+        const configRepo = EquipmentConfigRepository.getInstance();
+        await configRepo.loadConfigs();
+        const instance = inventoryService.getInstanceByUniqueId(uniqueId);
+        const upgradeCost = instance ? (canUpgrade(instance, configRepo).cost ?? []) : [];
 
         // 先给足够材料
         const txn2 = `test_upgrade_ok_mat_${Date.now()}`;
         inventoryService.addAssets(
           txn2,
-          [{
-            itemId: 'ITEM_EQUIPMENT_STONE',
-            count: 100,
-            source: 'system_default',
-            reason: 'reward_grant',
-          }],
+          upgradeCost.map((cost) => ({
+            itemId: cost.itemId,
+            count: cost.count,
+            source: 'system_default' as const,
+            reason: 'reward_grant' as const,
+          })),
           'reward_grant',
           'system_default',
         );
 
-        const service = EquipmentService.getInstance();
-        const configRepo = EquipmentConfigRepository.getInstance();
-        await configRepo.loadConfigs();
-
-        const instance = inventoryService.getInstanceByUniqueId(uniqueId);
         const levelBefore = instance?.level ?? 1;
 
         const upgradeResult = service.upgrade(uniqueId);
@@ -699,26 +699,26 @@ export class EquipmentAcceptanceTest extends Component {
 
       if (result.success && result.createdUniqueIds && result.createdUniqueIds.length > 0) {
         const uniqueId = result.createdUniqueIds[0];
+        const service = EquipmentService.getInstance();
+        const configRepo = EquipmentConfigRepository.getInstance();
+        await configRepo.loadConfigs();
+        const instance = inventoryService.getInstanceByUniqueId(uniqueId);
+        const enhanceCost = instance ? (canEnhance(instance, configRepo).cost ?? []) : [];
 
         // 给材料
         const txn2 = `test_enhance_mat_${Date.now()}`;
         inventoryService.addAssets(
           txn2,
-          [{
-            itemId: 'ITEM_EQUIPMENT_STONE',
-            count: 100,
-            source: 'system_default',
-            reason: 'reward_grant',
-          }],
+          enhanceCost.map((cost) => ({
+            itemId: cost.itemId,
+            count: cost.count,
+            source: 'system_default' as const,
+            reason: 'reward_grant' as const,
+          })),
           'reward_grant',
           'system_default',
         );
 
-        const service = EquipmentService.getInstance();
-        const configRepo = EquipmentConfigRepository.getInstance();
-        await configRepo.loadConfigs();
-
-        const instance = inventoryService.getInstanceByUniqueId(uniqueId);
         const enhanceBefore = ((instance?.extraData?.enhanceLevel as number) ?? 0);
 
         const enhanceResult = service.enhance(uniqueId);

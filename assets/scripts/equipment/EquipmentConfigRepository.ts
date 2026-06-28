@@ -13,68 +13,36 @@ import { CORE_SLOT_IDS } from './EquipmentTypes';
 // ==================== 配置路径常量 ====================
 
 const CONFIG_PATH_EQUIPMENT = 'config/systems/equipment_config';
-const CONFIG_PATH_POWER = 'config/systems/power_config';
-
 /** 装备配置 JSON 顶层结构 */
 interface EquipmentConfigData {
-  version: number;
+  version: string | number;
   name: string;
+  growth?: EquipmentGrowthConfigData;
   data: EquipmentConfigEntry[];
 }
 
-/** 战力配置 JSON 顶层结构 */
-interface PowerConfigData {
-  version: number;
-  data: {
-    equipmentMultipliers?: Record<string, number>;
-    statWeights?: Record<string, number>;
-  };
-}
-
-// ==================== 升级/强化配置常量（暂无专用 JSON，落在 EquipmentConfigRepository 内） ====================
-
-/**
- * 升级消耗配置（默认常量，未来可迁移到 JSON）。
- *
- * key: 品质, value: 每级消耗 { itemId, baseCount, countPerLevel }
- */
-interface UpgradeCostRule {
+/** 单项成长消耗规则。 */
+interface EquipmentGrowthCostRuleData {
   itemId: string;
   baseCount: number;
   countPerLevel: number;
+  startLevel: number;
 }
 
-const DEFAULT_UPGRADE_COST_RULES: Record<number, UpgradeCostRule> = {
-  0: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 10, countPerLevel: 5 },
-  1: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 20, countPerLevel: 10 },
-  2: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 40, countPerLevel: 20 },
-  3: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 80, countPerLevel: 40 },
-};
+/** equipment_config.json 中的成长配置。 */
+interface EquipmentGrowthConfigData {
+  maxLevel: number;
+  maxEnhanceLevel: number;
+  upgradeCostRules: Record<string, EquipmentGrowthCostRuleData[]>;
+  enhanceCostRules: Record<string, EquipmentGrowthCostRuleData[]>;
+  decomposeStoneReturnRatio: Record<string, number>;
+}
 
-/** 最大装备等级 */
-const DEFAULT_MAX_EQUIPMENT_LEVEL = 50;
-
-/** 强化消耗配置 */
-const DEFAULT_ENHANCE_COST_RULES: Record<number, UpgradeCostRule> = {
-  0: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 5, countPerLevel: 2 },
-  1: { itemId: 'ITEM_EQUIPMENT_STONE', baseCount: 10, countPerLevel: 5 },
-  2: { itemId: 'ITEM_GOLD', baseCount: 1000, countPerLevel: 500 },
-  3: { itemId: 'ITEM_GOLD', baseCount: 2000, countPerLevel: 1000 },
-};
-
-/** 最大强化等级 */
-const DEFAULT_MAX_ENHANCE_LEVEL = 20;
-
-/**
- * 分解返还比例。
- *
- * key: 品质, value: 返还比例（0~1）
- */
-const DECOMPOSE_RETURN_RATIO: Record<number, number> = {
-  0: 0.3,
-  1: 0.5,
-  2: 0.7,
-  3: 0.9,
+const QUALITY_CONFIG_KEYS: Record<number, string> = {
+  0: 'Common',
+  1: 'Rare',
+  2: 'Epic',
+  3: 'Legendary',
 };
 
 // ==================== 单例 ====================
@@ -105,6 +73,9 @@ export class EquipmentConfigRepository {
 
   /** 是否已加载 */
   private _loaded: boolean = false;
+
+  /** 装备成长配置。缺失时升级/强化安全阻断。 */
+  private _growthConfig: EquipmentGrowthConfigData | null = null;
 
   /** 允许的槽位列表（可由外部注入） */
   private _allowedSlotIds: EquipmentSlotId[] = [...CORE_SLOT_IDS];
@@ -140,9 +111,14 @@ export class EquipmentConfigRepository {
           this._configIdToItemIdMap.set(entry.id, itemId);
         }
 
+        this._growthConfig = eqData.growth ?? null;
+        if (!this._growthConfig) {
+          console.error('[EquipmentConfigRepository] equipment growth config missing');
+        }
+
         this._configVersion = `${eqData.version}`;
         console.log(
-          `[EquipmentConfigRepository] Loaded ${eqData.data.length} equipment configs, version=${this._configVersion}`,
+          `[EquipmentConfigRepository] Loaded ${eqData.data.length} equipment configs, version=${this._configVersion}, growth=${this._growthConfig ? 'ready' : 'missing'}`,
         );
       }
 
@@ -249,19 +225,9 @@ export class EquipmentConfigRepository {
       return [];
     }
 
-    const quality = config.quality ?? 0;
-    const rule = DEFAULT_UPGRADE_COST_RULES[quality] ?? DEFAULT_UPGRADE_COST_RULES[0];
-    if (!rule) {
-      return [];
-    }
-
-    // 计算总消耗
-    let totalCount = 0;
-    for (let lv = fromLevel; lv < toLevel; lv++) {
-      totalCount += rule.baseCount + lv * rule.countPerLevel;
-    }
-
-    return totalCount > 0 ? [{ itemId: rule.itemId, count: totalCount }] : [];
+    const qualityKey = this._getQualityConfigKey(config.quality);
+    const rules = this._growthConfig?.upgradeCostRules[qualityKey] ?? [];
+    return this._calculateGrowthCosts(rules, fromLevel, toLevel);
   }
 
   /**
@@ -282,18 +248,9 @@ export class EquipmentConfigRepository {
       return [];
     }
 
-    const quality = config.quality ?? 0;
-    const rule = DEFAULT_ENHANCE_COST_RULES[quality] ?? DEFAULT_ENHANCE_COST_RULES[0];
-    if (!rule) {
-      return [];
-    }
-
-    let totalCount = 0;
-    for (let lv = fromEnhanceLv; lv < toEnhanceLv; lv++) {
-      totalCount += rule.baseCount + lv * rule.countPerLevel;
-    }
-
-    return totalCount > 0 ? [{ itemId: rule.itemId, count: totalCount }] : [];
+    const qualityKey = this._getQualityConfigKey(config.quality);
+    const rules = this._growthConfig?.enhanceCostRules[qualityKey] ?? [];
+    return this._calculateGrowthCosts(rules, fromEnhanceLv, toEnhanceLv);
   }
 
   /**
@@ -320,21 +277,14 @@ export class EquipmentConfigRepository {
     }
 
     // 计算升级消耗返还（按品质比例）
-    const ratio = DECOMPOSE_RETURN_RATIO[quality] ?? 0.3;
-    const upgradeRule = DEFAULT_UPGRADE_COST_RULES[quality] ?? DEFAULT_UPGRADE_COST_RULES[0];
-    if (!upgradeRule) {
-      return [];
-    }
-
-    // 总计升级到当前等级的成本
-    let totalUpgradeCost = 0;
-    for (let lv = 1; lv < level; lv++) {
-      totalUpgradeCost += upgradeRule.baseCount + lv * upgradeRule.countPerLevel;
-    }
-
-    const returnCount = Math.floor(totalUpgradeCost * ratio);
+    const qualityKey = this._getQualityConfigKey(quality);
+    const ratio = this._growthConfig?.decomposeStoneReturnRatio[qualityKey] ?? 0;
+    const rules = this._growthConfig?.upgradeCostRules[qualityKey] ?? [];
+    const stoneCost = this._calculateGrowthCosts(rules, 1, level)
+      .find((entry) => entry.itemId === 'ITEM_EQUIPMENT_STONE')?.count ?? 0;
+    const returnCount = Math.floor(stoneCost * ratio);
     return returnCount > 0
-      ? [{ itemId: upgradeRule.itemId, count: returnCount }]
+      ? [{ itemId: 'ITEM_EQUIPMENT_STONE', count: returnCount }]
       : [];
   }
 
@@ -342,12 +292,12 @@ export class EquipmentConfigRepository {
 
   /** 获取最大装备等级 */
   getMaxLevel(): number {
-    return DEFAULT_MAX_EQUIPMENT_LEVEL;
+    return this._growthConfig?.maxLevel ?? 0;
   }
 
   /** 获取最大强化等级 */
   getMaxEnhanceLevel(): number {
-    return DEFAULT_MAX_ENHANCE_LEVEL;
+    return this._growthConfig?.maxEnhanceLevel ?? 0;
   }
 
   /** 品质对应的战力倍率 */
@@ -391,5 +341,33 @@ export class EquipmentConfigRepository {
     const type = (equipmentType ?? parts[0] ?? 'UNKNOWN').toUpperCase();
     const num = parts[1] ?? '001';
     return `ITEM_EQ_${type}_${num}`;
+  }
+
+  /** 同时兼容历史数值品质和 JSON 中的字符串品质。 */
+  private _getQualityConfigKey(quality: unknown): string {
+    if (typeof quality === 'string' && quality.length > 0) {
+      return quality;
+    }
+    return QUALITY_CONFIG_KEYS[Number(quality)] ?? QUALITY_CONFIG_KEYS[0];
+  }
+
+  /** 按等级区间汇总多种资源成本。 */
+  private _calculateGrowthCosts(
+    rules: EquipmentGrowthCostRuleData[],
+    fromLevel: number,
+    toLevel: number,
+  ): CostEntry[] {
+    const totals = new Map<string, number>();
+    for (let level = fromLevel; level < toLevel; level++) {
+      for (const rule of rules) {
+        if (level < rule.startLevel) continue;
+        const count = Math.floor(
+          rule.baseCount + (level - rule.startLevel) * rule.countPerLevel,
+        );
+        if (count <= 0) continue;
+        totals.set(rule.itemId, (totals.get(rule.itemId) ?? 0) + count);
+      }
+    }
+    return Array.from(totals, ([itemId, count]) => ({ itemId, count }));
   }
 }

@@ -21,6 +21,8 @@ export interface GlobalPlayerEntry {
   initialGold: number;
   /** 初始钻石 */
   initialDiamond: number;
+  /** 初始装备强化石（Inventory 一次性发放） */
+  initialEquipmentStone: number;
   /** 初始体力 */
   initialStamina: number;
   /** 体力上限 */

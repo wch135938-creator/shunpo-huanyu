@@ -7,6 +7,7 @@
       "initialLevel": 1,
       "initialGold": 1000,
       "initialDiamond": 50,
+      "initialEquipmentStone": 60,
       "initialStamina": 50,
       "maxStamina": 120,
       "staminaRecoverIntervalMs": 300000,

@@ -168,13 +168,13 @@ export function buildCurrencyIndex(stackItems: StackItem[]): CurrencyIndex {
   for (const item of stackItems) {
     switch (item.itemId) {
       case 'ITEM_GOLD':
-        index.gold = item.count;
+        index.gold += item.count;
         break;
       case 'ITEM_SPIRIT_STONE':
-        index.spiritStone = item.count;
+        index.spiritStone += item.count;
         break;
       case 'ITEM_DIAMOND':
-        index.diamond = item.count;
+        index.diamond += item.count;
         break;
     }
   }
