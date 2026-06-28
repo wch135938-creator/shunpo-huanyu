@@ -7,6 +7,7 @@ import { BaseManager } from '../core/BaseManager';
 import { EventManager } from '../core/EventManager';
 import { SaveManager } from '../save/SaveManager';
 import type { SaveContainerV8 } from '../save/SaveContainerV8';
+import { InventoryService } from '../inventory/InventoryService';
 import { Phase8Bootstrap } from '../systems/Phase8Bootstrap';
 import type { LiveOpsManager } from '../systems/LiveOpsManager';
 import { OperationsConfigRepository } from './OperationsConfigRepository';
@@ -73,12 +74,18 @@ export class LoginRewardService extends BaseManager {
     const now = this._now();
     const accountData = this._getAccountData(data);
     const dateKey = buildDateKey(now, config.login.timezoneOffsetMinutes);
-    const rewardDay = (accountData.totalClaimDays % config.login.rewards.length) + 1;
+    const existingRecord = accountData.claimsByDate[dateKey];
+    const rewardDay = existingRecord?.rewardDay
+      ?? (accountData.totalClaimDays % config.login.rewards.length) + 1;
     const rewardConfig = config.login.rewards.find((entry) => entry.day === rewardDay);
     const liveOpsConfig = this._liveOpsManager?.getConfig(config.login.liveOpsEventId);
+    const transactionId = buildLoginTransactionId(this._accountId, dateKey);
+    const inventory = InventoryService.getInstance();
+    if (!inventory.isInitialized()) inventory.initialize();
     return {
       active: !!liveOpsConfig && now >= liveOpsConfig.startTime && now <= liveOpsConfig.endTime,
-      claimed: !!accountData.claimsByDate[dateKey],
+      claimed: !!accountData.claimsByDate[dateKey]
+        && inventory.isTransactionClaimed(transactionId),
       dateKey,
       rewardDay,
       rewards: rewardConfig?.rewards.map((reward) => ({ ...reward })) ?? [],
@@ -115,8 +122,9 @@ export class LoginRewardService extends BaseManager {
       claimedAt: this._now(),
       transactionId,
     };
+    const hadRecord = !!accountData.claimsByDate[status.dateKey];
     accountData.claimsByDate[status.dateKey] = record;
-    accountData.totalClaimDays += 1;
+    if (!hadRecord) accountData.totalClaimDays += 1;
     accountData.lastClaimDate = status.dateKey;
     this._saveManager.markDirty();
     this._eventManager.emit(LoginRewardEvent.CLAIMED, record);

@@ -80,15 +80,18 @@ const createMailBody = mailService.slice(
 );
 check(!createMailBody.includes('grantOperationsRewards'), '创建邮件时不得发奖');
 check(mailService.includes('buildMailClaimTransactionId'), '邮件领取缺少稳定事务 ID');
+check(mailService.includes('inventory.isTransactionClaimed(transactionId)'), '邮件幂等必须核对资产真相源');
 
 const redeemService = read('assets/scripts/operations/RedeemCodeService.ts');
 check(redeemService.includes('attachments: []'), '兑换回执必须无附件');
 check(!redeemService.includes('console.log(input'), '日志不得输出完整兑换码');
 check(!redeemService.includes('console.warn(input'), '警告日志不得输出完整兑换码');
+check(redeemService.includes('inventory.isTransactionClaimed(transactionId)'), '兑换幂等必须核对资产真相源');
 
 const loginService = read('assets/scripts/operations/LoginRewardService.ts');
 check(loginService.includes('Phase8Bootstrap.getInstance()'), '登录奖励必须复用既有 LiveOpsManager');
 check(!loginService.includes('new LiveOpsManager'), '禁止创建第二套 LiveOpsManager');
+check(loginService.includes('inventory.isTransactionClaimed(transactionId)'), '登录幂等必须核对资产真相源');
 
 for (const relativePath of [
   'assets/scripts/operations/MailService.ts',

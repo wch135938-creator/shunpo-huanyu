@@ -7,6 +7,7 @@ import { BaseManager } from '../core/BaseManager';
 import { EventManager } from '../core/EventManager';
 import { SaveManager } from '../save/SaveManager';
 import type { SaveContainerV8 } from '../save/SaveContainerV8';
+import { InventoryService } from '../inventory/InventoryService';
 import { MailService } from './MailService';
 import {
   normalizeRedeemCode,
@@ -85,7 +86,9 @@ export class RedeemCodeService extends BaseManager {
     const data = this._requireData();
     const recordKey = buildRedeemRecordKey(this._accountId, codeConfig.id);
     const existing = data.redeemData.records[recordKey];
-    if (existing) {
+    const inventory = InventoryService.getInstance();
+    if (!inventory.isInitialized()) inventory.initialize();
+    if (existing && inventory.isTransactionClaimed(transactionId)) {
       return { success: true, isDuplicate: true, code: 'duplicate', transactionId };
     }
 

@@ -7,6 +7,7 @@ import { BaseManager } from '../core/BaseManager';
 import { EventManager } from '../core/EventManager';
 import { SaveManager } from '../save/SaveManager';
 import type { SaveContainerV8 } from '../save/SaveContainerV8';
+import { InventoryService } from '../inventory/InventoryService';
 import { OperationsConfigRepository } from './OperationsConfigRepository';
 import { ensureOperationsSaveData } from './OperationsSaveData';
 import {
@@ -130,7 +131,9 @@ export class MailService extends BaseManager {
       return { success: false, isDuplicate: false, code: 'expired', transactionId };
     }
 
-    if (mail.claimedAt > 0) {
+    const inventory = InventoryService.getInstance();
+    if (!inventory.isInitialized()) inventory.initialize();
+    if (mail.claimedAt > 0 && inventory.isTransactionClaimed(transactionId)) {
       return { success: true, isDuplicate: true, code: 'duplicate', transactionId };
     }
 
@@ -178,7 +181,12 @@ export class MailService extends BaseManager {
     const maxMessages = config?.mail.maxMessages ?? Number.MAX_SAFE_INTEGER;
     const data = this._requireData();
     const ordered = [...data.mailData.messages].sort((a, b) => b.createdAt - a.createdAt);
-    const protectedMails = ordered.filter((mail) => mail.attachments.length > 0 && mail.claimedAt <= 0);
+    const now = this._now();
+    const protectedMails = ordered.filter((mail) => (
+      mail.attachments.length > 0
+      && mail.claimedAt <= 0
+      && (mail.expiresAt <= 0 || now <= mail.expiresAt)
+    ));
     const removableMails = ordered.filter((mail) => !protectedMails.includes(mail));
     const remainingCapacity = Math.max(0, maxMessages - protectedMails.length);
     data.mailData.messages = [...protectedMails, ...removableMails.slice(0, remainingCapacity)]
