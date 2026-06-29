@@ -75,6 +75,7 @@ export class EquipmentItemView extends Component {
 
   onLoad(): void {
     this._recoverBindings();
+    this._applyReadableTypography();
 
     if (this.clickButton) {
       this.clickButton.node.on(Button.EventType.CLICK, this._handleClick, this);
@@ -144,6 +145,9 @@ export class EquipmentItemView extends Component {
 
   private _refreshUI(): void {
     if (!this._viewModel) return;
+
+    this._recoverBindings();
+    this._applyReadableTypography();
 
     const vm = this._viewModel;
     const colorHex = QUALITY_COLOR_BY_NUM[vm.quality] ?? '#9CA3AF';
@@ -219,6 +223,22 @@ export class EquipmentItemView extends Component {
     if (!this.equippedLabel) this.equippedLabel = this._findNode('equippedLabel')?.getComponent(Label) ?? null;
     if (!this.clickButton) this.clickButton = this._findNode('clickButton')?.getComponent(Button) ?? null;
     if (!this.bgNode) this.bgNode = this._findNode('bgNode');
+  }
+
+  private _applyReadableTypography(): void {
+    this._setReadableLabel(this.nameLabel, 26, 34);
+    this._setReadableLabel(this.qualityLabel, 20, 28);
+    this._setReadableLabel(this.statsLabel, 18, 26);
+    this._setReadableLabel(this.powerLabel, 18, 26);
+    this._setReadableLabel(this.equippedLabel, 18, 26);
+  }
+
+  private _setReadableLabel(label: Label | null, fontSize: number, lineHeight: number): void {
+    if (!label) return;
+    label.fontSize = fontSize;
+    label.lineHeight = lineHeight;
+    label.enableWrapText = false;
+    label.overflow = Label.Overflow.SHRINK;
   }
 
   private _findNode(name: string, root: Node = this.node): Node | null {

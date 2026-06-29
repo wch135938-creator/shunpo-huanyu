@@ -211,6 +211,7 @@ export class EquipmentBagPanel extends BasePanel {
 
     // 1. 恢复节点引用
     this._recoverBindings();
+    this._applyReadableTypography();
 
     // 2. 注册按钮事件（核心修复）
     this._bindEvents();
@@ -466,6 +467,32 @@ export class EquipmentBagPanel extends BasePanel {
     if (!this.qualityLegendaryBtn) this.qualityLegendaryBtn = this._findNode('qualityLegendaryBtn')?.getComponent(Button) ?? null;
     if (!this.closeButton) this.closeButton = this._findNode('closeButton')?.getComponent(Button) ?? null;
     if (!this.emptyHintNode) this.emptyHintNode = this._findNode('emptyHintNode');
+  }
+
+  /** 背包筛选区在 720×1280 设计分辨率下的可读字号。 */
+  private _applyReadableTypography(): void {
+    this._setReadableLabel(this.filterHintLabel, 20, 28);
+
+    for (const button of [
+      this.typeAllBtn,
+      this.typeWeaponBtn,
+      this.typeArmorBtn,
+      this.typeAccessoryBtn,
+      this.qualityAllBtn,
+      this.qualityCommonBtn,
+      this.qualityRareBtn,
+      this.qualityEpicBtn,
+      this.qualityLegendaryBtn,
+    ]) {
+      this._setReadableLabel(button?.node.getComponent(Label) ?? null, 20, 28);
+    }
+  }
+
+  private _setReadableLabel(label: Label | null, fontSize: number, lineHeight: number): void {
+    if (!label) return;
+    label.fontSize = fontSize;
+    label.lineHeight = lineHeight;
+    label.overflow = Label.Overflow.SHRINK;
   }
 
   private _findNode(name: string, root: Node = this.node): Node | null {

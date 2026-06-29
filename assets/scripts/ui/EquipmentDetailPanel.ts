@@ -16,6 +16,7 @@ import type { EquipmentUIPresenter, EquipmentDetailViewModel } from './Equipment
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
 import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
 import { SLOT_NAME_MAP, EquipmentOperationError } from '../equipment/EquipmentTypes';
+import { EquipmentResourceBar } from './EquipmentResourceBar';
 
 const { ccclass, property } = _decorator;
 
@@ -130,6 +131,7 @@ export class EquipmentDetailPanel extends BasePanel {
   private _pendingAction: PendingAction | null = null;
   private _currentPreview: 'upgrade' | 'enhance' | null = null;
   private _feedbackLabel: Label | null = null;
+  private _resourceBar: EquipmentResourceBar | null = null;
 
   /** 一次性初始化标记 — 解决 inactive prefab 节点 onLoad 不执行的问题 */
   private _initialized = false;
@@ -156,6 +158,8 @@ export class EquipmentDetailPanel extends BasePanel {
   /** 设置 Presenter 引用 */
   setPresenter(presenter: EquipmentUIPresenter): void {
     this._presenter = presenter;
+    this._ensureResourceBar();
+    this._refreshResourceBar();
   }
 
   /**
@@ -208,6 +212,7 @@ export class EquipmentDetailPanel extends BasePanel {
     // 1. 恢复节点引用
     this._recoverBindings();
     this._ensureRuntimeControls();
+    this._applyReadableTypography();
 
     // 2. 注册按钮事件（核心修复）
     this._bindEvents();
@@ -309,6 +314,8 @@ export class EquipmentDetailPanel extends BasePanel {
 
     // 操作按钮可见性
     this._renderButtons();
+
+    this._refreshResourceBar();
 
     // 预览区域（默认隐藏）
     this._renderPreview();
@@ -436,6 +443,7 @@ export class EquipmentDetailPanel extends BasePanel {
       return;
     }
     this._pendingAction = { type: 'upgrade', uniqueId: dvm.equipment.uniqueId };
+    this._refreshResourceBar();
 
     const powerDelta = dvm.upgradePowerAfter - dvm.currentPower;
     const sign = powerDelta >= 0 ? '+' : '';
@@ -465,6 +473,7 @@ export class EquipmentDetailPanel extends BasePanel {
       return;
     }
     this._pendingAction = { type: 'enhance', uniqueId: dvm.equipment.uniqueId };
+    this._refreshResourceBar();
 
     const powerDelta = dvm.enhancePowerAfter - dvm.currentPower;
     const sign = powerDelta >= 0 ? '+' : '';
@@ -799,6 +808,36 @@ export class EquipmentDetailPanel extends BasePanel {
     }
   }
 
+  /** 720×1280 设计分辨率下的详情页可读字号。 */
+  private _applyReadableTypography(): void {
+    this._setReadableLabel(this.nameLabel, 30, 38);
+    this._setReadableLabel(this.qualityLabel, 22, 30);
+    this._setReadableLabel(this.levelLabel, 22, 30);
+    this._setReadableLabel(this.enhanceLevelLabel, 22, 30);
+    this._setReadableLabel(this.powerLabel, 24, 32);
+    this._setReadableLabel(this.hpStatLabel, 22, 30);
+    this._setReadableLabel(this.atkStatLabel, 22, 30);
+    this._setReadableLabel(this.defStatLabel, 22, 30);
+    this._setReadableLabel(this.equipStatusLabel, 20, 28);
+
+    for (const button of [
+      this.equipBtn,
+      this.unequipBtn,
+      this.upgradeBtn,
+      this.enhanceBtn,
+      this.decomposeBtn,
+    ]) {
+      this._setReadableLabel(button?.node.getComponent(Label) ?? null, 24, 34);
+    }
+  }
+
+  private _setReadableLabel(label: Label | null, fontSize: number, lineHeight: number): void {
+    if (!label) return;
+    label.fontSize = fontSize;
+    label.lineHeight = lineHeight;
+    label.overflow = Label.Overflow.SHRINK;
+  }
+
   private _resetTransientState(): void {
     if (this.confirmDialog) {
       this.confirmDialog.active = false;
@@ -812,6 +851,7 @@ export class EquipmentDetailPanel extends BasePanel {
     }
     this._pendingAction = null;
     this._currentPreview = null;
+    this._refreshResourceBar();
   }
 
   private _bringToFront(): void {
@@ -865,6 +905,25 @@ export class EquipmentDetailPanel extends BasePanel {
     this._markRuntimeObject(transform);
     transform.setContentSize(width, height);
     return node;
+  }
+
+  private _ensureResourceBar(): void {
+    if (this._resourceBar || !this._presenter) return;
+
+    const panelRoot = this.node.getChildByName('panelRoot');
+    if (!panelRoot) return;
+
+    this._resourceBar = new EquipmentResourceBar(
+      panelRoot,
+      '__EquipmentDetailResourceBar',
+      -25,
+      500,
+      (itemId) => this._presenter?.getAssetCount(itemId) ?? 0,
+    );
+  }
+
+  private _refreshResourceBar(): void {
+    this._resourceBar?.refresh();
   }
 
   private _ensureButtonNode(parent: Node, name: string, width: number, height: number, color: Color): Node {

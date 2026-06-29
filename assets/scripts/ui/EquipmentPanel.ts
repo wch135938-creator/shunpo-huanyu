@@ -18,6 +18,7 @@ import type { SlotViewModel } from '../equipment/EquipmentInventoryView';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
 import { EquipmentSlotItem, type SlotClickCallback } from './EquipmentSlotItem';
 import type { EquipmentUIPresenter } from './EquipmentUIPresenter';
+import { EquipmentResourceBar } from './EquipmentResourceBar';
 
 const { ccclass, property } = _decorator;
 
@@ -74,6 +75,7 @@ private _flushInitialData() {
 
   private _currentHeroId: string = '';
   private _presenter: EquipmentUIPresenter | null = null;
+  private _resourceBar: EquipmentResourceBar | null = null;
 
   /** 动态创建的 SlotItem 列表 */
   private _slotItems: EquipmentSlotItem[] = [];
@@ -104,6 +106,8 @@ private _flushInitialData() {
   /** 设置 Presenter 引用 */
   setPresenter(presenter: EquipmentUIPresenter): void {
     this._presenter = presenter;
+    this._ensureResourceBar();
+    this._resourceBar?.refresh();
   }
 
   /** 设置打开背包回调 */
@@ -162,6 +166,7 @@ private _flushInitialData() {
     this._renderSlots(heroView.slots);
     this._renderAttributeBonus(heroView.slots);
     this._renderPower(heroView.totalEquipmentPower);
+    this._resourceBar?.refresh();
   }
 
   // ==================== 槽位渲染（动态） ====================
@@ -310,6 +315,7 @@ private _flushInitialData() {
     // =========================
     this._recoverBindings();
     this._ensureVisualBlocks();
+    this._ensureResourceBar();
     this._ensureSlotItemPrefabLoaded();
 
     // =========================
@@ -357,6 +363,18 @@ private _flushInitialData() {
     if (this.closeButton) {
       this._ensureBlock(this.closeButton.node, '__CloseButtonBg', 80, 56, new Color(70, 85, 110, 255));
     }
+  }
+
+  private _ensureResourceBar(): void {
+    if (this._resourceBar || !this.panelRoot || !this._presenter) return;
+
+    this._resourceBar = new EquipmentResourceBar(
+      this.panelRoot,
+      '__EquipmentResourceBar',
+      -30,
+      600,
+      (itemId) => this._presenter?.getAssetCount(itemId) ?? 0,
+    );
   }
 
   private _recoverBindings(): void {

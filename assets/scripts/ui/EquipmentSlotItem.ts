@@ -256,21 +256,21 @@ export class EquipmentSlotItem extends Component {
   }
 
   private _applyCompactLayout(): void {
-    this._setNodeSize(this.node, 120, 120);
-    this._setNodeSize(this.borderNode, 120, 120);
-    this._setNodeSize(this.clickButton?.node ?? null, 120, 120);
+    this._setNodeSize(this.node, 160, 150);
+    this._setNodeSize(this.borderNode, 160, 150);
+    this._setNodeSize(this.clickButton?.node ?? null, 160, 150);
 
-    this.iconNode?.setPosition(0, 28, 0);
-    this._setNodeSize(this.iconNode, 48, 48);
+    this.iconNode?.setPosition(0, 34, 0);
+    this._setNodeSize(this.iconNode, 56, 56);
 
-    this.slotNameLabel?.node.setPosition(0, -10, 0);
-    this._setLabelStyle(this.slotNameLabel, 13, 18, 100, 20);
+    this.slotNameLabel?.node.setPosition(0, -8, 0);
+    this._setLabelStyle(this.slotNameLabel, 17, 22, 140, 24);
 
-    this.equipmentNameLabel?.node.setPosition(0, -32, 0);
-    this._setLabelStyle(this.equipmentNameLabel, 15, 20, 112, 22);
+    this.equipmentNameLabel?.node.setPosition(0, -36, 0);
+    this._setLabelStyle(this.equipmentNameLabel, 21, 26, 150, 28);
 
-    this.statsLabel?.node.setPosition(0, -52, 0);
-    this._setLabelStyle(this.statsLabel, 12, 16, 116, 18);
+    this.statsLabel?.node.setPosition(0, -62, 0);
+    this._setLabelStyle(this.statsLabel, 15, 20, 154, 22);
 
     if (this.qualityLabel) this.qualityLabel.node.active = false;
     if (this.powerLabel) this.powerLabel.node.active = false;
