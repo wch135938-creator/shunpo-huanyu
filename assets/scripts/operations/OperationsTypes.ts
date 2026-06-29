@@ -116,6 +116,9 @@ export interface LoginRewardDayConfig {
 }
 
 export interface OperationsUITextConfig {
+  menuMail: string;
+  menuRedeem: string;
+  menuLogin: string;
   mailTitle: string;
   mailEmpty: string;
   mailClaim: string;
@@ -125,6 +128,8 @@ export interface OperationsUITextConfig {
   mailSenderFormat: string;
   mailPageFormat: string;
   mailNoAttachment: string;
+  mailPrevious: string;
+  mailNext: string;
   redeemTitle: string;
   redeemPlaceholder: string;
   redeemSubmit: string;

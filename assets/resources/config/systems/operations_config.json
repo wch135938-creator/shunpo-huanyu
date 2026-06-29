@@ -53,6 +53,9 @@
     ]
   },
   "ui": {
+    "menuMail": "邮箱",
+    "menuRedeem": "兑换码",
+    "menuLogin": "登录奖励",
     "mailTitle": "寰宇邮箱",
     "mailEmpty": "暂无邮件",
     "mailClaim": "领取附件",
@@ -62,6 +65,8 @@
     "mailSenderFormat": "发件人：{sender}",
     "mailPageFormat": "{current} / {total}",
     "mailNoAttachment": "本邮件无附件",
+    "mailPrevious": "上一封",
+    "mailNext": "下一封",
     "redeemTitle": "兑换码",
     "redeemPlaceholder": "请输入兑换码",
     "redeemSubmit": "立即兑换",

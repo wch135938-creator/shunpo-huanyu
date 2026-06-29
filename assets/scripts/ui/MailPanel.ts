@@ -23,7 +23,9 @@ export class MailPanel extends BasePanel {
   @property(Label) pageLabel: Label | null = null;
   @property(Label) resultLabel: Label | null = null;
   @property(Button) previousButton: Button | null = null;
+  @property(Label) previousButtonLabel: Label | null = null;
   @property(Button) nextButton: Button | null = null;
+  @property(Label) nextButtonLabel: Label | null = null;
   @property(Button) claimButton: Button | null = null;
   @property(Label) claimButtonLabel: Label | null = null;
   @property(Button) closeButton: Button | null = null;
@@ -76,6 +78,8 @@ export class MailPanel extends BasePanel {
     const ui = this._getUIConfig();
     if (!ui) return;
     if (this.titleLabel) this.titleLabel.string = ui.mailTitle;
+    if (this.previousButtonLabel) this.previousButtonLabel.string = ui.mailPrevious;
+    if (this.nextButtonLabel) this.nextButtonLabel.string = ui.mailNext;
     if (this.closeButtonLabel) this.closeButtonLabel.string = ui.close;
 
     const mail = this._messages[this._selectedIndex];
