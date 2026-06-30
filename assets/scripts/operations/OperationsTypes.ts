@@ -138,6 +138,8 @@ export interface OperationsUITextConfig {
   redeemInvalid: string;
   redeemInactive: string;
   redeemServerRequired: string;
+  redeemRewardTitle: string;
+  redeemRewardConfirm: string;
   loginTitle: string;
   loginClaim: string;
   loginClaimed: string;

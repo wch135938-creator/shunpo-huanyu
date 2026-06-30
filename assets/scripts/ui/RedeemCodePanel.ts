@@ -2,11 +2,19 @@
 // RedeemCodePanel.ts — 兑换码输入与结果反馈 UI
 // ============================================================
 
-import { _decorator, Button, EditBox, Label } from 'cc';
+import { _decorator, Button, EditBox, Label, Node } from 'cc';
 import { BasePanel } from '../core/BasePanel';
-import { OperationsConfigRepository } from '../operations/OperationsConfigRepository';
+import {
+  normalizeRedeemCode,
+  OperationsConfigRepository,
+} from '../operations/OperationsConfigRepository';
 import { RedeemCodeService } from '../operations/RedeemCodeService';
-import type { OperationsResultCode, OperationsUITextConfig } from '../operations/OperationsTypes';
+import type {
+  OperationsResultCode,
+  OperationsRewardConfig,
+  OperationsUITextConfig,
+} from '../operations/OperationsTypes';
+import { formatOperationsRewards } from './OperationsUIFormatter';
 
 const { ccclass, property } = _decorator;
 
@@ -19,6 +27,11 @@ export class RedeemCodePanel extends BasePanel {
   @property(Label) resultLabel: Label | null = null;
   @property(Button) closeButton: Button | null = null;
   @property(Label) closeButtonLabel: Label | null = null;
+  @property(Node) rewardPopupRoot: Node | null = null;
+  @property(Label) rewardPopupTitleLabel: Label | null = null;
+  @property(Label) rewardPopupItemsLabel: Label | null = null;
+  @property(Button) rewardPopupConfirmButton: Button | null = null;
+  @property(Label) rewardPopupConfirmButtonLabel: Label | null = null;
 
   private _service = RedeemCodeService.getInstance();
   private _configRepository = OperationsConfigRepository.getInstance();
@@ -29,6 +42,11 @@ export class RedeemCodePanel extends BasePanel {
     console.log('[SOP-UI-01] PREFAB_INIT:', this.node.name);
     this.submitButton?.node.on(Button.EventType.CLICK, this._submit, this);
     this.closeButton?.node.on(Button.EventType.CLICK, this._closePanel, this);
+    this.rewardPopupConfirmButton?.node.on(
+      Button.EventType.CLICK,
+      this._hideRewardPopup,
+      this,
+    );
   }
 
   async open(): Promise<void> {
@@ -41,12 +59,18 @@ export class RedeemCodePanel extends BasePanel {
       if (this.closeButtonLabel) this.closeButtonLabel.string = ui.close;
     }
     if (this.resultLabel) this.resultLabel.string = '';
+    this._hideRewardPopup();
     this.show();
   }
 
   onDestroy(): void {
     this.submitButton?.node.off(Button.EventType.CLICK, this._submit, this);
     this.closeButton?.node.off(Button.EventType.CLICK, this._closePanel, this);
+    this.rewardPopupConfirmButton?.node.off(
+      Button.EventType.CLICK,
+      this._hideRewardPopup,
+      this,
+    );
     super.onDestroy();
   }
 
@@ -58,9 +82,14 @@ export class RedeemCodePanel extends BasePanel {
     this._submitting = true;
     if (this.submitButton) this.submitButton.interactable = false;
     try {
-      const result = await this._service.redeem(this.codeInput?.string ?? '');
+      const input = this.codeInput?.string ?? '';
+      const rewardConfig = this._configRepository.findRedeemCode(normalizeRedeemCode(input));
+      const result = await this._service.redeem(input);
       if (this.resultLabel) this.resultLabel.string = this._resultText(result.code, ui);
-      if (result.success && !result.isDuplicate && this.codeInput) this.codeInput.string = '';
+      if (result.success && !result.isDuplicate) {
+        if (rewardConfig) this._showRewardPopup(rewardConfig.rewards, ui);
+        if (this.codeInput) this.codeInput.string = '';
+      }
     } finally {
       this._submitting = false;
       if (this.submitButton) this.submitButton.interactable = true;
@@ -80,7 +109,27 @@ export class RedeemCodePanel extends BasePanel {
   }
 
   private _closePanel(): void {
+    this._hideRewardPopup();
     this.hide();
+  }
+
+  private _showRewardPopup(
+    rewards: OperationsRewardConfig[],
+    ui: OperationsUITextConfig,
+  ): void {
+    if (this.rewardPopupTitleLabel) this.rewardPopupTitleLabel.string = ui.redeemRewardTitle;
+    if (this.rewardPopupItemsLabel) {
+      this.rewardPopupItemsLabel.string = formatOperationsRewards(rewards, ui.itemNames);
+    }
+    if (this.rewardPopupConfirmButtonLabel) {
+      this.rewardPopupConfirmButtonLabel.string = ui.redeemRewardConfirm;
+    }
+    if (this.rewardPopupRoot) this.rewardPopupRoot.active = true;
+    this.markLayoutDirty('RUNTIME_UPDATE');
+  }
+
+  private _hideRewardPopup(): void {
+    if (this.rewardPopupRoot) this.rewardPopupRoot.active = false;
   }
 
   private _getUIConfig(): OperationsUITextConfig | null {

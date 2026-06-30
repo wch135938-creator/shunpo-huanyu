@@ -75,6 +75,8 @@
     "redeemInvalid": "兑换码无效",
     "redeemInactive": "兑换码尚未生效或已过期",
     "redeemServerRequired": "当前版本需联网校验兑换码",
+    "redeemRewardTitle": "恭喜获得",
+    "redeemRewardConfirm": "收下奖励",
     "loginTitle": "每日登录奖励",
     "loginClaim": "领取今日奖励",
     "loginClaimed": "今日已领取",

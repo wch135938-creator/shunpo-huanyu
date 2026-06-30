@@ -191,7 +191,7 @@ function addButton(parentIndex, name, x, y, width, height, background = color(70
 
 function addPanelRoot(name, width, height) {
   const node = makeNode(name, uiRootIndex, 0, 0, width, height, false);
-  addBackdrop(node.node, name, color(20, 22, 34, 250), 24);
+  addBackdrop(node.node, name, color(20, 22, 34, 255), 0);
   addComponent(node.node, 'cc.BlockInputEvents', `block:${name}`);
   return node;
 }
@@ -211,6 +211,10 @@ function addEditBox(parentIndex, name, x, y, width, height) {
     '',
     color(150, 155, 170, 255),
   );
+  objects[text.transform]._anchorPoint = { __type__: 'cc.Vec2', x: 0, y: 1 };
+  objects[placeholder.transform]._anchorPoint = { __type__: 'cc.Vec2', x: 0, y: 1 };
+  objects[text.label]._horizontalAlign = 0;
+  objects[placeholder.label]._horizontalAlign = 0;
   objects[text.node]._active = false;
   const editBox = addComponent(node.node, 'cc.EditBox', `editbox:${name}`, {
     editingDidBegan: [],
@@ -237,7 +241,7 @@ const redeemMenuButton = addButton(menu.node, 'RedeemEntryButton', 0, 0, 190, 80
 const loginMenuButton = addButton(menu.node, 'LoginEntryButton', 220, 0, 190, 80, color(130, 96, 54));
 
 // 邮箱面板
-const mailPanel = addPanelRoot('MailPanel', 680, 1100);
+const mailPanel = addPanelRoot('MailPanel', 720, 1280);
 const mailTitle = addLabel(mailPanel.node, 'titleLabel', 0, 490, 480, 60, 34, '', color(255, 214, 102));
 const mailSubject = addLabel(mailPanel.node, 'mailTitleLabel', 0, 410, 560, 60, 30);
 const mailSender = addLabel(mailPanel.node, 'senderLabel', 0, 350, 560, 50, 24, '', color(180, 190, 210));
@@ -268,12 +272,46 @@ const mailComponent = addComponent(mailPanel.node, scriptTypes.mail, 'panel:mail
 });
 
 // 兑换码面板
-const redeemPanel = addPanelRoot('RedeemCodePanel', 620, 620);
+const redeemPanel = addPanelRoot('RedeemCodePanel', 720, 1280);
 const redeemTitle = addLabel(redeemPanel.node, 'titleLabel', 0, 225, 440, 60, 34, '', color(255, 214, 102));
 const codeInput = addEditBox(redeemPanel.node, 'codeInput', 0, 80, 500, 90);
 const redeemResult = addLabel(redeemPanel.node, 'resultLabel', 0, -45, 500, 70, 24, '', color(255, 214, 102));
 const submitRedeem = addButton(redeemPanel.node, 'submitButton', 0, -175, 260, 80, color(100, 78, 130));
 const closeRedeem = addButton(redeemPanel.node, 'closeButton', 260, 255, 70, 70, color(118, 58, 66));
+const redeemRewardPopup = makeNode('rewardPopupRoot', redeemPanel.node, 0, 0, 560, 360, false);
+addBackdrop(redeemRewardPopup.node, 'rewardPopupRoot', color(32, 37, 52, 255), 20);
+addComponent(redeemRewardPopup.node, 'cc.BlockInputEvents', 'block:rewardPopupRoot');
+const redeemRewardTitle = addLabel(
+  redeemRewardPopup.node,
+  'rewardPopupTitleLabel',
+  0,
+  105,
+  420,
+  60,
+  32,
+  '',
+  color(255, 214, 102),
+);
+const redeemRewardItems = addLabel(
+  redeemRewardPopup.node,
+  'rewardPopupItemsLabel',
+  0,
+  15,
+  440,
+  110,
+  28,
+  '',
+  color(120, 230, 150),
+);
+const redeemRewardConfirm = addButton(
+  redeemRewardPopup.node,
+  'rewardPopupConfirmButton',
+  0,
+  -110,
+  240,
+  80,
+  color(100, 78, 130),
+);
 const redeemComponent = addComponent(redeemPanel.node, scriptTypes.redeem, 'panel:redeem', {
   titleLabel: ref(redeemTitle.label),
   codeInput: ref(codeInput.editBox),
@@ -282,10 +320,15 @@ const redeemComponent = addComponent(redeemPanel.node, scriptTypes.redeem, 'pane
   resultLabel: ref(redeemResult.label),
   closeButton: ref(closeRedeem.button),
   closeButtonLabel: ref(closeRedeem.label),
+  rewardPopupRoot: ref(redeemRewardPopup.node),
+  rewardPopupTitleLabel: ref(redeemRewardTitle.label),
+  rewardPopupItemsLabel: ref(redeemRewardItems.label),
+  rewardPopupConfirmButton: ref(redeemRewardConfirm.button),
+  rewardPopupConfirmButtonLabel: ref(redeemRewardConfirm.label),
 });
 
 // 登录奖励弹窗
-const loginPanel = addPanelRoot('LoginRewardPopup', 620, 720);
+const loginPanel = addPanelRoot('LoginRewardPopup', 720, 1280);
 const loginTitle = addLabel(loginPanel.node, 'titleLabel', 0, 280, 460, 60, 34, '', color(255, 214, 102));
 const loginDay = addLabel(loginPanel.node, 'dayLabel', 0, 170, 400, 60, 30);
 const loginReward = addLabel(loginPanel.node, 'rewardLabel', 0, 25, 480, 160, 28, '', color(120, 230, 150));
