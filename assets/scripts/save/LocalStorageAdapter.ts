@@ -11,6 +11,12 @@ import { ISaveAdapter } from './ISaveAdapter';
 import { SaveContainer } from './SaveContainer';
 import { WxPlatform } from '../core/WxPlatform';
 
+interface BrowserStorageLike {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
 export class LocalStorageAdapter implements ISaveAdapter {
 
   // ==================== 降级存储（非微信环境）====================
@@ -24,6 +30,18 @@ export class LocalStorageAdapter implements ISaveAdapter {
     return WxPlatform.getInstance();
   }
 
+  /** 浏览器 Preview 使用持久化 localStorage；不可用时再退回内存。 */
+  private get _browserStorage(): BrowserStorageLike | null {
+    try {
+      const host = globalThis as typeof globalThis & {
+        localStorage?: BrowserStorageLike;
+      };
+      return host.localStorage ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   // ==================== ISaveAdapter 实现 ====================
 
   write(key: string, data: SaveContainer): boolean {
@@ -33,6 +51,16 @@ export class LocalStorageAdapter implements ISaveAdapter {
       // 优先走微信存储，失败则降级到本地 Map
       if (this._platform.setStorageSync(key, jsonStr)) {
         return true;
+      }
+
+      const browserStorage = this._browserStorage;
+      if (browserStorage) {
+        try {
+          browserStorage.setItem(key, jsonStr);
+          return true;
+        } catch (e) {
+          console.warn(`[LocalStorageAdapter] 浏览器存储写入失败，退回内存: ${key}`, e);
+        }
       }
 
       LocalStorageAdapter._fallbackMap.set(key, jsonStr);
@@ -59,6 +87,15 @@ export class LocalStorageAdapter implements ISaveAdapter {
       }
 
       // 降级：从本地 Map 读取
+      const browserStorage = this._browserStorage;
+      if (!jsonStr && browserStorage) {
+        try {
+          jsonStr = browserStorage.getItem(key);
+        } catch (e) {
+          console.warn(`[LocalStorageAdapter] 浏览器存储读取失败，尝试内存: ${key}`, e);
+        }
+      }
+
       if (!jsonStr) {
         jsonStr = LocalStorageAdapter._fallbackMap.get(key) ?? null;
       }
@@ -75,6 +112,11 @@ export class LocalStorageAdapter implements ISaveAdapter {
   delete(key: string): boolean {
     try {
       this._platform.removeStorageSync(key);
+      try {
+        this._browserStorage?.removeItem(key);
+      } catch (e) {
+        console.warn(`[LocalStorageAdapter] 浏览器存储删除失败: ${key}`, e);
+      }
       LocalStorageAdapter._fallbackMap.delete(key);
       return true;
     } catch (e) {
@@ -90,6 +132,14 @@ export class LocalStorageAdapter implements ISaveAdapter {
         if (raw !== null && raw !== undefined && raw !== '') {
           return true;
         }
+      }
+      try {
+        const browserValue = this._browserStorage?.getItem(key);
+        if (browserValue !== null && browserValue !== undefined && browserValue !== '') {
+          return true;
+        }
+      } catch {
+        // 浏览器存储不可用时继续检查内存降级存储。
       }
       return LocalStorageAdapter._fallbackMap.has(key);
     } catch {
