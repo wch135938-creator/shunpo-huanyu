@@ -37,6 +37,7 @@ export class EquipmentMediator extends Component {
   // ==================== 内部状态 ====================
 
   private _presenter: EquipmentUIPresenter | null = null;
+  private _configReadyPromise: Promise<void> = Promise.resolve();
 
   // ==================== 生命周期 ====================
 
@@ -52,13 +53,17 @@ export class EquipmentMediator extends Component {
       eqService.initialize();
     }
 
-    // 预加载装备配置（异步，不阻塞 UI 初始化）
-    eqService.loadConfigs().catch((err: unknown) => {
+    // 预加载装备配置，并由 start() 等待完成后再进行首屏渲染。
+    this._configReadyPromise = eqService.loadConfigs().catch((err: unknown) => {
       console.warn('[EquipmentMediator] 装备配置加载失败:', err);
     });
   }
 
   async start(): Promise<void> {
+    // 配置未就绪时 ViewModel 只能回退到 itemId / 0 属性。
+    // 等待同一个加载任务，确保首屏名称、属性和自动穿戴刷新使用真实配置。
+    await this._configReadyPromise;
+
     // 1. 创建 Presenter
     this._presenter = new EquipmentUIPresenter();
     this._presenter.initialize();

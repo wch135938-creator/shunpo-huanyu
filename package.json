@@ -6,7 +6,8 @@
   },
   "scripts": {
     "mount:operations-ui": "node tools/mount-operations-ui.mjs",
-    "validate:operations": "node tools/validate-operations.mjs"
+    "validate:operations": "node tools/validate-operations.mjs",
+    "validate:equipment-preview": "node tools/validate-equipment-preview.mjs"
   },
   "devDependencies": {
     "playwright": "^1.60.0",
