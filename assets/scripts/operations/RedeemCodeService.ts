@@ -8,7 +8,6 @@ import { EventManager } from '../core/EventManager';
 import { SaveManager } from '../save/SaveManager';
 import type { SaveContainerV8 } from '../save/SaveContainerV8';
 import { InventoryService } from '../inventory/InventoryService';
-import { MailService } from './MailService';
 import {
   normalizeRedeemCode,
   OperationsConfigRepository,
@@ -32,7 +31,6 @@ export class RedeemCodeService extends BaseManager {
   private _saveManager = SaveManager.getInstance();
   private _configRepository = OperationsConfigRepository.getInstance();
   private _eventManager = EventManager.getInstance();
-  private _mailService = MailService.getInstance();
   private _data: OperationsSaveData | null = null;
   private _accountId = '';
   private _initialized = false;
@@ -48,7 +46,6 @@ export class RedeemCodeService extends BaseManager {
 
     this._data = ensureOperationsSaveData(container);
     this._accountId = resolvedAccountId;
-    await this._mailService.initialize(resolvedAccountId);
     this._initialized = true;
     console.log('[RedeemCodeService] 初始化完成');
   }
@@ -101,26 +98,15 @@ export class RedeemCodeService extends BaseManager {
     );
     if (!result.success) return result;
 
-    const receiptMailId = `RECEIPT.${codeConfig.id}.${encodeURIComponent(this._accountId)}`;
     const record: RedeemRecordData = {
       accountId: this._accountId,
       codeId: codeConfig.id,
       redeemedAt: now,
       transactionId,
-      receiptMailId,
+      // 保留旧存档字段兼容，但兑换成功不再创建邮箱回执。
+      receiptMailId: '',
     };
     data.redeemData.records[recordKey] = record;
-
-    this._mailService.createMail({
-      mailId: receiptMailId,
-      accountId: this._accountId,
-      title: codeConfig.receiptTitle,
-      sender: codeConfig.receiptSender,
-      body: codeConfig.receiptBody,
-      attachments: [],
-      createdAt: now,
-      expiresAt: 0,
-    });
 
     this._saveManager.markDirty();
     this._eventManager.emit(RedeemCodeEvent.REDEEMED, {
