@@ -32,7 +32,12 @@ import {
   trimTransactions,
   trimSnapshots,
 } from './InventorySaveData';
-import { INITIAL_EQUIPMENT_ITEM_IDS } from './InventoryDomain';
+import {
+  INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID,
+  INITIAL_EQUIPMENT_ARMOR_ITEM_ID,
+  INITIAL_EQUIPMENT_ITEM_IDS,
+  INITIAL_EQUIPMENT_WEAPON_ITEM_ID,
+} from './InventoryDomain';
 import type {
   TransactionResult,
   AddAssetRequest,
@@ -60,6 +65,8 @@ export const InventoryEvent = {
   /** 事务完成 */
   TRANSACTION_COMPLETE: 'inventory:transactionComplete',
 } as const;
+
+const LEGACY_QINGFENG_REPAIR_TRANSACTION_ID = 'txn_initial_equipment_weapon_repair_v1';
 
 // ==================== 事件载荷 ====================
 
@@ -156,6 +163,7 @@ export class InventoryService extends BaseManager {
       console.log('[InventoryInit] grant initial equipment');
       this._grantInitialEquipment();
     }
+    this._repairMissingInitialWeapon();
     this._scheduleInitialEconomyGrant();
 
     console.log(
@@ -235,6 +243,49 @@ export class InventoryService extends BaseManager {
       console.warn(
         `[InventoryService] 初始装备发放失败: errorCode=${result.errorCode}, message=${result.message}`,
       );
+    }
+  }
+
+  /**
+   * 仅修复旧异常存档：初始装备已发放、布衣和铜戒仍在、青锋剑缺失，
+   * 且历史中没有主动移除青锋剑、也没有执行过补偿时，独立补发一次。
+   */
+  private _repairMissingInitialWeapon(): void {
+    if (!this._saveData.meta.initialEquipmentGranted) return;
+    if (this._saveData.instanceItems.some((item) => (
+      item.itemId === INITIAL_EQUIPMENT_WEAPON_ITEM_ID
+    ))) return;
+    if (this._saveData.claimStates[LEGACY_QINGFENG_REPAIR_TRANSACTION_ID]?.claimed) return;
+
+    const hasArmor = this._saveData.instanceItems.some((item) => (
+      item.itemId === INITIAL_EQUIPMENT_ARMOR_ITEM_ID
+    ));
+    const hasAccessory = this._saveData.instanceItems.some((item) => (
+      item.itemId === INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID
+    ));
+    if (!hasArmor || !hasAccessory) return;
+
+    const wasRemovedByPlayer = this._saveData.transactions.some((transaction) => (
+      transaction.success
+      && transaction.changeType === 'consume'
+      && transaction.itemIds.includes(INITIAL_EQUIPMENT_WEAPON_ITEM_ID)
+    ));
+    if (wasRemovedByPlayer) return;
+
+    const result = this.addAssets(
+      LEGACY_QINGFENG_REPAIR_TRANSACTION_ID,
+      [{
+        itemId: INITIAL_EQUIPMENT_WEAPON_ITEM_ID,
+        count: 1,
+        source: 'system_default',
+        reason: 'reward_grant',
+      }],
+      'reward_grant',
+      'system_default',
+    );
+    if (result.success && !result.isDuplicate) {
+      this._saveManager.save();
+      console.log('[InventoryService] 旧异常存档青锋剑补发完成');
     }
   }
 

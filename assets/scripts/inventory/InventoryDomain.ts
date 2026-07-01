@@ -478,8 +478,12 @@ export function mapDropItemIdToEquipItemId(dropItemId: string): string | null {
  * 品质：全部 Common
  * 覆盖三个槽位：Weapon ×1, Armor ×1, Accessory ×1
  */
+export const INITIAL_EQUIPMENT_WEAPON_ITEM_ID = 'ITEM_EQ_WEAPON_001';
+export const INITIAL_EQUIPMENT_ARMOR_ITEM_ID = 'ITEM_EQ_ARMOR_001';
+export const INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID = 'ITEM_EQ_ACCESSORY_001';
+
 export const INITIAL_EQUIPMENT_ITEM_IDS: string[] = [
-  'ITEM_EQ_WEAPON_001',    // 青锋剑 (Common)
-  'ITEM_EQ_ARMOR_001',     // 布衣   (Common)
-  'ITEM_EQ_ACCESSORY_001', // 铜戒   (Common)
+  INITIAL_EQUIPMENT_WEAPON_ITEM_ID, // 青锋剑 (Common)
+  INITIAL_EQUIPMENT_ARMOR_ITEM_ID, // 布衣 (Common)
+  INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID, // 铜戒 (Common)
 ];

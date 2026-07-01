@@ -202,14 +202,9 @@ export class EquipmentSlotItem extends Component {
         this.equipmentNameLabel.string = vm.name;
       }
 
-      // 属性简览
-      const statParts: string[] = [];
-      if (vm.baseHp > 0) statParts.push(`HP+${vm.baseHp}`);
-      if (vm.baseAtk > 0) statParts.push(`ATK+${vm.baseAtk}`);
-      if (vm.baseDef > 0) statParts.push(`DEF+${vm.baseDef}`);
       if (this.statsLabel) {
-        this.statsLabel.node.active = true;
-        this.statsLabel.string = statParts.join(' ');
+        this.statsLabel.string = '';
+        this.statsLabel.node.active = false;
       }
 
       // 品质标签
@@ -271,6 +266,7 @@ export class EquipmentSlotItem extends Component {
 
     this.statsLabel?.node.setPosition(0, -62, 0);
     this._setLabelStyle(this.statsLabel, 15, 20, 154, 22);
+    if (this.statsLabel) this.statsLabel.node.active = false;
 
     if (this.qualityLabel) this.qualityLabel.node.active = false;
     if (this.powerLabel) this.powerLabel.node.active = false;
