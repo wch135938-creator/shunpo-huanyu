@@ -50,5 +50,11 @@ assert.ok(
   slotItem.includes('this.statsLabel.node.active = false;'),
   '主面板槽位属性摘要必须隐藏',
 );
+assert.ok(
+  mediator.includes("'HP', '生命'")
+    && mediator.includes("'ATK', '攻击'")
+    && mediator.includes("'DEF', '防御'"),
+  '装备主面板属性名称必须显示中文',
+);
 
-console.log('Equipment Preview readiness validation passed: 10 checks');
+console.log('Equipment Preview readiness validation passed: 11 checks');

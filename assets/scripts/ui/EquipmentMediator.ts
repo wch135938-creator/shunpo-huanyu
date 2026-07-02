@@ -10,7 +10,7 @@
 //   · 不再调用 syncHeroPowerAfterEquipmentChange
 // ============================================================
 
-import { _decorator, Component, find } from 'cc';
+import { _decorator, Component, find, Label } from 'cc';
 import { EquipmentService } from '../equipment/EquipmentService';
 import { InventoryService } from '../inventory/InventoryService';
 import { EquipmentUIPresenter } from './EquipmentUIPresenter';
@@ -219,6 +219,7 @@ export class EquipmentMediator extends Component {
 
     this._presenter.setCurrentHero(heroId);
     this.equipmentPanel.open(heroId);
+    this._localizeEquipmentSummaryLabels();
   }
 
   /** 获取当前操作的英雄 ID */
@@ -257,6 +258,7 @@ export class EquipmentMediator extends Component {
   private _onPresenterRefresh(): void {
     if (this.equipmentPanel?.isShowing()) {
       this.equipmentPanel.refreshFromPresenter();
+      this._localizeEquipmentSummaryLabels();
     }
     if (this.bagPanel?.isShowing()) {
       this.bagPanel.refreshFromPresenter();
@@ -264,6 +266,21 @@ export class EquipmentMediator extends Component {
     if (this.detailPanel?.isShowing()) {
       this.detailPanel.refreshFromPresenter();
     }
+  }
+
+  private _localizeEquipmentSummaryLabels(): void {
+    this._replaceSummaryPrefix(this.equipmentPanel?.hpBonusLabel ?? null, 'HP', '生命');
+    this._replaceSummaryPrefix(this.equipmentPanel?.atkBonusLabel ?? null, 'ATK', '攻击');
+    this._replaceSummaryPrefix(this.equipmentPanel?.defBonusLabel ?? null, 'DEF', '防御');
+  }
+
+  private _replaceSummaryPrefix(
+    label: Label | null,
+    originalPrefix: string,
+    localizedPrefix: string,
+  ): void {
+    if (!label || !label.string.startsWith(originalPrefix)) return;
+    label.string = `${localizedPrefix}${label.string.slice(originalPrefix.length)}`;
   }
 
   // ==================== 清理 ====================
