@@ -32,7 +32,8 @@
             "playerLevel": 1,
             "totalPower": 0
           },
-          "staminaCost": 5
+          "staminaCost": 5,
+          "battleStageId": "STAGE_001"
         },
         {
           "id": "chapter_001_stage_02",

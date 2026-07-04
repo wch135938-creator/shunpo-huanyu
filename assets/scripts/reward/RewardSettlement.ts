@@ -11,6 +11,7 @@ import { BaseManager } from '../core/BaseManager';
 import { RewardRepository } from './RewardRepository';
 import { RewardPoolRepository, type RollContext } from './RewardPoolRepository';
 import { RewardSystem } from './RewardSystem';
+import { InventoryService } from '../inventory/InventoryService';
 import type { BattleResult, BattleReward } from '../battle/BattleResult';
 import type {
   RewardEntry,
@@ -41,6 +42,12 @@ export interface SettlementOptions {
   attemptIndex?: number;
   /** 配置版本号 */
   configVersion?: string;
+  /**
+   * [Step12A-A] 外部传入的稳定 transactionId。
+   * 由 Coordinator 生成，用于跨系统事务幂等。
+   * 未提供时使用 fallback（Date.now + random），日志会标记。
+   */
+  transactionId?: string;
 }
 
 // ==================== RewardSettlement ====================
@@ -109,7 +116,29 @@ export class RewardSettlement extends BaseManager {
       };
     }
 
-    const transactionId = generateTransactionId('battle', battleResult.stageId);
+    // [Step12A-A] 优先使用外部传入的稳定 transactionId；无外部时 fallback
+    const externalTxnId = options?.transactionId;
+    const transactionId = externalTxnId ?? generateTransactionId('battle', battleResult.stageId);
+    if (!externalTxnId) {
+      console.log(
+        `[Step12A-A][RewardSettlement] 使用 fallback transactionId: ${transactionId}`,
+      );
+    }
+
+    // [Step12A-A] 防重：检查 InventoryService 是否已处理过此 transactionId
+    const inventoryService = InventoryService.getInstance();
+    if (inventoryService.isTransactionClaimed(transactionId)) {
+      console.log(
+        `[Step12A-A][RewardSettlement] 事务已处理，拒绝重复发奖: transactionId=${transactionId}`,
+      );
+      return {
+        success: false,
+        aggregated: null,
+        transactionId,
+        isDuplicate: true,
+        reason: `事务已处理，拒绝重复发奖: ${transactionId}`,
+      };
+    }
 
     const entries: RewardEntry[] = [];
 
@@ -131,6 +160,11 @@ export class RewardSettlement extends BaseManager {
     );
 
     this._rewardSystem.grantRewardWithTransaction(aggregated, transactionId);
+
+    console.log(
+      `[Step12A-A][RewardSettlement] 战斗奖励结算完成: stageId=${battleResult.stageId}, ` +
+      `transactionId=${transactionId}, entryCount=${entries.length}`,
+    );
 
     return {
       success: true,

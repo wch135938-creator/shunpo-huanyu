@@ -35,6 +35,12 @@ export interface GlobalPlayerEntry {
   defaultHeroSlotCount: number;
   /** 玩家等级上限 */
   maxLevel: number;
+  /**
+   * [Step12A-B] 初始默认英雄 ID。
+   * 新存档无已解锁英雄时，Coordinator 使用此 ID 通过 HeroSystem.unlockHero() 解锁。
+   * 必须为 hero_data.json 中真实存在的 heroId。
+   */
+  initialHeroId: string;
 }
 
 // ==================== 战斗基础配置 ====================

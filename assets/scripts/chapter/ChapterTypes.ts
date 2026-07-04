@@ -55,6 +55,13 @@ export interface StageConfig {
   unlockCondition: StageUnlockCondition;
   /** 消耗体力 */
   staminaCost: number;
+  /**
+   * [Step12A-B] BattleManager stageId 映射。
+   * 将 Chapter 关卡映射到 stage_data.json 中的 Battle 关卡。
+   * 仅在已完成映射的关卡上设置；未设置的关卡 Coordinator 拒绝启动。
+   * 可选字段 — 旧配置兼容，缺失时 Coordinator 返回"后续关卡尚未接入"。
+   */
+  battleStageId?: string;
 }
 
 // ==================== 解锁条件 ====================

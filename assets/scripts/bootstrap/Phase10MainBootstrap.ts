@@ -20,6 +20,9 @@ import { EquipmentService } from '../equipment/EquipmentService';
 import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
 import { UIDiagnosticCore } from '../diagnostic/UIDiagnosticCore';
 import { UIEngine } from '../ui/UIEngine';
+import { ConfigManager } from '../core/ConfigManager';
+import { HeroSnapshotBuilder } from '../hero/HeroSnapshotBuilder';
+import type { GlobalConstConfig, GlobalPlayerEntry } from '../config/global_config';
 
 const { ccclass } = _decorator;
 
@@ -50,7 +53,7 @@ const phase10BootstrapState = phase10BootstrapStateHost.__PHASE10_MAIN_BOOTSTRAP
 };
 phase10BootstrapStateHost.__PHASE10_MAIN_BOOTSTRAP_STATE__ = phase10BootstrapState;
 
-const DEFAULT_EQUIPMENT_HERO_ID = '0';
+const DEFAULT_EQUIPMENT_HERO_ID_FALLBACK = 'hero_001';
 const DESIGN_RESOLUTION_WIDTH = 720;
 const DESIGN_RESOLUTION_HEIGHT = 1280;
 const INITIAL_EQUIPMENT_AUTO_EQUIP: Array<{ itemId: string; slotId: EquipmentSlotId }> = [
@@ -130,6 +133,30 @@ async function runPhase10Bootstrap(startLog: 'START' | 'START_FALLBACK' = 'START
     console.log('[Phase10MainBootstrap] Configs Loaded');
     autoEquipInitialEquipment(inventory, equipment);
 
+    // [Step12A-C1.2][EquipmentUIDiag] 自动装备后诊断
+    const diagHeroId = resolveInitialHeroId();
+    logEquipmentDiagAfterBootstrap(diagHeroId, inventory, equipment);
+
+    // [Step12A-C1.1] Wire EquipmentService → HeroSnapshotBuilder
+    // so equipment stats flow into hero battle snapshots.
+    HeroSnapshotBuilder.getInstance().setBonusProvider((heroId: string) => {
+      try {
+        const eq = EquipmentService.getInstance();
+        const contrib = eq.getHeroEquipmentContribution(heroId);
+        if (!contrib) return {};
+        return {
+          hp: contrib.attributeBonus.hp,
+          atk: contrib.attributeBonus.atk,
+          def: contrib.attributeBonus.def,
+          speed: contrib.attributeBonus.speed,
+          equipmentPower: contrib.equipmentPower,
+        };
+      } catch {
+        return {};
+      }
+    });
+    console.log('[Step12A-C1.1][Bootstrap] HeroSnapshotBuilder bonusProvider 已接线');
+
     // ---- Step 6: Phase9 恢复完成 ----
     console.log('[Phase10MainBootstrap] Restore Complete');
 
@@ -142,6 +169,47 @@ async function runPhase10Bootstrap(startLog: 'START' | 'START_FALLBACK' = 'START
   } catch (err) {
     console.error('[Phase10MainBootstrap] INIT FAILED:', err);
   }
+}
+
+function logEquipmentDiagAfterBootstrap(
+  initialHeroId: string,
+  inventory: InventoryService,
+  equipment: EquipmentService,
+): void {
+  const TAG = '[Step12A-C1.2][EquipmentUIDiag]';
+
+  // hero_001 loadout 摘要
+  const loadoutHero = equipment.getHeroLoadout(initialHeroId);
+  console.log(
+    `${TAG} Bootstrap: heroId=${initialHeroId} loadout: ` +
+    `Weapon=${loadoutHero?.slots['Weapon']?.slice(-8) ?? 'null'}, ` +
+    `Armor=${loadoutHero?.slots['Armor']?.slice(-8) ?? 'null'}, ` +
+    `Accessory=${loadoutHero?.slots['Accessory']?.slice(-8) ?? 'null'}`,
+  );
+
+  // hero '0' loadout 摘要（遗留检查）
+  const loadoutLegacy = equipment.getHeroLoadout('0');
+  if (loadoutLegacy) {
+    console.log(
+      `${TAG} Bootstrap: heroId='0' legacy loadout: ` +
+      `Weapon=${loadoutLegacy.slots['Weapon']?.slice(-8) ?? 'null'}, ` +
+      `Armor=${loadoutLegacy.slots['Armor']?.slice(-8) ?? 'null'}, ` +
+      `Accessory=${loadoutLegacy.slots['Accessory']?.slice(-8) ?? 'null'}`,
+    );
+  } else {
+    console.log(`${TAG} Bootstrap: heroId='0' legacy loadout: null (已清理)`);
+  }
+
+  // inventory 中三件初始装备摘要
+  const weaponInst = inventory.getInstancesByItemId('ITEM_EQ_WEAPON_001');
+  const armorInst = inventory.getInstancesByItemId('ITEM_EQ_ARMOR_001');
+  const accessoryInst = inventory.getInstancesByItemId('ITEM_EQ_ACCESSORY_001');
+  console.log(
+    `${TAG} Bootstrap: Inventory initial equipment: ` +
+    `Weapon=[${weaponInst.map((i) => `${i.uniqueId.slice(-8)}(eq=${equipment.isEquipped(i.uniqueId).equipped})`).join(', ') || 'NONE'}], ` +
+    `Armor=[${armorInst.map((i) => `${i.uniqueId.slice(-8)}(eq=${equipment.isEquipped(i.uniqueId).equipped})`).join(', ') || 'NONE'}], ` +
+    `Accessory=[${accessoryInst.map((i) => `${i.uniqueId.slice(-8)}(eq=${equipment.isEquipped(i.uniqueId).equipped})`).join(', ') || 'NONE'}]`,
+  );
 }
 
 function registerPhase10BootstrapFallback(): void {
@@ -161,15 +229,80 @@ function registerPhase10BootstrapFallback(): void {
   });
 }
 
+function resolveInitialHeroId(): string {
+  try {
+    const configManager = ConfigManager.getInstance();
+    const globalCfg = configManager.getConfig<GlobalConstConfig>('config/systems/global_const');
+    const playerEntry = globalCfg?.data?.find(
+      (e): e is GlobalPlayerEntry => e.id === 'GLOBAL_PLAYER',
+    );
+    if (playerEntry?.initialHeroId) {
+      return playerEntry.initialHeroId;
+    }
+  } catch {
+    // fallback
+  }
+  return DEFAULT_EQUIPMENT_HERO_ID_FALLBACK;
+}
+
 function autoEquipInitialEquipment(
   inventory: InventoryService,
   equipment: EquipmentService,
 ): void {
-  const loadout = equipment.getHeroLoadout(DEFAULT_EQUIPMENT_HERO_ID);
+  const initialHeroId = resolveInitialHeroId();
+  const TAG = '[Step12A-C1.3][AutoEquip]';
+
+  // [Step12A-C1.1] Migration: unequip items from legacy hero '0' if present
+  const legacyLoadout = equipment.getHeroLoadout('0');
+  if (legacyLoadout) {
+    const slotIds: EquipmentSlotId[] = ['Weapon', 'Armor', 'Accessory'];
+    for (const slotId of slotIds) {
+      if (legacyLoadout.slots[slotId]) {
+        equipment.unequip('0', slotId);
+        console.log(
+          `[Step12A-C1.1][Bootstrap] 迁移: 从旧 heroId='0' 卸下 ${slotId}`,
+        );
+      }
+    }
+  }
+
+  // Auto-equip initial equipment to the correct hero
+  const loadout = equipment.getHeroLoadout(initialHeroId);
+
+  // [Step12A-C1.3] 诊断: 打印装备背包中初始装备的完整状态
+  for (const entry of INITIAL_EQUIPMENT_AUTO_EQUIP) {
+    const instances = inventory.getInstancesByItemId(entry.itemId);
+    const equippedInst = instances.filter((i) => equipment.isEquipped(i.uniqueId).equipped);
+    const unequippedInst = instances.filter((i) => !equipment.isEquipped(i.uniqueId).equipped);
+    console.log(
+      `${TAG} ${entry.itemId}: total=${instances.length}, ` +
+      `equipped=[${equippedInst.map((i) => `${i.uniqueId.slice(-8)}→${equipment.isEquipped(i.uniqueId).heroId}/${equipment.isEquipped(i.uniqueId).slotId}`).join(', ') || 'NONE'}], ` +
+      `unequipped=[${unequippedInst.map((i) => i.uniqueId.slice(-8)).join(', ') || 'NONE'}]`,
+    );
+  }
 
   for (const entry of INITIAL_EQUIPMENT_AUTO_EQUIP) {
-    if (loadout?.slots[entry.slotId]) {
-      continue;
+    const occupiedUniqueId = loadout?.slots[entry.slotId];
+    if (occupiedUniqueId) {
+      const occupiedInstance = inventory.getInstanceByUniqueId(occupiedUniqueId);
+      if (occupiedInstance) {
+        console.log(
+          `${TAG} 槽位已占用: ${entry.slotId}=${occupiedUniqueId.slice(-8)}, 跳过`,
+        );
+        continue;
+      }
+
+      const clearResult = equipment.unequip(initialHeroId, entry.slotId);
+      if (!clearResult.success) {
+        console.warn(
+          `${TAG} 清理悬空装备引用失败: hero=${initialHeroId}, slot=${entry.slotId}, `
+          + `uniqueId=${occupiedUniqueId}, errorCode=${clearResult.errorCode}, message=${clearResult.message}`,
+        );
+        continue;
+      }
+      console.log(
+        `${TAG} 已清理悬空装备引用: hero=${initialHeroId}, slot=${entry.slotId}, uniqueId=${occupiedUniqueId}`,
+      );
     }
 
     const instance = inventory
@@ -177,22 +310,28 @@ function autoEquipInitialEquipment(
       .find((item) => !equipment.isEquipped(item.uniqueId).equipped);
 
     if (!instance) {
+      console.warn(
+        `${TAG} 无可穿戴实例: ${entry.itemId}, slot=${entry.slotId}. ` +
+        `所有${inventory.getInstancesByItemId(entry.itemId).length}件均已装备或无实例`,
+      );
       continue;
     }
 
     const result = equipment.equip(
-      DEFAULT_EQUIPMENT_HERO_ID,
+      initialHeroId,
       entry.slotId,
       instance.uniqueId,
     );
 
-    if (!result.success) {
+    if (result.success) {
+      console.log(
+        `${TAG} 自动穿戴: hero=${initialHeroId} ` +
+        `${entry.itemId}(${instance.uniqueId.slice(-8)}) → ${entry.slotId}`,
+      );
+    } else {
       console.warn(
-        '[Phase10MainBootstrap] Auto equip initial equipment failed:',
-        entry.itemId,
-        entry.slotId,
-        result.errorCode,
-        result.message,
+        `${TAG} 自动穿戴失败: ${entry.itemId}, ` +
+        `slot=${entry.slotId}, errorCode=${result.errorCode}, message=${result.message}`,
       );
     }
   }

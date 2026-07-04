@@ -162,7 +162,19 @@ private _flushInitialData() {
       return;
     }
 
+    // [Step12A-C1.2][EquipmentUIDiag] 主面板刷新诊断
     const heroView = this._presenter.getHeroEquipmentView(this._currentHeroId);
+    console.log(
+      `[Step12A-C1.2][EquipmentUIDiag] EquipmentPanel._refreshAll: ` +
+      `heroId=${this._currentHeroId}, ` +
+      `slots=[${heroView.slots.map((s) =>
+        `${s.slotId}=${s.equippedItem ? `${s.equippedItem.name}(${s.equippedItem.uniqueId.slice(-8)})` : 'EMPTY'}`,
+      ).join(', ')}], ` +
+      `totalPower=${heroView.totalEquipmentPower}, ` +
+      `hpBonus=${heroView.slots.reduce((sum, s) => sum + (s.equippedItem?.baseHp ?? 0), 0)}, ` +
+      `atkBonus=${heroView.slots.reduce((sum, s) => sum + (s.equippedItem?.baseAtk ?? 0), 0)}, ` +
+      `defBonus=${heroView.slots.reduce((sum, s) => sum + (s.equippedItem?.baseDef ?? 0), 0)}`,
+    );
     this._renderSlots(heroView.slots);
     this._renderAttributeBonus(heroView.slots);
     this._renderPower(heroView.totalEquipmentPower);

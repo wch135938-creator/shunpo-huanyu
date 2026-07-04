@@ -67,6 +67,7 @@ export const InventoryEvent = {
 } as const;
 
 const LEGACY_QINGFENG_REPAIR_TRANSACTION_ID = 'txn_initial_equipment_weapon_repair_v1';
+const QINGFENG_FINAL_REPAIR_TRANSACTION_ID = 'txn_initial_equipment_weapon_repair_v2';
 
 // ==================== 事件载荷 ====================
 
@@ -195,8 +196,25 @@ export class InventoryService extends BaseManager {
         initialEquipmentMaterialsGranted: false,
       };
     }
-    if (data.meta.initialEquipmentGranted === undefined) {
-      data.meta.initialEquipmentGranted = false;
+    const hasInitialWeapon = data.instanceItems.some(
+      (item) => item.itemId === INITIAL_EQUIPMENT_WEAPON_ITEM_ID,
+    );
+    const hasInitialArmor = data.instanceItems.some(
+      (item) => item.itemId === INITIAL_EQUIPMENT_ARMOR_ITEM_ID,
+    );
+    const hasInitialAccessory = data.instanceItems.some(
+      (item) => item.itemId === INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID,
+    );
+    const shouldNormalizeInitialGrantState =
+      data.meta.initialEquipmentGranted === undefined
+      || (!data.meta.initialEquipmentGranted && hasInitialArmor && hasInitialAccessory);
+    if (shouldNormalizeInitialGrantState) {
+      data.meta.initialEquipmentGranted = hasInitialWeapon || (hasInitialArmor && hasInitialAccessory);
+      this._saveManager.markDirty();
+      console.log(
+        `[Step12A-C1.4][InventoryInit] initialEquipmentGranted normalized to ${data.meta.initialEquipmentGranted}, ` +
+        `initialEquipInInventory=[${data.instanceItems.filter((i) => INITIAL_EQUIPMENT_ITEM_IDS.indexOf(i.itemId) >= 0).map((i) => i.itemId).join(', ')}]`,
+      );
     }
     if (data.meta.initialEquipmentMaterialsGranted === undefined) {
       data.meta.initialEquipmentMaterialsGranted = false;
@@ -247,15 +265,22 @@ export class InventoryService extends BaseManager {
   }
 
   /**
-   * 仅修复旧异常存档：初始装备已发放、布衣和铜戒仍在、青锋剑缺失，
-   * 且历史中没有主动移除青锋剑、也没有执行过补偿时，独立补发一次。
+   * 最终修复旧异常存档：布衣和铜戒仍在、青锋剑缺失时，独立补发一次。
+   * v2 事务自身负责幂等；旧 v1 claim 和旧消费记录只用于诊断，避免它们
+   * 永久拦截本轮针对已确认异常存档的补偿。
    */
   private _repairMissingInitialWeapon(): void {
-    if (!this._saveData.meta.initialEquipmentGranted) return;
+    const TAG = '[Step12A-C1.4][QingfengRepair]';
+
     if (this._saveData.instanceItems.some((item) => (
       item.itemId === INITIAL_EQUIPMENT_WEAPON_ITEM_ID
-    ))) return;
-    if (this._saveData.claimStates[LEGACY_QINGFENG_REPAIR_TRANSACTION_ID]?.claimed) return;
+    ))) {
+      console.log(
+        `${TAG} 跳过: ITEM_EQ_WEAPON_001 已存在, ` +
+        `count=${this._saveData.instanceItems.filter((i) => i.itemId === INITIAL_EQUIPMENT_WEAPON_ITEM_ID).length}`,
+      );
+      return;
+    }
 
     const hasArmor = this._saveData.instanceItems.some((item) => (
       item.itemId === INITIAL_EQUIPMENT_ARMOR_ITEM_ID
@@ -263,17 +288,32 @@ export class InventoryService extends BaseManager {
     const hasAccessory = this._saveData.instanceItems.some((item) => (
       item.itemId === INITIAL_EQUIPMENT_ACCESSORY_ITEM_ID
     ));
-    if (!hasArmor || !hasAccessory) return;
+    if (!hasArmor || !hasAccessory) {
+      console.log(
+        `${TAG} 跳过: 缺少布衣(${hasArmor})或铜戒(${hasAccessory}), ` +
+        `无法确认是初始装备丢失场景`,
+      );
+      return;
+    }
 
+    if (this._saveData.claimStates[QINGFENG_FINAL_REPAIR_TRANSACTION_ID]?.claimed) {
+      console.log(`${TAG} 跳过: v2 补偿事务已领取`);
+      return;
+    }
+
+    const legacyRepairClaimed = this._saveData.claimStates[LEGACY_QINGFENG_REPAIR_TRANSACTION_ID]?.claimed === true;
     const wasRemovedByPlayer = this._saveData.transactions.some((transaction) => (
       transaction.success
       && transaction.changeType === 'consume'
-      && transaction.itemIds.includes(INITIAL_EQUIPMENT_WEAPON_ITEM_ID)
+      && transaction.itemIds.indexOf(INITIAL_EQUIPMENT_WEAPON_ITEM_ID) >= 0
     ));
-    if (wasRemovedByPlayer) return;
 
+    console.log(
+      `${TAG} 执行青锋剑补发: 布衣+铜戒存在，青锋剑缺失, `
+      + `legacyRepairClaimed=${legacyRepairClaimed}, historicallyConsumed=${wasRemovedByPlayer}`,
+    );
     const result = this.addAssets(
-      LEGACY_QINGFENG_REPAIR_TRANSACTION_ID,
+      QINGFENG_FINAL_REPAIR_TRANSACTION_ID,
       [{
         itemId: INITIAL_EQUIPMENT_WEAPON_ITEM_ID,
         count: 1,
@@ -284,8 +324,13 @@ export class InventoryService extends BaseManager {
       'system_default',
     );
     if (result.success && !result.isDuplicate) {
+      this._saveData.meta.initialEquipmentGranted = true;
       this._saveManager.save();
-      console.log('[InventoryService] 旧异常存档青锋剑补发完成');
+      console.log(`${TAG} 青锋剑补发完成: transactionId=${QINGFENG_FINAL_REPAIR_TRANSACTION_ID}`);
+    } else if (result.isDuplicate) {
+      console.log(`${TAG} 青锋剑补发已幂等拦截 (duplicate transaction)`);
+    } else {
+      console.warn(`${TAG} 青锋剑补发失败: errorCode=${result.errorCode}, message=${result.message}`);
     }
   }
 
@@ -410,6 +455,23 @@ export class InventoryService extends BaseManager {
   /**
    * 处理 RewardSystem 发放的奖励，将资产入库。
    */
+  /**
+   * [Step12A-A] 经验奖励排除列表。
+   * 这些 itemType / itemId 不得进入背包 stackItems / instanceItems，
+   * 经验由后续 Coordinator 调用 HeroSystem.addHeroExp 处理。
+   */
+  private static readonly EXP_REWARD_ITEM_TYPES: ReadonlySet<string> = new Set([
+    'exp',
+    'hero_exp',
+    'experience',
+  ]);
+
+  private static readonly EXP_REWARD_ITEM_IDS: ReadonlySet<string> = new Set([
+    'ITEM_EXP',
+    'ITEM_HERO_EXP',
+    'ITEM_EXPERIENCE',
+  ]);
+
   private _processRewardGrant(
     aggregated: AggregatedReward,
     transactionId: string,
@@ -417,9 +479,30 @@ export class InventoryService extends BaseManager {
   ): void {
     if (!aggregated.rawRewards || aggregated.rawRewards.length === 0) return;
 
+    // [Step12A-A] 过滤经验类奖励，不让 exp 进入背包
+    const filteredRewards = aggregated.rawRewards.filter((entry) => {
+      const isExpType = InventoryService.EXP_REWARD_ITEM_TYPES.has(entry.itemType);
+      const isExpId = InventoryService.EXP_REWARD_ITEM_IDS.has(entry.itemId);
+      if (isExpType || isExpId) {
+        console.log(
+          `[Step12A-A][InventoryService] 经验奖励不入库: itemId=${entry.itemId}, ` +
+          `itemType=${entry.itemType}, count=${entry.count}, txn=${transactionId}`,
+        );
+        return false;
+      }
+      return true;
+    });
+
+    if (filteredRewards.length === 0) {
+      console.log(
+        `[Step12A-A][InventoryService] 过滤后无可入库奖励: txn=${transactionId}`,
+      );
+      return;
+    }
+
     // 将 RewardEntry 转为 AddAssetRequest
     const requests: AddAssetRequest[] = [];
-    for (const entry of aggregated.rawRewards) {
+    for (const entry of filteredRewards) {
       requests.push({
         itemId: entry.itemId,
         count: entry.count,

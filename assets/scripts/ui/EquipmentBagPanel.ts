@@ -192,6 +192,18 @@ export class EquipmentBagPanel extends BasePanel {
     this._refreshFilterButtons();
 
     this._refreshList();
+
+    // [Step12A-C1.2][EquipmentUIDiag] 装备选择页打开诊断
+    if (this._presenter) {
+      const entries = this._getFilteredEntries();
+      console.log(
+        `[Step12A-C1.2][EquipmentUIDiag] EquipmentBagPanel.open: ` +
+        `heroId=${heroId}, filterSlot=${this._filter.slotType ?? 'ALL'}, ` +
+        `items=[${entries.map((e) =>
+          `${e.name}(${e.uniqueId.slice(-8)}) slot=${e.slotType} eq=${e.isEquipped ? `YES->${e.equippedHeroId}/${e.equippedSlotId}` : 'NO'}`,
+        ).join('; ')}]`,
+      );
+    }
   }
 
   // ==================== 一次性安全初始化 ====================

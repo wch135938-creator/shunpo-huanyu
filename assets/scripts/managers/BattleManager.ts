@@ -35,9 +35,8 @@ import type { SkillConfig, SkillDataConfig } from '../config/skill_config';
 import type { DropTableConfig, DropItem } from '../config/drop_config';
 import type { GlobalBattleEntry, GlobalConstConfig } from '../config/global_config';
 import type { TeamSnapshot, FormationSlot } from '../formation/FormationTypes';
-import { InventoryService } from '../inventory/InventoryService';
-import { mapDropItemIdToEquipItemId } from '../inventory/InventoryDomain';
-import type { AddAssetRequest } from '../inventory/InventoryTransaction';
+// [Step12A-A] 移除 BattleManager 直接依赖 InventoryService
+// 奖励发放已收口到 RewardSettlement/RewardSystem 链路
 
 // ==================== 事件名常量 ====================
 
@@ -489,7 +488,8 @@ export class BattleManager extends BaseManager {
         ? this._resolveRewards(executionResult.stageId)
         : [];
 
-      // 汇总各类收益
+      // [Step12A-A] 仅汇总收益摘要，不再直接写入 InventoryService
+      // 奖励发放已收口到 RewardSettlement/RewardSystem 唯一链路
       let expGain = 0;
       let goldGain = 0;
       for (const reward of rewards) {
@@ -497,14 +497,13 @@ export class BattleManager extends BaseManager {
           expGain += reward.count;
         } else if (reward.itemType === 'gold') {
           goldGain += reward.count;
-          this._grantStackReward(reward);
-        } else if (reward.itemType === 'equip') {
-          // Phase10-Step11AA: 装备奖励进入 InventoryService
-          this._grantEquipReward(reward);
-        } else if (reward.itemType === 'material' || reward.itemType === 'diamond') {
-          this._grantStackReward(reward);
         }
+        // 材料/钻石/装备保留在 rewards 数组中，由 RewardSettlement 统一处理
       }
+      console.log(
+        `[Step12A-A][BattleManager] 战斗结束 — stageId=${executionResult.stageId}, ` +
+        `expGain=${expGain}, goldGain=${goldGain}, rewardCount=${rewards.length}`,
+      );
 
       // 组装最终 BattleResult
       const result: BattleResult = {
@@ -668,97 +667,6 @@ export class BattleManager extends BaseManager {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  /**
-   * Phase10-Step11AA: 将装备掉落奖励通过 InventoryService 入库。
-   *
-   * 流程：
-   *   1. 将掉落 itemId（如 ITEM_EQUIP_N_001）映射为 Inventory 装备 itemId（如 ITEM_EQ_WEAPON_001）
-   *   2. 通过 InventoryService.addAssets() 创建装备 InstanceItem
-   *
-   * @param reward  装备类型掉落奖励
-   * @returns       是否成功入库
-   */
-  private _grantEquipReward(reward: BattleReward): boolean {
-    const equipItemId = mapDropItemIdToEquipItemId(reward.itemId);
-    if (!equipItemId) {
-      console.warn(
-        `[BattleManager] 无法识别的装备掉落 itemId: ${reward.itemId}，跳过`,
-      );
-      return false;
-    }
-
-    try {
-      const inventoryService = InventoryService.getInstance();
-      const transactionId = `battle_equip_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-
-      const request: AddAssetRequest = {
-        itemId: equipItemId,
-        count: reward.count,
-        source: 'battle_drop',
-        reason: 'reward_grant',
-      };
-
-      const result = inventoryService.addAssets(
-        transactionId,
-        [request],
-        'reward_grant',
-        'battle_drop',
-      );
-
-      if (result.success) {
-        console.log(
-          `[BattleManager] 装备入库: ${equipItemId} ×${reward.count} (来源: ${reward.itemId})`,
-        );
-        return true;
-      }
-
-      if (!result.isDuplicate) {
-        console.warn(
-          `[BattleManager] 装备入库失败: ${equipItemId}, errorCode=${result.errorCode}, message=${result.message}`,
-        );
-      }
-      return result.isDuplicate; // 重复也算成功
-    } catch (err) {
-      console.error(
-        `[BattleManager] 装备入库异常: ${equipItemId}`,
-        err,
-      );
-      return false;
-    }
-  }
-
-  /** 将战斗金币、钻石和材料奖励写入 InventoryService。 */
-  private _grantStackReward(reward: BattleReward): boolean {
-    try {
-      const inventoryService = InventoryService.getInstance();
-      const transactionId = `battle_stack_${reward.itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
-      const request: AddAssetRequest = {
-        itemId: reward.itemId,
-        count: reward.count,
-        source: 'battle_drop',
-        reason: 'reward_grant',
-      };
-      const result = inventoryService.addAssets(
-        transactionId,
-        [request],
-        'reward_grant',
-        'battle_drop',
-      );
-
-      if (result.success) {
-        console.log(`[BattleManager] 堆叠资产入库: ${reward.itemId} ×${reward.count}`);
-        return true;
-      }
-
-      if (!result.isDuplicate) {
-        console.warn(
-          `[BattleManager] 堆叠资产入库失败: ${reward.itemId}, errorCode=${result.errorCode}, message=${result.message}`,
-        );
-      }
-      return result.isDuplicate;
-    } catch (err) {
-      console.error(`[BattleManager] 堆叠资产入库异常: ${reward.itemId}`, err);
-      return false;
-    }
-  }
+  // [Step12A-A] _grantEquipReward / _grantStackReward 已移除
+  // BattleManager 不再直接写 Inventory — 奖励收口到 RewardSettlement
 }

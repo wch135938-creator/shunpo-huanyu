@@ -13,7 +13,8 @@
       "staminaRecoverIntervalMs": 300000,
       "initialStageId": "STAGE_001",
       "defaultHeroSlotCount": 5,
-      "maxLevel": 100
+      "maxLevel": 100,
+      "initialHeroId": "hero_001"
     },
     {
       "id": "GLOBAL_BATTLE",

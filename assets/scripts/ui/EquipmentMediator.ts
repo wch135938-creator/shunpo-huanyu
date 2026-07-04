@@ -18,6 +18,26 @@ import { EquipmentPanel } from './EquipmentPanel';
 import { EquipmentBagPanel } from './EquipmentBagPanel';
 import { EquipmentDetailPanel } from './EquipmentDetailPanel';
 import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
+import { ConfigManager } from '../core/ConfigManager';
+import type { GlobalConstConfig, GlobalPlayerEntry } from '../config/global_config';
+
+const DEFAULT_EQUIPMENT_HERO_ID = 'hero_001';
+
+function resolveActiveEquipmentHeroId(): string {
+  try {
+    const configManager = ConfigManager.getInstance();
+    const globalCfg = configManager.getConfig<GlobalConstConfig>('config/systems/global_const');
+    const playerEntry = globalCfg?.data?.find(
+      (e): e is GlobalPlayerEntry => e.id === 'GLOBAL_PLAYER',
+    );
+    if (playerEntry?.initialHeroId) {
+      return playerEntry.initialHeroId;
+    }
+  } catch {
+    // fallback
+  }
+  return DEFAULT_EQUIPMENT_HERO_ID;
+}
 
 const { ccclass, property } = _decorator;
 
@@ -196,7 +216,11 @@ export class EquipmentMediator extends Component {
     if (!this.equipmentPanel || this.equipmentPanel.isShowing()) return;
     if (!this.equipmentPanel.node.active) return;
 
-    this.openEquipmentPanel('0');
+    const initialHeroId = resolveActiveEquipmentHeroId();
+    console.log(
+      `[Step12A-C1.2][EquipmentUIDiag] Mediator._openActiveScenePanel heroId=${initialHeroId}`,
+    );
+    this.openEquipmentPanel(initialHeroId);
   }
 
   // ==================== 公开方法（向后兼容） ====================

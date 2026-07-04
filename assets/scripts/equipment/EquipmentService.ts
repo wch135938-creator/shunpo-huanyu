@@ -496,8 +496,10 @@ export class EquipmentService extends BaseManager {
       levelAfter,
       powerDelta,
     });
-    console.log('[EquipmentService][LOADOUT_CHANGED]');
-    this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId ?? '' });
+    if (wearer.heroId) {
+      console.log(`[EquipmentService][LOADOUT_CHANGED] upgrade heroId=${wearer.heroId}`);
+      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId });
+    }
 
     // 10. Analytics
     if (this._analyticsBridge) {
@@ -664,7 +666,9 @@ export class EquipmentService extends BaseManager {
       powerDelta,
     });
     console.log('[EquipmentService][LOADOUT_CHANGED]');
-    this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId ?? '' });
+    if (wearer.heroId) {
+      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: wearer.heroId });
+    }
 
     // 10. Analytics
     if (this._analyticsBridge) {
@@ -799,14 +803,15 @@ export class EquipmentService extends BaseManager {
       itemId: instance.itemId,
       returnItems,
     });
-    console.log('[EquipmentService][LOADOUT_CHANGED]');
     if (clearedHeroIds.length > 0) {
+      console.log(
+        `[EquipmentService][LOADOUT_CHANGED] decompose cleared loadout refs: heroIds=[${clearedHeroIds.join(', ')}]`,
+      );
       for (const heroId of clearedHeroIds) {
         this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId });
       }
-    } else {
-      this._eventManager!.emit(EquipmentEvent.LOADOUT_CHANGED, { heroId: '' });
     }
+    // 无受影响的英雄时不发射空 heroId 的 LOADOUT_CHANGED
 
     // 6. Analytics（注意：equipment_consume 由 InventoryAnalyticsBridge 自动发射）
     if (this._analyticsBridge) {
