@@ -10,7 +10,7 @@
 //       不接 UI / 不接 Scene / 不接 Prefab
 // ============================================================
 
-import { _decorator, Component, Button, Label, Node, find } from 'cc';
+import { _decorator, Component, Button, Label, Node, find, UITransform, Color } from 'cc';
 import { EventManager } from '../core/EventManager';
 import { ConfigManager } from '../core/ConfigManager';
 import { BattleManager, BattleManagerEvent } from '../managers/BattleManager';
@@ -22,7 +22,7 @@ import { FormationSystem } from '../formation/FormationSystem';
 import { ChapterSystem } from '../chapter/ChapterSystem';
 import { ChapterRepository } from '../chapter/ChapterRepository';
 import type { StageConfig } from '../chapter/ChapterTypes';
-import { Phase9Bootstrap } from '../systems/Phase9Bootstrap';
+import { Phase9Bootstrap, Phase9Event } from '../systems/Phase9Bootstrap';
 import { SaveManager } from '../save/SaveManager';
 import { EquipmentService } from '../equipment/EquipmentService';
 import { InventoryService } from '../inventory/InventoryService';
@@ -121,12 +121,23 @@ export class Phase10MainGameplayCoordinator extends Component {
   private _currentChapterStageId: string = '';
   private _currentBattleStageId: string = '';
 
+  // ===== C1.5 HeroInfoLabel（运行时创建） =====
+
+  @property(Label)
+  heroInfoLabel: Label | null = null;
+
   // ===== Before / After 记录 =====
 
   private _powerBefore: number = 0;
   private _powerAfter: number = 0;
   private _expBefore: number = 0;
   private _expAfter: number = 0;
+
+  /** [C1.5] 战斗前 hero_001 的 level 快照 */
+  private _heroLevelBefore: number = 0;
+
+  /** [C1.5] 战斗后 hero_001 的 level（用于结果 Label 显示等级变化） */
+  private _heroLevelAfter: number = 0;
 
   // ===== 结算结果 =====
 
@@ -135,6 +146,8 @@ export class Phase10MainGameplayCoordinator extends Component {
   // ===== 事件监听引用 =====
 
   private _battleFinishedListener: ((...args: unknown[]) => void) | null = null;
+  private _phase9RestoreListener: ((...args: unknown[]) => void) | null = null;
+  private _heroStartupDiagLogged = false;
 
   // ===== 首关映射常量 =====
 
@@ -191,6 +204,10 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (this.resultLabel && this.resultLabel.node.active !== shouldShow) {
       this.resultLabel.node.active = shouldShow;
     }
+    // [C1.5] heroInfoLabel 跟随挑战 UI 可见性
+    if (this.heroInfoLabel && this.heroInfoLabel.node.active !== shouldShow) {
+      this.heroInfoLabel.node.active = shouldShow;
+    }
 
     const popupDiagState = JSON.stringify({
       uiRootFound: uiRoot !== null,
@@ -226,6 +243,7 @@ export class Phase10MainGameplayCoordinator extends Component {
   // ================================================================
 
   onLoad(): void {
+    console.log('[Step12A-C1.5.1][CoordinatorDiag] ON_LOAD_ENTER');
     this._eventManager = EventManager.getInstance();
     this._configManager = ConfigManager.getInstance();
     this._battleManager = BattleManager.getInstance();
@@ -238,12 +256,20 @@ export class Phase10MainGameplayCoordinator extends Component {
     this._saveManager = SaveManager.getInstance();
 
     this._registerBattleEndedListener();
+    this._registerPhase9RestoreListener();
     this._bindChallengeButton();
+
+    // [C1.5] 创建极简英雄信息标签（运行时，不修改 Scene）
+    this._ensureHeroInfoLabel();
 
     // [Step12A-C1.2] 初始检测弹窗状态，避免挑战按钮覆盖在弹窗上
     this.scheduleOnce(() => {
       this._updateChallengeUIVisibility();
-    }, 0.1);
+      // 热重载等场景下恢复事件可能早于本组件监听，使用状态做一次幂等兜底。
+      if (this._phase9Bootstrap.isRestored()) {
+        this._refreshHeroInfoAfterRestore();
+      }
+    }, 0.2);
 
     console.log('[Step12A-B][Coordinator] onLoad — 依赖就绪, state=idle');
   }
@@ -251,6 +277,7 @@ export class Phase10MainGameplayCoordinator extends Component {
   onDestroy(): void {
     this._unbindChallengeButton();
     this._unregisterBattleEndedListener();
+    this._unregisterPhase9RestoreListener();
     console.log('[Step12A-B][Coordinator] onDestroy — 事件注销完成');
   }
 
@@ -465,6 +492,29 @@ export class Phase10MainGameplayCoordinator extends Component {
     this._battleFinishedListener = null;
   }
 
+  private _registerPhase9RestoreListener(): void {
+    if (this._phase9RestoreListener) return;
+
+    this._phase9RestoreListener = (): void => {
+      this._refreshHeroInfoAfterRestore();
+    };
+    this._eventManager.on(
+      Phase9Event.RESTORE_COMPLETE,
+      this._phase9RestoreListener,
+      this,
+    );
+  }
+
+  private _unregisterPhase9RestoreListener(): void {
+    if (!this._phase9RestoreListener) return;
+    this._eventManager.off(
+      Phase9Event.RESTORE_COMPLETE,
+      this._phase9RestoreListener,
+      this,
+    );
+    this._phase9RestoreListener = null;
+  }
+
   private async _onBattleFinished(result: BattleResult): Promise<void> {
     // 校验是否是当前战斗
     if (result.stageId !== this._currentBattleStageId) {
@@ -615,9 +665,16 @@ export class Phase10MainGameplayCoordinator extends Component {
 
       // 6. 保存
       this._phase9Bootstrap.saveAll();
-      this._saveManager.save();
+      const saveSucceeded = this._saveManager.save();
+      const savedHero = this._saveManager.loadHeroData()?.heroStates['hero_001'];
 
       console.log('[Step12A-B][Coordinator] saveAll + save 完成');
+      console.log(
+        `[Step12A-C1.5][HeroExpDiag] saveAll+save done, ` +
+        `success=${saveSucceeded}, hero_001 level=${savedHero?.level ?? -1}, ` +
+        `exp=${savedHero?.exp ?? -1}, power=${savedHero?.power ?? -1}, ` +
+        `unlocked=${savedHero?.unlocked ?? false}`,
+      );
 
       // 7. 构建 lastResult
       // [C1.4.1] 从 BattleResult.rewards 提取非金币/经验的奖励项
@@ -659,6 +716,8 @@ export class Phase10MainGameplayCoordinator extends Component {
       this._state = 'settled';
       this._setChallengeButtonInteractable(true);
       this._renderLastResultToLabel();
+      // [C1.5] 更新英雄信息标签（经验/等级变化后刷新显示）
+      this._updateHeroInfoLabel();
 
       console.log(
         `[Step12A-B][Coordinator] 首关闭环完成: state=settled, ` +
@@ -781,16 +840,45 @@ export class Phase10MainGameplayCoordinator extends Component {
     const perHero = Math.floor(totalExp / heroIds.length);
     const remainder = totalExp - perHero * heroIds.length;
 
+    // [C1.5] 记录 hero_001 加经验前的等级快照
+    const hero001Before = this._heroSystem.getHero('hero_001');
+    this._heroLevelBefore = hero001Before ? hero001Before.level : 0;
+    console.log(
+      `[Step12A-C1.5][HeroExpDiag] expGain=${totalExp}, perHero=${perHero}, ` +
+      `heroCount=${heroIds.length}, ` +
+      `hero_001 levelBefore=${this._heroLevelBefore}, expBefore=${hero001Before?.exp ?? -1}`,
+    );
+
     for (let i = 0; i < heroIds.length; i++) {
       const exp = perHero + (i === 0 ? remainder : 0);
       if (exp > 0) {
+        const heroBefore = this._heroSystem.getHero(heroIds[i]);
+        const levelBefore = heroBefore?.level ?? -1;
+        const expBefore = heroBefore?.exp ?? -1;
+
         const levelUps = this._heroSystem.addHeroExp(heroIds[i], exp);
+
+        const heroAfter = this._heroSystem.getHero(heroIds[i]);
+        const levelAfter = heroAfter?.level ?? -1;
+        const expAfter = heroAfter?.exp ?? -1;
+
         console.log(
           `[Step12A-B][Coordinator] HeroSystem.addHeroExp: heroId=${heroIds[i]}, ` +
           `exp=${exp}, levelUps=${levelUps}`,
         );
+        console.log(
+          `[Step12A-C1.5][HeroExpDiag] heroId=${heroIds[i]}, ` +
+          `levelBefore=${levelBefore}, expBefore=${expBefore}, ` +
+          `expGain=${exp}, ` +
+          `levelAfter=${levelAfter}, expAfter=${expAfter}, ` +
+          `levelUp=${levelUps > 0 ? `YES (Lv${levelBefore}→Lv${levelAfter})` : 'NO'}`,
+        );
       }
     }
+
+    // [C1.5] 记录 hero_001 加经验后的等级
+    const hero001After = this._heroSystem.getHero('hero_001');
+    this._heroLevelAfter = hero001After ? hero001After.level : this._heroLevelBefore;
   }
 
   /**
@@ -996,6 +1084,11 @@ export class Phase10MainGameplayCoordinator extends Component {
         }
       }
 
+      // [C1.5] 等级变化（如果升级了）
+      if (this._heroLevelAfter > this._heroLevelBefore) {
+        lines.push(`等级 Lv${this._heroLevelBefore} → Lv${this._heroLevelAfter}`);
+      }
+
       // 战力变化
       lines.push(`战力 ${r.powerBefore} → ${r.powerAfter}`);
 
@@ -1028,6 +1121,137 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (!this.resultLabel) return;
     this.resultLabel.string = text;
     console.log(`[Step12A-C1][Entry] resultLabel → ${text.replace(/\n/g, '\\n')}`);
+  }
+
+  // ================================================================
+  // 内部 — [Step12A-C1.5] HeroInfoLabel（极简英雄等级经验显示）
+  // ================================================================
+
+  /**
+   * [C1.5] 确保运行时 HeroInfoLabel 已创建。
+   *
+   * 优先使用 inspector 绑定的 heroInfoLabel；
+   * 如果未绑定，则在同一父节点下运行时创建一个 Label 节点。
+   * 位置：主界面右上区域，不遮挡装备、邮箱、兑换码、登录奖励和挑战按钮。
+   */
+  private _ensureHeroInfoLabel(): void {
+    if (this.heroInfoLabel) {
+      console.log('[Step12A-C1.5][HeroInfoLabel] 使用 inspector 绑定的 heroInfoLabel');
+      return;
+    }
+
+    // 运行时创建：放在 resultLabel 同父节点下
+    const parent = this.resultLabel?.node.parent ?? this.node;
+    if (!parent) {
+      console.warn('[Step12A-C1.5][HeroInfoLabel] 无法确定父节点，跳过创建');
+      return;
+    }
+
+    const labelNode = new Node('HeroInfoLabel');
+    labelNode.setParent(parent);
+
+    // 位置：右上区域 (x≈200, y≈280)
+    labelNode.setPosition(200, 280, 0);
+
+    const uiTransform = labelNode.addComponent(UITransform);
+    uiTransform.width = 260;
+    uiTransform.height = 50;
+
+    const label = labelNode.addComponent(Label);
+    label.string = '英雄数据加载中...';
+    label.fontSize = 20;
+    label.lineHeight = 24;
+    label.color = new Color(255, 255, 200, 255);
+    label.overflow = 2; // SHRINK
+
+    this.heroInfoLabel = label;
+    console.log('[Step12A-C1.5][HeroInfoLabel] 运行时创建完成: pos=(200,280), size=260×50');
+  }
+
+  /**
+   * [C1.5] 更新 HeroInfoLabel 文本。
+   *
+   * 从 HeroSystem 读取 hero_001 的 level / exp，计算 nextLevelExp，
+   * 格式: "剑无极 Lv1  EXP 65/100"。
+   * 也同时打印控制台诊断日志。
+   */
+  private _updateHeroInfoLabel(): void {
+    const TAG = '[Step12A-C1.5][HeroInfoLabel]';
+
+    const hero = this._heroSystem.getHero('hero_001');
+    if (!hero) {
+      console.warn(`${TAG} hero_001 不存在`);
+      if (this.heroInfoLabel) {
+        this.heroInfoLabel.string = '英雄数据加载中...';
+      }
+      return;
+    }
+
+    const level = hero.level;
+    const exp = hero.exp;
+    const nextLevelExp = level * 100; // HeroSystem.EXP_PER_LEVEL = 100, 公式: level × 100
+    const unlocked = hero.unlocked;
+    const power = hero.power;
+
+    console.log(
+      `${TAG} hero_001: level=${level}, exp=${exp}/${nextLevelExp}, ` +
+      `power=${power}, unlocked=${unlocked}, star=${hero.star}, breakthrough=${hero.breakthrough}`,
+    );
+
+    if (this.heroInfoLabel) {
+      const expProgress = `${exp}/${nextLevelExp}`;
+      const unlockTag = unlocked ? '' : ' [未解锁]';
+      this.heroInfoLabel.string = `剑无极 Lv${level}  EXP ${expProgress}${unlockTag}`;
+    }
+  }
+
+  /**
+   * [C1.5] 启动时 hero_001 诊断日志。
+   *
+   * 在 restoreFromSave 后调用，打印从存档恢复后的 hero_001 状态。
+   */
+  private _logHeroStartupDiag(): void {
+    if (this._heroStartupDiagLogged) return;
+
+    const TAG = '[Step12A-C1.5][HeroExpDiag]';
+    const hero = this._heroSystem.getHero('hero_001');
+    if (!hero) {
+      console.warn(`${TAG} Startup: hero_001 不存在（HeroSystem 可能未初始化）`);
+      return;
+    }
+    const nextLevelExp = hero.level * 100;
+    const savedHero = this._saveManager.loadHeroData()?.heroStates['hero_001'];
+    console.log(
+      `${TAG} Startup restore: hero_001 level=${hero.level}, exp=${hero.exp}/${nextLevelExp}, ` +
+      `power=${hero.power}, unlocked=${hero.unlocked}, ` +
+      `savedLevel=${savedHero?.level ?? -1}, savedExp=${savedHero?.exp ?? -1}, ` +
+      `savedUnlocked=${savedHero?.unlocked ?? false}`,
+    );
+    this._heroStartupDiagLogged = true;
+  }
+
+  private _refreshHeroInfoAfterRestore(): void {
+    this._updateHeroInfoLabel();
+    this._logHeroStartupDiag();
+  }
+
+  /**
+   * [C1.5] 战斗前 hero_001 运行时诊断。
+   *
+   * 在 _logPreBattleDiagnostics 末尾调用。
+   */
+  private _logC15PreBattleDiag(): void {
+    const TAG = '[Step12A-C1.5][HeroExpDiag]';
+    const hero = this._heroSystem.getHero('hero_001');
+    if (!hero) {
+      console.warn(`${TAG} PreBattle: hero_001 不存在`);
+      return;
+    }
+    console.log(
+      `${TAG} PreBattle: hero_001 level=${hero.level}, exp=${hero.exp}, ` +
+      `nextLevelExp=${hero.level * 100}, power=${hero.power}, ` +
+      `unlocked=${hero.unlocked}, star=${hero.star}`,
+    );
   }
 
   // ================================================================
@@ -1097,6 +1321,9 @@ export class Phase10MainGameplayCoordinator extends Component {
       `heroCount=${teamSnapshot.heroSnapshots.length}, ` +
       `skillCount=${teamSnapshot.skillSnapshots.length}`,
     );
+
+    // [C1.5] hero_001 战斗前运行时诊断
+    this._logC15PreBattleDiag();
 
   }
 

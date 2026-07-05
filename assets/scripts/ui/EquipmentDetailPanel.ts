@@ -292,13 +292,13 @@ export class EquipmentDetailPanel extends BasePanel {
 
     // 属性
     if (this.hpStatLabel) {
-      this.hpStatLabel.string = `HP ${vm.baseHp}`;
+      this.hpStatLabel.string = `生命 ${vm.baseHp}`;
     }
     if (this.atkStatLabel) {
-      this.atkStatLabel.string = `ATK ${vm.baseAtk}`;
+      this.atkStatLabel.string = `攻击 ${vm.baseAtk}`;
     }
     if (this.defStatLabel) {
-      this.defStatLabel.string = `DEF ${vm.baseDef}`;
+      this.defStatLabel.string = `防御 ${vm.baseDef}`;
     }
 
     // 穿戴状态
