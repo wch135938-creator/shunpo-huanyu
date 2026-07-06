@@ -174,9 +174,9 @@ export class EquipmentItemView extends Component {
     // 属性简览
     if (this.statsLabel) {
       const parts: string[] = [];
-      if (vm.baseHp > 0) parts.push(`HP+${vm.baseHp}`);
-      if (vm.baseAtk > 0) parts.push(`ATK+${vm.baseAtk}`);
-      if (vm.baseDef > 0) parts.push(`DEF+${vm.baseDef}`);
+      if (vm.baseHp > 0) parts.push(`生命+${vm.baseHp}`);
+      if (vm.baseAtk > 0) parts.push(`攻击+${vm.baseAtk}`);
+      if (vm.baseDef > 0) parts.push(`防御+${vm.baseDef}`);
       this.statsLabel.string = parts.join('  ');
     }
 
