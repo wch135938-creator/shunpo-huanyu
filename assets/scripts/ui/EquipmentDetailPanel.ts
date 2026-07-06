@@ -306,7 +306,7 @@ export class EquipmentDetailPanel extends BasePanel {
       if (vm.isEquipped) {
         const heroId = vm.equippedHeroId ?? '?';
         const slotName = SLOT_NAME_MAP[vm.equippedSlotId as EquipmentSlotId] ?? vm.equippedSlotId ?? '?';
-        this.equipStatusLabel.string = `已装备 · ${heroId} · ${slotName}`;
+        this.equipStatusLabel.string = `已装备：${this.formatHeroDisplayName(heroId)} · ${slotName}`;
       } else {
         this.equipStatusLabel.string = '背包中';
       }
@@ -1016,6 +1016,17 @@ export class EquipmentDetailPanel extends BasePanel {
   }
 
   // ==================== 工具方法 ====================
+
+  /**
+   * [C1.5.2] 将内部 heroId 映射为玩家可见的中文角色名。
+   * 仅用于 UI 文案展示，不参与存档、逻辑或装备归属判断。
+   */
+  private formatHeroDisplayName(heroId: string): string {
+    if (heroId === 'hero_001') {
+      return '剑无极';
+    }
+    return heroId;
+  }
 
   private _hexToColor(hex: string): Color {
     const h = hex.replace('#', '');

@@ -135,7 +135,7 @@ private _flushInitialData() {
     this._presenter.setCurrentHero(heroId);
 
     if (this.heroIdLabel) {
-      this.heroIdLabel.string = `英雄 ${heroId}`;
+      this.heroIdLabel.string = `英雄 ${this.formatHeroDisplayName(heroId)}`;
     }
 
     this._refreshAll();
@@ -387,6 +387,17 @@ private _flushInitialData() {
       600,
       (itemId) => this._presenter?.getAssetCount(itemId) ?? 0,
     );
+  }
+
+  /**
+   * [C1.5.2] 将内部 heroId 映射为玩家可见的中文角色名。
+   * 仅用于 UI 文案展示，不参与存档、逻辑或装备归属判断。
+   */
+  private formatHeroDisplayName(heroId: string): string {
+    if (heroId === 'hero_001') {
+      return '剑无极';
+    }
+    return heroId;
   }
 
   private _recoverBindings(): void {
