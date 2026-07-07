@@ -16,7 +16,7 @@ import { _decorator, Node, Label, Button, ScrollView, Prefab, instantiate, UITra
 import { BasePanel } from '../core/BasePanel';
 import type { EquipmentViewFilter } from '../equipment/EquipmentInventoryView';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
-import type { EquipmentSlotId } from '../equipment/EquipmentTypes';
+import { SLOT_NAME_MAP, type EquipmentSlotId } from '../equipment/EquipmentTypes';
 import { EquipmentItemView, type EquipmentItemClickCallback } from './EquipmentItemView';
 import type { EquipmentUIPresenter } from './EquipmentUIPresenter';
 
@@ -175,7 +175,7 @@ export class EquipmentBagPanel extends BasePanel {
 
     if (this.titleLabel) {
       if (this._preselectedSlot) {
-        const slotName = this._presenter?.getSlotName(this._preselectedSlot) ?? this._preselectedSlot;
+        const slotName = this._presenter?.getSlotName(this._preselectedSlot) ?? SLOT_NAME_MAP[this._preselectedSlot] ?? this._preselectedSlot;
         this.titleLabel.string = `选择装备 · ${slotName}`;
       } else {
         this.titleLabel.string = '装备背包';
@@ -301,7 +301,7 @@ export class EquipmentBagPanel extends BasePanel {
 
     const parts: string[] = [];
     if (this._filter.slotType) {
-      const slotName = this._presenter?.getSlotName(this._filter.slotType) ?? this._filter.slotType;
+      const slotName = this._presenter?.getSlotName(this._filter.slotType) ?? SLOT_NAME_MAP[this._filter.slotType] ?? this._filter.slotType;
       parts.push(slotName);
     } else {
       parts.push('全部类型');
@@ -355,6 +355,7 @@ export class EquipmentBagPanel extends BasePanel {
 
       item.setData(viewModels[i]);
       item.node.active = true;
+      item.node.setSiblingIndex(i);
     }
 
     // 隐藏多余的 item

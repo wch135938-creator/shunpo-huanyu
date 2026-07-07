@@ -12,6 +12,7 @@
 
 import { _decorator, Component, Node, Label, Sprite, Color, Button } from 'cc';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
+import { SLOT_NAME_MAP, type EquipmentSlotId } from '../equipment/EquipmentTypes';
 
 
 const { ccclass, property } = _decorator;
@@ -190,7 +191,7 @@ export class EquipmentItemView extends Component {
       this.equippedBadgeNode.active = vm.isEquipped;
     }
     if (this.equippedLabel && vm.isEquipped) {
-      const slotLabel = vm.equippedSlotId ?? '';
+      const slotLabel = SLOT_NAME_MAP[vm.equippedSlotId as EquipmentSlotId] ?? vm.equippedSlotId ?? '';
       this.equippedLabel.string = `已装备·${slotLabel}`;
     }
 
