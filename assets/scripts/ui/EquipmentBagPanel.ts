@@ -27,6 +27,9 @@ const EQUIPMENT_ITEM_VIEW_PREFAB_UUID = 'd2b3c4e5-f6a7-8901-bcde-f12345678901';
 const BAG_PANEL_BG_WIDTH = 720;
 const BAG_PANEL_BG_HEIGHT = 1280;
 const BAG_CLOSE_BUTTON_SIZE = 60;
+const BAG_LIST_PADDING_TOP = 10;
+const BAG_LIST_PADDING_BOTTOM = 10;
+const BAG_LIST_ITEM_SPACING_Y = 6;
 const RUNTIME_HIDE_FLAGS = CCObject.Flags.DontSave | CCObject.Flags.HideInHierarchy;
 
 /** 当前筛选状态 */
@@ -108,6 +111,8 @@ export class EquipmentBagPanel extends BasePanel {
 
   /** 一次性初始化标记 — 解决 inactive prefab 节点 onLoad 不执行的问题 */
   private _initialized = false;
+  /** 列表刷新版本号：用于让关闭后的延迟 Layout 刷新失效 */
+  private _listRefreshRevision = 0;
 
   // ==================== BasePanel 生命周期 ====================
 
@@ -328,26 +333,21 @@ export class EquipmentBagPanel extends BasePanel {
     if (this.emptyHintNode) {
       this.emptyHintNode.active = viewModels.length === 0;
     }
-    // 确保有足够的 item（对象池）
-    for (let i = this._activeItems.length; i < viewModels.length; i++) {
-      const item = this._getOrCreateItem();
-      if (item) {
-        this._activeItems.push(item);
-      }
-    }
 
-    // 设置数据 & 激活
+    const nextActiveItems: EquipmentItemView[] = [];
+
     for (let i = 0; i < viewModels.length; i++) {
       let item = this._activeItems[i];
 
       if (!item || !item.node || !item.node.isValid) {
         item = this._getOrCreateItem();
-        this._activeItems[i] = item;
       }
 
       if (!item || !item.node || !item.node.isValid) {
         continue;
       }
+
+      nextActiveItems.push(item);
 
       if (item.node.parent !== this.contentNode) {
         item.node.setParent(this.contentNode);
@@ -358,14 +358,15 @@ export class EquipmentBagPanel extends BasePanel {
       item.node.setSiblingIndex(i);
     }
 
-    // 隐藏多余的 item
-    for (let i = viewModels.length; i < this._activeItems.length; i++) {
-      const item = this._activeItems[i];
-      if (item && item.node.isValid) {
+    const activeSet = new Set(nextActiveItems);
+    for (const item of this._pool) {
+      if (!activeSet.has(item) && item.node.isValid) {
         item.reset();
         item.node.active = false;
       }
     }
+    this._activeItems = nextActiveItems;
+    this._applyStableListLayout();
 
     this._updateFilterHint();
 
@@ -373,6 +374,59 @@ export class EquipmentBagPanel extends BasePanel {
     this.markLayoutDirty('DATA_BIND');
     // 强制 Layout 刷新 + ScrollView 回顶部
     this._forceListLayoutRefresh();
+    this._scheduleDeferredListLayoutRefresh();
+  }
+
+  private _scheduleDeferredListLayoutRefresh(): void {
+    const revision = ++this._listRefreshRevision;
+    this.scheduleOnce(() => {
+      if (revision !== this._listRefreshRevision) {
+        return;
+      }
+      if (!this._isShowing || !this.node.activeInHierarchy) {
+        return;
+      }
+      this._forceListLayoutRefresh();
+    }, 0);
+  }
+
+  private _applyStableListLayout(): void {
+    const content = this.contentNode;
+    if (!content || !content.isValid) {
+      return;
+    }
+
+    const contentTransform = content.getComponent(UITransform);
+    const viewTransform = content.parent?.getComponent(UITransform) ?? null;
+    if (!contentTransform) {
+      return;
+    }
+
+    let cursorY = -BAG_LIST_PADDING_TOP;
+    let maxWidth = contentTransform.contentSize.width;
+    let totalHeight = BAG_LIST_PADDING_TOP + BAG_LIST_PADDING_BOTTOM;
+    const activeItems = this._activeItems.filter((item) => item.node.isValid && item.node.active);
+
+    for (let i = 0; i < activeItems.length; i++) {
+      const item = activeItems[i];
+      const itemTransform = item.node.getComponent(UITransform);
+      const itemHeight = itemTransform?.contentSize.height ?? 100;
+      const itemWidth = itemTransform?.contentSize.width ?? maxWidth;
+
+      maxWidth = Math.max(maxWidth, itemWidth);
+      cursorY -= itemHeight / 2;
+      item.node.setPosition(0, cursorY, 0);
+      item.node.setSiblingIndex(i);
+      cursorY -= itemHeight / 2 + BAG_LIST_ITEM_SPACING_Y;
+      totalHeight += itemHeight;
+      if (i < activeItems.length - 1) {
+        totalHeight += BAG_LIST_ITEM_SPACING_Y;
+      }
+    }
+
+    const viewHeight = viewTransform?.contentSize.height ?? 0;
+    contentTransform.setContentSize(maxWidth, Math.max(totalHeight, Math.ceil(viewHeight) + 1));
+    content.setPosition(0, 0, 0);
   }
 
   /**
@@ -429,9 +483,32 @@ export class EquipmentBagPanel extends BasePanel {
 
     const layout = content.getComponent(Layout);
     layout?.updateLayout();
+    this._applyStableListLayout();
+    this._ensureListContentCanScrollToTop();
 
-    const sv = this.scrollView;
+    const sv = this.scrollView as (ScrollView & { stopAutoScroll?: () => void }) | null;
+    sv?.stopAutoScroll?.();
     sv?.scrollToTop(0);
+  }
+
+  private _ensureListContentCanScrollToTop(): void {
+    const content = this.contentNode;
+    const viewNode = content?.parent ?? null;
+    if (!content || !viewNode || !content.isValid || !viewNode.isValid) {
+      return;
+    }
+
+    const contentTransform = content.getComponent(UITransform);
+    const viewTransform = viewNode.getComponent(UITransform);
+    if (!contentTransform || !viewTransform) {
+      return;
+    }
+
+    const contentSize = contentTransform.contentSize;
+    const minHeight = Math.ceil(viewTransform.contentSize.height) + 1;
+    if (contentSize.height < minHeight) {
+      contentTransform.setContentSize(contentSize.width, minHeight);
+    }
   }
 
   // ==================== 事件处理 ====================
@@ -651,6 +728,10 @@ export class EquipmentBagPanel extends BasePanel {
 
   private _handleClose(): void {
     this.hide();
+  }
+
+  protected onHide(): void {
+    this._listRefreshRevision++;
   }
 
   onClose(): void {
