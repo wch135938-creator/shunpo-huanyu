@@ -12,7 +12,7 @@
 //   · 事件从旧 equipment:heroChanged/gained → Presenter 驱动
 // ============================================================
 
-import { _decorator, Node, Label, Button, ScrollView, Prefab, instantiate, UITransform, Graphics, Color, assetManager, CCObject } from 'cc';
+import { _decorator, Node, Label, Button, ScrollView, Prefab, instantiate, UITransform, Graphics, Color, assetManager, CCObject, Layout } from 'cc';
 import { BasePanel } from '../core/BasePanel';
 import type { EquipmentViewFilter } from '../equipment/EquipmentInventoryView';
 import type { EquipmentViewModel } from '../equipment/EquipmentInventoryView';
@@ -167,12 +167,11 @@ export class EquipmentBagPanel extends BasePanel {
     this._heroId = heroId;
     this._preselectedSlot = preselectedSlot ?? null;
 
-    // 预选槽位 → 自动筛选对应类型
-    if (this._preselectedSlot) {
-      this._filter.slotType = this._preselectedSlot;
-    } else {
-      this._filter = { slotType: null, minQuality: null };
-    }
+    // 每次打开选择模式时完整重置筛选：保留预选 slotType，清空品质残留
+    this._filter = {
+      slotType: this._preselectedSlot ?? null,
+      minQuality: null,
+    };
 
     if (this.titleLabel) {
       if (this._preselectedSlot) {
@@ -329,7 +328,6 @@ export class EquipmentBagPanel extends BasePanel {
     if (this.emptyHintNode) {
       this.emptyHintNode.active = viewModels.length === 0;
     }
-
     // 确保有足够的 item（对象池）
     for (let i = this._activeItems.length; i < viewModels.length; i++) {
       const item = this._getOrCreateItem();
@@ -340,11 +338,23 @@ export class EquipmentBagPanel extends BasePanel {
 
     // 设置数据 & 激活
     for (let i = 0; i < viewModels.length; i++) {
-      const item = this._activeItems[i];
-      if (item) {
-        item.setData(viewModels[i]);
-        item.node.active = true;
+      let item = this._activeItems[i];
+
+      if (!item || !item.node || !item.node.isValid) {
+        item = this._getOrCreateItem();
+        this._activeItems[i] = item;
       }
+
+      if (!item || !item.node || !item.node.isValid) {
+        continue;
+      }
+
+      if (item.node.parent !== this.contentNode) {
+        item.node.setParent(this.contentNode);
+      }
+
+      item.setData(viewModels[i]);
+      item.node.active = true;
     }
 
     // 隐藏多余的 item
@@ -360,6 +370,8 @@ export class EquipmentBagPanel extends BasePanel {
 
     // 更新 Layout
     this.markLayoutDirty('DATA_BIND');
+    // 强制 Layout 刷新 + ScrollView 回顶部
+    this._forceListLayoutRefresh();
   }
 
   /**
@@ -398,6 +410,27 @@ export class EquipmentBagPanel extends BasePanel {
 
     console.warn('[EquipmentBagPanel] 实例化的节点未找到 EquipmentItemView 组件');
     return null;
+  }
+
+  // ==================== Layout 强制刷新 ====================
+
+  /**
+   * 强制列表容器 Layout 真实刷新，并将 ScrollView 拉回顶部。
+   *
+   * 解决筛选切换后列表节点已存在但 Layout 未重排、ScrollView 偏移残留
+   * 导致 item 不可见的问题。
+   */
+  private _forceListLayoutRefresh(): void {
+    const content = this.contentNode;
+    if (!content || !content.isValid) {
+      return;
+    }
+
+    const layout = content.getComponent(Layout);
+    layout?.updateLayout();
+
+    const sv = this.scrollView;
+    sv?.scrollToTop(0);
   }
 
   // ==================== 事件处理 ====================

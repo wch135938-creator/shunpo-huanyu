@@ -291,13 +291,13 @@ private _flushInitialData() {
     }
 
     if (this.hpBonusLabel) {
-      this.hpBonusLabel.string = `HP +${totalHp}`;
+      this.hpBonusLabel.string = `生命 +${totalHp}`;
     }
     if (this.atkBonusLabel) {
-      this.atkBonusLabel.string = `ATK +${totalAtk}`;
+      this.atkBonusLabel.string = `攻击 +${totalAtk}`;
     }
     if (this.defBonusLabel) {
-      this.defBonusLabel.string = `DEF +${totalDef}`;
+      this.defBonusLabel.string = `防御 +${totalDef}`;
     }
   }
 
