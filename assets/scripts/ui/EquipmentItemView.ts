@@ -228,10 +228,10 @@ export class EquipmentItemView extends Component {
 
   private _applyReadableTypography(): void {
     this._setReadableLabel(this.nameLabel, 26, 34);
-    this._setReadableLabel(this.qualityLabel, 20, 28);
-    this._setReadableLabel(this.statsLabel, 18, 26);
-    this._setReadableLabel(this.powerLabel, 18, 26);
-    this._setReadableLabel(this.equippedLabel, 18, 26);
+    this._setReadableLabel(this.qualityLabel, 22, 30);
+    this._setReadableLabel(this.statsLabel, 20, 28);
+    this._setReadableLabel(this.powerLabel, 20, 28);
+    this._setReadableLabel(this.equippedLabel, 20, 28);
   }
 
   private _setReadableLabel(label: Label | null, fontSize: number, lineHeight: number): void {

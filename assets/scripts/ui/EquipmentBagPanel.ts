@@ -594,7 +594,7 @@ export class EquipmentBagPanel extends BasePanel {
 
   /** 背包筛选区在 720×1280 设计分辨率下的可读字号。 */
   private _applyReadableTypography(): void {
-    this._setReadableLabel(this.filterHintLabel, 20, 28);
+    this._setReadableLabel(this.filterHintLabel, 22, 30);
 
     for (const button of [
       this.typeAllBtn,
@@ -607,7 +607,7 @@ export class EquipmentBagPanel extends BasePanel {
       this.qualityEpicBtn,
       this.qualityLegendaryBtn,
     ]) {
-      this._setReadableLabel(button?.node.getComponent(Label) ?? null, 20, 28);
+      this._setReadableLabel(button?.node.getComponent(Label) ?? null, 22, 30);
     }
   }
 
