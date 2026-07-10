@@ -15,6 +15,27 @@ export type TargetType = '单体' | '群体' | '自身';
 /** 伤害类型 */
 export type DamageType = '物理' | '法术' | '真实' | '治疗';
 
+// ==================== 效果条目（C1.5.8-D） ====================
+
+/**
+ * 单个技能效果（对应 skill_data.json effects[] 中每一项）
+ *
+ * skill_data.json 中技能倍率通过 effects[].baseValue 存储，
+ * 而非顶层 powerMultiplier。本接口用于兼容两套配置方案。
+ */
+export interface SkillEffect {
+  /** 效果唯一 ID */
+  effectId: string;
+  /** 效果类型：damage | dot | heal | shield | buff | debuff */
+  effectType: string;
+  /** 基础数值（伤害倍率 / 治疗量等，1.0 = 100%） */
+  baseValue: number;
+  /** 每级成长值 */
+  valuePerLevel?: number;
+  /** 持续时间（毫秒，瞬时效果为 0） */
+  durationMs?: number;
+}
+
 // ==================== 技能条目 ====================
 
 /**
@@ -42,6 +63,8 @@ export interface SkillConfig {
   powerMultiplier: number;
   /** 冷却时间（毫秒，普攻和被动填 0） */
   cooldownMs: number;
+  /** 效果列表（skill_data.json effects[]，C1.5.8-D 倍率兼容解析） */
+  effects?: SkillEffect[];
   /** 能量消耗（普攻和被动填 0） */
   energyCost: number;
   /** 施加的 Buff/Debuff ID 列表（无效果时空数组 []） */

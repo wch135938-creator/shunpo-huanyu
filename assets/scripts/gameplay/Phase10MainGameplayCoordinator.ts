@@ -73,6 +73,23 @@ export interface ChallengeResult {
   message: string;
 }
 
+// ==================== [C1.5.8-B3] 关卡上下文 ====================
+
+/** 当前关卡解析上下文（统一 helper 返回值）。
+ *  challengeFirstStage 和 _refreshCurrentStageDisplay 共用同一解析逻辑。 */
+interface CurrentStageContext {
+  /** ChapterSystem 返回的完整 StageConfig（未就绪时为 null） */
+  stageConfig: StageConfig | null;
+  /** 关卡序号（1-based），用于显示 "第 X 关" */
+  displayIndex: number | null;
+  /** 关卡名称，如 "灵鹤涧" */
+  stageName: string | null;
+  /** 章节关卡 ID，如 "chapter_001_stage_04" */
+  chapterStageId: string | null;
+  /** 解析后的 Battle 关卡 ID（映射失败时为 null） */
+  battleStageId: string | null;
+}
+
 // ==================== 错误码 ====================
 
 const ERR_BUSY = 'ERR_BUSY';
@@ -121,6 +138,11 @@ export class Phase10MainGameplayCoordinator extends Component {
   private _currentChapterStageId: string = '';
   private _currentBattleStageId: string = '';
 
+  // ===== C1.5.8-B 当前关卡显示缓存 =====
+
+  /** [C1.5.8-B] 最近一次 challenge 使用的关卡配置（用于动态文案生成） */
+  private _currentStageConfig: StageConfig | null = null;
+
   // ===== C1.5 HeroInfoLabel（运行时创建） =====
 
   @property(Label)
@@ -149,10 +171,21 @@ export class Phase10MainGameplayCoordinator extends Component {
   private _phase9RestoreListener: ((...args: unknown[]) => void) | null = null;
   private _heroStartupDiagLogged = false;
 
-  // ===== 首关映射常量 =====
+  // ===== C1.5.8 章节→战斗关卡映射 =====
 
-  private static readonly FIRST_CHAPTER_STAGE_ID = 'chapter_001_stage_01';
-  private static readonly EXPECTED_BATTLE_STAGE_ID = 'STAGE_001';
+  /** [C1.5.8] chapter stage → battle stage 局部映射表（fallback）。
+   *  仅当 StageConfig.battleStageId 为空时使用。
+   *  映射范围以 stage_data.json 实际存在的 Battle Stage 为准。
+   *  当前覆盖 chapter_001 前 5 关（chapter_001_stage_06 为 Boss 关，本轮不映射）。 */
+  private static readonly CHAPTER_TO_BATTLE_STAGE_MAP: Record<string, string> = {
+    'chapter_001_stage_01': 'STAGE_001',
+    'chapter_001_stage_02': 'STAGE_002',
+    'chapter_001_stage_03': 'STAGE_003',
+    'chapter_001_stage_04': 'STAGE_004',
+    // C1.5.8-E: 修正第5关映射 — 旧 STAGE_005 为高难 Boss 关 (rec 2500, ENEMY_BOSS_001)，
+    // 改为早期主线专用 stage STAGE_MAIN_001_005 (rec 400, ENEMY_004+ENEMY_005)
+    'chapter_001_stage_05': 'STAGE_MAIN_001_005',
+  };
 
   // ===== 弹窗覆盖检测（Step12A-C1.2）=====
 
@@ -271,6 +304,11 @@ export class Phase10MainGameplayCoordinator extends Component {
       }
     }, 0.2);
 
+    // [C1.5.8-B4] 短时重试初始化显示刷新：最多 10 次，每 0.1s 一次，
+    // 始终覆盖按钮，仅当 displayIndex > 1（真实进度确认）时提前停止。
+    // displayIndex=1 可能是 ChapterSystem 默认值（存档尚未恢复），继续重试。
+    this._retryInitDisplay(0, 10);
+
     console.log('[Step12A-B][Coordinator] onLoad — 依赖就绪, state=idle');
   }
 
@@ -321,30 +359,29 @@ export class Phase10MainGameplayCoordinator extends Component {
     console.log('[Step12A-B][Coordinator] challengeFirstStage — 开始');
 
     try {
-      // 1. 读取首关配置
-      const stageConfig = this._getFirstChapterStageConfig();
+      // 1. [C1.5.8-B3] 使用统一 helper 解析当前章节进度
+      const ctx = this._resolveCurrentStageContext();
+      const stageConfig = ctx.stageConfig;
       if (!stageConfig) {
-        return this._failChallenge(ERR_CONFIG_MISSING, '首关配置不存在');
+        return this._failChallenge(ERR_CONFIG_MISSING, '当前章节关卡配置不存在，请确认 ChapterSystem 已初始化');
       }
 
-      // 2. 验证 battleStageId 映射
-      const battleStageId = stageConfig.battleStageId;
+      // [C1.5.8-B2] 缓存当前关卡配置并立即刷新显示（按钮/结果标签）
+      this._currentStageConfig = stageConfig;
+      this._refreshCurrentStageDisplay();
+
+      // 2. 解析 battleStageId 映射（使用 context 中已解析的结果）
+      const battleStageId = ctx.battleStageId;
       if (!battleStageId) {
+        const stageDisplay = this._formatStageDisplayText(stageConfig);
         return this._failChallenge(
           ERR_NO_BATTLE_MAPPING,
-          `章节关卡 ${stageConfig.id} 未配置 battleStageId，后续关卡尚未接入`,
-        );
-      }
-
-      if (battleStageId !== Phase10MainGameplayCoordinator.EXPECTED_BATTLE_STAGE_ID) {
-        console.warn(
-          `[Step12A-B][Coordinator] battleStageId 与预期不符: ` +
-          `expected=${Phase10MainGameplayCoordinator.EXPECTED_BATTLE_STAGE_ID} actual=${battleStageId}`,
+          `${stageDisplay} 尚未接入`,
         );
       }
 
       console.log(
-        `[Step12A-B][Coordinator] 首关映射读取成功: ` +
+        `[Step12A-B][Coordinator] 关卡映射读取成功: ` +
         `chapterStage=${stageConfig.id} → battleStage=${battleStageId}`,
       );
 
@@ -400,7 +437,10 @@ export class Phase10MainGameplayCoordinator extends Component {
 
       this._state = 'running';
       this._setChallengeButtonInteractable(false);
-      this._updateResultLabel('战斗中...');
+      const battleText = this._currentStageConfig
+        ? `第 ${this._currentStageConfig.stageIndex} 关战斗中...`
+        : '战斗中...';
+      this._updateResultLabel(battleText);
       console.log(
         `[Step12A-B][Coordinator] BattleManager 启动成功: stageId=${battleStageId}, state=running`,
       );
@@ -571,6 +611,7 @@ export class Phase10MainGameplayCoordinator extends Component {
       this._state = 'failed';
       this._setChallengeButtonInteractable(true);
       this._renderLastResultToLabel();
+      this._refreshCurrentStageDisplay();
       console.log('[Step12A-B][Coordinator] 战斗失败，不发放奖励');
       return;
     }
@@ -600,6 +641,7 @@ export class Phase10MainGameplayCoordinator extends Component {
         this._state = 'failed';
         this._setChallengeButtonInteractable(true);
         this._renderLastResultToLabel();
+        this._refreshCurrentStageDisplay();
         this._lastResult = {
           success: false,
           isDuplicate: true,
@@ -716,11 +758,12 @@ export class Phase10MainGameplayCoordinator extends Component {
       this._state = 'settled';
       this._setChallengeButtonInteractable(true);
       this._renderLastResultToLabel();
+      this._refreshCurrentStageDisplay();
       // [C1.5] 更新英雄信息标签（经验/等级变化后刷新显示）
       this._updateHeroInfoLabel();
 
       console.log(
-        `[Step12A-B][Coordinator] 首关闭环完成: state=settled, ` +
+        `[Step12A-B][Coordinator] 关卡闭环完成: state=settled, stage=${this._currentChapterStageId}, ` +
         `goldGain=${result.goldGain}, expGain=${totalExpGain}`,
       );
     } catch (err) {
@@ -728,6 +771,7 @@ export class Phase10MainGameplayCoordinator extends Component {
       this._state = 'failed';
       this._setChallengeButtonInteractable(true);
       this._renderLastResultToLabel();
+      this._refreshCurrentStageDisplay();
       this._lastResult = {
         success: false,
         isDuplicate: false,
@@ -903,13 +947,44 @@ export class Phase10MainGameplayCoordinator extends Component {
   // ================================================================
 
   /**
-   * 读取首关 chapter_001_stage_01 的 StageConfig。
+   * [C1.5.8-B3] 解析当前章节进度上下文（统一入口）。
+   *
+   * challengeFirstStage() 和 _refreshCurrentStageDisplay() 共用此方法，
+   * 禁止初始化显示和点击挑战各写一套不同的关卡推断逻辑。
+   *
+   * 返回的 displayIndex / stageName 可用于按钮和 resultLabel 文案；
+   * stageConfig / battleStageId 供战斗启动使用。
    */
-  private _getFirstChapterStageConfig(): StageConfig | null {
-    const stageConfig = this._chapterRepository.getStage(
-      Phase10MainGameplayCoordinator.FIRST_CHAPTER_STAGE_ID,
-    );
-    return stageConfig ?? null;
+  private _resolveCurrentStageContext(): CurrentStageContext {
+    const stageConfig = this._chapterSystem.getCurrentStage('chapter_001');
+    if (stageConfig) {
+      const battleStageId = this._resolveBattleStageId(stageConfig);
+      return {
+        stageConfig,
+        displayIndex: stageConfig.stageIndex,
+        stageName: stageConfig.name || null,
+        chapterStageId: stageConfig.id,
+        battleStageId,
+      };
+    }
+    return {
+      stageConfig: null,
+      displayIndex: null,
+      stageName: null,
+      chapterStageId: null,
+      battleStageId: null,
+    };
+  }
+
+  /**
+   * [C1.5.8] 从 chapter stage 解析 battle stage ID。
+   * 优先级：StageConfig.battleStageId → 局部映射表 → null
+   */
+  private _resolveBattleStageId(stageConfig: StageConfig): string | null {
+    if (stageConfig.battleStageId) {
+      return stageConfig.battleStageId;
+    }
+    return Phase10MainGameplayCoordinator.CHAPTER_TO_BATTLE_STAGE_MAP[stageConfig.id] ?? null;
   }
 
   /**
@@ -928,6 +1003,116 @@ export class Phase10MainGameplayCoordinator extends Component {
       return playerEntry?.initialHeroId ?? '';
     } catch {
       return '';
+    }
+  }
+
+  // ================================================================
+  // 内部 — [C1.5.8-B3] 当前关卡显示文案（统一 context 驱动）
+  // ================================================================
+
+  /**
+   * [C1.5.8-B] 格式化关卡显示文本。
+   * 有名称且总长≤8字时返回 "第 X 关·关卡名"，否则返回 "第 X 关"。
+   */
+  private _formatStageDisplayText(stageConfig: StageConfig): string {
+    const num = stageConfig.stageIndex;
+    const name = stageConfig.name;
+    if (name && name.length > 0) {
+      const combined = `第 ${num} 关·${name}`;
+      return combined.length <= 8 ? combined : `第 ${num} 关`;
+    }
+    return `第 ${num} 关`;
+  }
+
+  /**
+   * [C1.5.8-B4] 短时重试初始化显示刷新。
+   *
+   * 修复 B3 缺陷：B3 只要 displayIndex !== null 就停止，导致 ChapterSystem
+   * 默认第 1 关（存档尚未恢复时）被误认为最终结果。
+   *
+   * B4 策略：
+   *   - 每次尝试都无条件调用 _refreshCurrentStageDisplay() 覆盖按钮和 resultLabel
+   *   - 仅当 displayIndex > 1 时才提前停止（真实进度确认，非默认第 1 关）
+   *   - displayIndex=1 或 null 时继续重试，最多 maxAttempts 次
+   *   - 最后一次尝试无论 displayIndex 值如何都作为最终显示
+   *   - 非轮询，有限次数，无性能风险
+   */
+  private _retryInitDisplay(attempt: number, maxAttempts: number): void {
+    const ctx = this._resolveCurrentStageContext();
+
+    // [C1.5.8-B4] 无条件覆盖显示：每次重试都刷新按钮和 resultLabel，
+    // 确保后续读到真实进度时能覆盖之前的默认第 1 关显示。
+    this._refreshCurrentStageDisplay();
+
+    // [C1.5.8-B4] displayIndex=1 是可疑默认值（ChapterSystem 在存档恢复前
+    // 可能返回 stage_01），必须继续重试等待真实进度。
+    const isDefaultSuspect = ctx.displayIndex === 1;
+    const isRealProgress = ctx.displayIndex !== null && ctx.displayIndex > 1;
+
+    if (isRealProgress) {
+      console.log(
+        `[C1.5.8-B4] 初始化显示刷新成功（真实进度确认）: ` +
+        `displayIndex=${ctx.displayIndex}, attempt=${attempt + 1}/${maxAttempts}`,
+      );
+      return;
+    }
+
+    if (attempt >= maxAttempts - 1) {
+      // [C1.5.8-B4] 最终兜底：强制覆盖，无论 displayIndex 是什么
+      console.log(
+        `[C1.5.8-B4] 初始化显示刷新最终兜底: maxAttempts=${maxAttempts}, ` +
+        `displayIndex=${ctx.displayIndex ?? 'null'}, ` +
+        `isDefaultSuspect=${isDefaultSuspect}, 已强制覆盖`,
+      );
+      return;
+    }
+
+    console.log(
+      `[C1.5.8-B4] 初始化显示未确认真实进度，继续重试: ` +
+      `displayIndex=${ctx.displayIndex ?? 'null'}, ` +
+      `isDefaultSuspect=${isDefaultSuspect}, ` +
+      `attempt=${attempt + 1}/${maxAttempts}`,
+    );
+
+    this.scheduleOnce(() => {
+      this._retryInitDisplay(attempt + 1, maxAttempts);
+    }, 0.1);
+  }
+
+  /**
+   * [C1.5.8-B3] 运行时覆盖挑战按钮子 Label 文本。
+   *
+   * 始终覆盖 Scene 默认文字，绝不残留"挑战首关"。
+   * 不修改 Scene，仅通过 getComponentInChildren 获取 Label 后设置 string。
+   * 获取不到 Label 时静默跳过，不影响战斗逻辑。
+   */
+  private _updateChallengeButtonLabel(context?: CurrentStageContext): void {
+    if (!this.challengeButton) return;
+
+    const label = this.challengeButton.node.getComponentInChildren(Label);
+    if (!label) return;
+
+    const ctx = context ?? this._resolveCurrentStageContext();
+    if (ctx.displayIndex !== null) {
+      label.string = `挑战第 ${ctx.displayIndex} 关`;
+    } else {
+      // [C1.5.8-B3] 始终覆盖 Scene 默认文字，不留"挑战首关"
+      label.string = '挑战关卡';
+    }
+  }
+
+  /**
+   * [C1.5.8-B3] 统一运行时显示刷新入口。
+   *
+   * 解析一次当前关卡上下文，同时刷新挑战按钮 Label 和 resultLabel。
+   * 不修改 Scene，不修改 Prefab。
+   */
+  private _refreshCurrentStageDisplay(): void {
+    const ctx = this._resolveCurrentStageContext();
+    this._updateChallengeButtonLabel(ctx);
+    // 非战斗中/结算中状态时刷新结果标签
+    if (this._state !== 'running' && this._state !== 'settling') {
+      this._renderLastResultToLabel(ctx);
     }
   }
 
@@ -1041,13 +1226,28 @@ export class Phase10MainGameplayCoordinator extends Component {
    * 将 lastResult 渲染到 resultLabel。
    * [Step12A-C1.3] 使用多行文本避免单行穿出屏幕右侧。
    * [Step12A-C1.4.1] 补全所有奖励项展示（强化石、钻石、装备、材料等）。
+   *
+   * @param context  [C1.5.8-B3] 可选，预解析的关卡上下文（避免重复解析）
    */
-  private _renderLastResultToLabel(): void {
+  private _renderLastResultToLabel(context?: CurrentStageContext): void {
     if (!this.resultLabel) return;
     this._ensureResultLabelStyle();
 
+    const ctx = context ?? this._resolveCurrentStageContext();
+
     if (!this._lastResult) {
-      this._updateResultLabel('首关闭环未开始');
+      // [C1.5.8-B3] 从 context 直接生成 idle 文案，无需完整 StageConfig
+      let idleText: string;
+      if (ctx.displayIndex !== null) {
+        if (ctx.stageName) {
+          idleText = `准备挑战第 ${ctx.displayIndex} 关·${ctx.stageName}`;
+        } else {
+          idleText = `准备挑战第 ${ctx.displayIndex} 关`;
+        }
+      } else {
+        idleText = '准备挑战';
+      }
+      this._updateResultLabel(idleText);
       return;
     }
 
@@ -1055,10 +1255,25 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (r.isDuplicate) {
       this._updateResultLabel('重复结算已拦截：\n资产和经验未重复增加');
     } else if (!r.success) {
-      this._updateResultLabel('挑战失败：未发放奖励');
+      // [C1.5.8-B3] 从 context 生成失败文案
+      const failText = ctx.displayIndex !== null
+        ? `第 ${ctx.displayIndex} 关挑战失败：未发放奖励`
+        : '挑战失败：未发放奖励';
+      this._updateResultLabel(failText);
     } else {
       // [Step12A-C1.4.1] 完整奖励展示：金币、经验、强化石、钻石、装备、材料等
-      const lines: string[] = ['首关胜利'];
+      // [C1.5.8-B3] 从 context 生成胜利标题
+      let winTitle: string;
+      if (ctx.displayIndex !== null) {
+        if (ctx.stageName) {
+          winTitle = `第 ${ctx.displayIndex} 关·${ctx.stageName} 胜利`;
+        } else {
+          winTitle = `第 ${ctx.displayIndex} 关 胜利`;
+        }
+      } else {
+        winTitle = '胜利';
+      }
+      const lines: string[] = [winTitle];
 
       // 金币 + 经验同行
       const primary: string[] = [];

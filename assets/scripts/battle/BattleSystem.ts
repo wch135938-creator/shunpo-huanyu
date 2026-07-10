@@ -552,10 +552,31 @@ export class BattleSystem extends BaseSystem {
     );
 
     // 调用 DamageCalculator
-    const result = DamageCalculator.calculate(damageInput);
+    const rawResult = DamageCalculator.calculate(damageInput);
+    let safeDamage = rawResult.damage;
+
+    // [C1.5.8-D] NaN防线：防止非法伤害污染 BattleUnit 状态
+    if (!isFinite(safeDamage) || safeDamage <= 0) {
+      console.warn(
+        `[C1.5.8-D] 非法伤害 skillId=${skillChoice.skillId} ` +
+        `multiplier=${skillChoice.multiplier} result.damage=${rawResult.damage} ` +
+        `target=${target.unitId} target.currentHp=${target.currentHp}，降级为最小伤害1`,
+      );
+      safeDamage = 1;
+    }
+
+    // [C1.5.8-D] NaN防线：修复已被 NaN 污染的 target.currentHp
+    if (!isFinite(target.currentHp)) {
+      console.warn(
+        `[C1.5.8-D] target.currentHp=${target.currentHp} 被NaN污染 ` +
+        `target=${target.unitId} isAlive=${target.isAlive} maxHp=${target.maxHp}，正在修复`,
+      );
+      // 仅在目标仍存活时修复为安全值，避免复活已死亡单位
+      target.currentHp = target.isAlive ? Math.max(1, target.maxHp || 1) : 0;
+    }
 
     // 应用伤害
-    target.currentHp = Math.max(0, target.currentHp - result.damage);
+    target.currentHp = Math.max(0, target.currentHp - safeDamage);
 
     // 能量管理
     this._updateEnergy(unit, skillChoice.isActiveSkill);
@@ -565,12 +586,12 @@ export class BattleSystem extends BaseSystem {
       this._cooldowns.set(unit.unitId, skillChoice.cooldownMs);
     }
 
-    // 发出 UNIT_DAMAGED
+    // 发出 UNIT_DAMAGED（使用防线后的 safeDamage）
     this._eventManager.emit(BattleEvent.UNIT_DAMAGED, {
       sourceUnitId: unit.unitId,
       targetUnitId: target.unitId,
-      damage: result.damage,
-      isCritical: result.isCritical,
+      damage: safeDamage,
+      isCritical: rawResult.isCritical,
       remainingHp: target.currentHp,
       targetMaxHp: target.maxHp,
     } satisfies UnitDamagedEvent);
@@ -702,7 +723,8 @@ export class BattleSystem extends BaseSystem {
       const activeSkill = this._findActiveSkill(unit.skillIds);
       if (activeSkill) {
         return {
-          multiplier: activeSkill.powerMultiplier,
+          // C1.5.8-D: 兼容 powerMultiplier / effects[].baseValue 两套配置
+          multiplier: this._resolveSkillMultiplier(activeSkill, FALLBACK_ATTACK_MULTIPLIER),
           isActiveSkill: true,
           cooldownMs: activeSkill.cooldownMs,
           skillId: activeSkill.id,
@@ -712,11 +734,20 @@ export class BattleSystem extends BaseSystem {
 
     // 默认普攻
     const normalAttack = this._findNormalAttack(unit.skillIds);
+    if (normalAttack) {
+      return {
+        // C1.5.8-D: 普攻路径复用 helper，保持原 fallback 行为
+        multiplier: this._resolveSkillMultiplier(normalAttack, FALLBACK_ATTACK_MULTIPLIER),
+        isActiveSkill: false,
+        cooldownMs: 0,
+        skillId: normalAttack.id,
+      };
+    }
     return {
-      multiplier: normalAttack?.powerMultiplier ?? FALLBACK_ATTACK_MULTIPLIER,
+      multiplier: FALLBACK_ATTACK_MULTIPLIER,
       isActiveSkill: false,
       cooldownMs: 0,
-      skillId: normalAttack?.id ?? '',
+      skillId: '',
     };
   }
 
@@ -736,6 +767,52 @@ export class BattleSystem extends BaseSystem {
       if (cfg && cfg.type === '主动') return cfg;
     }
     return null;
+  }
+
+  /**
+   * 兼容解析技能倍率（C1.5.8-D）
+   *
+   * 优先级：
+   *   1. skill.powerMultiplier — 有限正数直接使用
+   *   2. skill.effects 中第一个 effectType='damage' 的 baseValue（有限正数）
+   *   3. skill.effects 中第一个非 heal 的有限正数 baseValue（兜底）
+   *   4. fallbackMultiplier — 最终保底
+   *
+   * 保证返回值永远是有限正数。
+   */
+  private _resolveSkillMultiplier(skill: SkillConfig, fallbackMultiplier: number): number {
+    // Priority 1: powerMultiplier
+    if (
+      typeof skill.powerMultiplier === 'number' &&
+      isFinite(skill.powerMultiplier) &&
+      skill.powerMultiplier > 0
+    ) {
+      return skill.powerMultiplier;
+    }
+
+    // Priority 2 & 3: effects array
+    if (skill.effects && skill.effects.length > 0) {
+      // Priority 2: first 'damage' effect with finite positive baseValue
+      for (const eff of skill.effects) {
+        if (eff.effectType === 'damage' && isFinite(eff.baseValue) && eff.baseValue > 0) {
+          return eff.baseValue;
+        }
+      }
+      // Priority 3: first non-heal effect with finite positive baseValue
+      for (const eff of skill.effects) {
+        if (eff.effectType !== 'heal' && isFinite(eff.baseValue) && eff.baseValue > 0) {
+          return eff.baseValue;
+        }
+      }
+    }
+
+    // Priority 4: fallback — 异常路径，记录 warning
+    console.warn(
+      `[C1.5.8-D] _resolveSkillMultiplier skillId=${skill.id} ` +
+      `powerMultiplier=${skill.powerMultiplier} 无法解析为有限正数，` +
+      `fallback到${fallbackMultiplier}`,
+    );
+    return fallbackMultiplier;
   }
 
   /** 更新单位能量 — 普攻 +energy, 主动技能 energy=0 */
