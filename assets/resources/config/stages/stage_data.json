@@ -289,6 +289,25 @@
       "battleWave": 1
     },
     {
+      "id": "STAGE_MAIN_001_006",
+      "name": "噬渊魔窟",
+      "nameKey": "stage_name_main_001_006",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 6,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": ["ENEMY_004", "ENEMY_005"],
+      "recommendedPower": 500,
+      "staminaCost": 8,
+      "dropId": "DROP_003",
+      "firstDropId": "DROP_F003",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_MAIN_001_005"
+      },
+      "battleWave": 1
+    },
+    {
       "id": "STAGE_015",
       "name": "仙府守护者",
       "nameKey": "stage_name_015",
