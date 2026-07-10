@@ -176,7 +176,7 @@ export class Phase10MainGameplayCoordinator extends Component {
   /** [C1.5.8] chapter stage → battle stage 局部映射表（fallback）。
    *  仅当 StageConfig.battleStageId 为空时使用。
    *  映射范围以 stage_data.json 实际存在的 Battle Stage 为准。
-   *  当前覆盖 chapter_001 前 6 关。 */
+   *  当前覆盖 chapter_001 前 7 关。 */
   private static readonly CHAPTER_TO_BATTLE_STAGE_MAP: Record<string, string> = {
     'chapter_001_stage_01': 'STAGE_001',
     'chapter_001_stage_02': 'STAGE_002',
@@ -187,6 +187,7 @@ export class Phase10MainGameplayCoordinator extends Component {
     'chapter_001_stage_05': 'STAGE_MAIN_001_005',
     // [C1.5.9-D] 第6关普通主线接入 — 复用 ENEMY_004+ENEMY_005, DROP_003
     'chapter_001_stage_06': 'STAGE_MAIN_001_006',
+    'chapter_001_stage_07': 'STAGE_MAIN_001_007',
   };
 
   // ===== 弹窗覆盖检测（Step12A-C1.2）=====
