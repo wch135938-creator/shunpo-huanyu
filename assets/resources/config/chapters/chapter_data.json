@@ -8,7 +8,7 @@
       "chapterIndex": 1,
       "description": "踏入修仙之路，在云雾山脉中磨砺意志，挑战初阶妖兽。",
       "iconPath": "icons/chapter_001",
-      "recommendedPower": 500,
+      "recommendedPower": 800,
       "unlockCondition": {
         "prevChapterId": null,
         "playerLevel": 1
@@ -121,21 +121,100 @@
           "name": "噬渊魔窟",
           "chapterId": "chapter_001",
           "stageIndex": 6,
-          "type": "boss",
+          "type": "normal",
           "recommendedPower": 500,
-          "enemyGroupId": "enemy_group_boss_001",
-          "bossId": "boss_001",
+          "enemyGroupId": "",
+          "bossId": "",
           "rewards": [
-            { "type": "gold", "id": "currency_gold", "amount": 800 },
-            { "type": "exp", "id": "player_exp", "amount": 500 },
-            { "type": "hero", "id": "hero_001", "amount": 1 }
+            { "type": "gold", "id": "currency_gold", "amount": 450 },
+            { "type": "exp", "id": "player_exp", "amount": 280 }
           ],
           "unlockCondition": {
             "prevStageId": "chapter_001_stage_05",
             "playerLevel": 5,
             "totalPower": 400
           },
+          "staminaCost": 8
+        },
+        {
+          "id": "chapter_001_stage_07",
+          "name": "第七关卡",
+          "chapterId": "chapter_001",
+          "stageIndex": 7,
+          "type": "normal",
+          "recommendedPower": 550,
+          "enemyGroupId": "",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 500 },
+            { "type": "exp", "id": "player_exp", "amount": 320 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_06",
+            "playerLevel": 5,
+            "totalPower": 470
+          },
+          "staminaCost": 8
+        },
+        {
+          "id": "chapter_001_stage_08",
+          "name": "第八关卡",
+          "chapterId": "chapter_001",
+          "stageIndex": 8,
+          "type": "normal",
+          "recommendedPower": 600,
+          "enemyGroupId": "",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 550 },
+            { "type": "exp", "id": "player_exp", "amount": 360 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_07",
+            "playerLevel": 6,
+            "totalPower": 530
+          },
           "staminaCost": 10
+        },
+        {
+          "id": "chapter_001_stage_09",
+          "name": "第九关卡",
+          "chapterId": "chapter_001",
+          "stageIndex": 9,
+          "type": "normal",
+          "recommendedPower": 660,
+          "enemyGroupId": "",
+          "bossId": "",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 600 },
+            { "type": "exp", "id": "player_exp", "amount": 400 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_08",
+            "playerLevel": 6,
+            "totalPower": 600
+          },
+          "staminaCost": 10
+        },
+        {
+          "id": "chapter_001_stage_10",
+          "name": "第一章终",
+          "chapterId": "chapter_001",
+          "stageIndex": 10,
+          "type": "boss",
+          "recommendedPower": 800,
+          "enemyGroupId": "",
+          "bossId": "boss_ch001_010",
+          "rewards": [
+            { "type": "gold", "id": "currency_gold", "amount": 1000 },
+            { "type": "exp", "id": "player_exp", "amount": 600 }
+          ],
+          "unlockCondition": {
+            "prevStageId": "chapter_001_stage_09",
+            "playerLevel": 7,
+            "totalPower": 700
+          },
+          "staminaCost": 12
         }
       ]
     },

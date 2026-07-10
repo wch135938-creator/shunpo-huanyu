@@ -1571,6 +1571,8 @@ export class Phase10MainGameplayCoordinator extends Component {
     );
     this._state = 'failed';
     this._setChallengeButtonInteractable(true);
+    // [C1.5.9-C3] 将失败信息显示到主界面结果区域
+    this._updateResultLabel(message);
     return {
       success: false,
       state: 'failed',
