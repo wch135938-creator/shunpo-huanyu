@@ -188,6 +188,8 @@ export class Phase10MainGameplayCoordinator extends Component {
     // [C1.5.9-D] 第6关普通主线接入 — 复用 ENEMY_004+ENEMY_005, DROP_003
     'chapter_001_stage_06': 'STAGE_MAIN_001_006',
     'chapter_001_stage_07': 'STAGE_MAIN_001_007',
+    'chapter_001_stage_08': 'STAGE_MAIN_001_008',
+    'chapter_001_stage_09': 'STAGE_MAIN_001_009',
   };
 
   // ===== 弹窗覆盖检测（Step12A-C1.2）=====
