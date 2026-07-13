@@ -45,6 +45,22 @@ export interface ChapterCompletedEventData {
   chapterId: string;
 }
 
+/**
+ * 关卡完成时所需的解锁上下文。
+ *
+ * 由调用方（Coordinator）提供真实玩家等级与总战力，
+ * 供 completeStage() 在校验下一章节及其首关解锁条件时使用。
+ *
+ * 不提供此上下文时，completeStage() 仍会完成当前关卡与章节，
+ * 但不会自动解锁带额外条件的下一章节。
+ */
+export interface StageCompletionContext {
+  /** 当前玩家等级（取自 PlayerProgressData.playerLevel） */
+  playerLevel: number;
+  /** 当前阵容总战力（取自 FormationSystem.getActivePreset('pve').teamPower） */
+  totalPower: number;
+}
+
 export class ChapterSystem extends BaseSystem {
 
   // ==================== 事件常量 ====================
@@ -230,6 +246,125 @@ export class ChapterSystem extends BaseSystem {
     return true;
   }
 
+  /**
+   * 内部章节解锁（仅状态，不处理首关）。
+   *
+   * 与 _unlockChapterInternal 的区别：
+   * - 不设置 currentStageId
+   * - 不发射 STAGE_UNLOCKED
+   * - 仅处理章节 status 变更与 CHAPTER_UNLOCKED 事件
+   *
+   * 用于 completeStage() 中由外部校验首关条件后再决定是否解锁首关。
+   */
+  private _unlockChapterStatusOnly(chapterId: string): boolean {
+    const progress = this._getOrCreateProgress(chapterId);
+    if (progress.status !== 'locked') return false;
+
+    progress.status = 'unlocked';
+    progress.unlockedAt = Date.now();
+    progress.updatedAt = Date.now();
+
+    this._emit(ChapterSystem.CHAPTER_UNLOCKED, {
+      chapterId,
+    } as ChapterUnlockedEventData);
+
+    return true;
+  }
+
+  // ==================== 统一条件重判 ====================
+
+  /**
+   * 统一章节解锁条件重判入口。
+   *
+   * 按章节顺序遍历所有章节，对每个"前置章节已完成"的后续章节执行：
+   * 1. locked → 检查章节自身 playerLevel 条件 → 满足则解锁章节状态
+   * 2. unlocked 但首关未解锁 → 检查首关 playerLevel + totalPower → 满足则解锁首关
+   *
+   * 幂等保证：
+   * - 不修改 completed 章节
+   * - 不将 unlocked 降回 locked
+   * - 不重复发射事件（依赖 _unlockChapterStatusOnly / unlockStage 的内置幂等）
+   *
+   * @param context  玩家等级与总战力
+   * @returns        本轮是否产生了新的章节或关卡解锁
+   */
+  reevaluateUnlockConditions(context: StageCompletionContext): boolean {
+    this._requireInitialized();
+
+    const repository = ChapterRepository.getInstance();
+    const allChapters = repository.getAllChapters();
+    let anyUnlocked = false;
+
+    for (const chapter of allChapters) {
+      const progress = this._progressMap.get(chapter.id);
+      if (!progress) continue;
+
+      // 跳过已完成章节
+      if (progress.status === 'completed') continue;
+
+      // 检查前置章节是否已完成
+      const prevChapterId = chapter.unlockCondition.prevChapterId;
+      if (prevChapterId) {
+        const prevProgress = this._progressMap.get(prevChapterId);
+        if (!prevProgress || prevProgress.status !== 'completed') {
+          // 前置未完成 → 此章节及之后都不处理
+          continue;
+        }
+      }
+
+      // ---- 情况1: 章节 locked → 尝试解锁章节状态 ----
+      if (progress.status === 'locked') {
+        if (context.playerLevel >= chapter.unlockCondition.playerLevel) {
+          const unlocked = this._unlockChapterStatusOnly(chapter.id);
+          if (unlocked) {
+            anyUnlocked = true;
+            console.log(
+              `[ChapterSystem] 重判解锁章节: chapterId=${chapter.id}, ` +
+              `playerLevel=${context.playerLevel}`,
+            );
+          }
+        } else {
+          // 等级不足，此章节之后的章节也不可能满足（chapterIndex 递增，等级要求递增）
+          // 但为了安全仍继续检查（未来可能有非常规配置）
+        }
+      }
+
+      // ---- 情况2: 章节 unlocked → 检查首关是否需要解锁 ----
+      if (progress.status === 'unlocked') {
+        const firstStage = repository.getFirstStageOfChapter(chapter.id);
+        if (firstStage) {
+          // 首关尚未在 currentStageId 中 → 尝试解锁
+          const stageAlreadyCurrent =
+            progress.currentStageId === firstStage.id &&
+            progress.completedStageIds.length === 0;
+          // 更稳健的判断：首关已完成 或 当前关卡已指向首关或更后的关卡
+          const firstStageHandled =
+            progress.completedStageIds.includes(firstStage.id) ||
+            (progress.currentStageId !== '' &&
+             this._getStageIndexInChapter(chapter.id, progress.currentStageId) >= 0);
+
+          if (!firstStageHandled) {
+            const stageUnlocked = this.unlockStage(
+              firstStage.id,
+              context.playerLevel,
+              context.totalPower,
+            );
+            if (stageUnlocked) {
+              anyUnlocked = true;
+              console.log(
+                `[ChapterSystem] 重判解锁首关: chapterId=${chapter.id}, ` +
+                `stageId=${firstStage.id}, ` +
+                `playerLevel=${context.playerLevel}, totalPower=${context.totalPower}`,
+              );
+            }
+          }
+        }
+      }
+    }
+
+    return anyUnlocked;
+  }
+
   // ==================== 关卡解锁 ====================
 
   /**
@@ -318,12 +453,16 @@ export class ChapterSystem extends BaseSystem {
    * 流程：
    * 1. 标记关卡为已完成
    * 2. 自动解锁下一关卡
-   * 3. 如果是章节最后一关，完成章节并解锁下一章节
+   * 3. 如果是章节最后一关，完成章节
+   * 4. 如果提供了 context，校验并解锁下一章节及其首关
+   *
+   * 无 context 时：完成当前关卡与章节，但不自动解锁带额外条件的下一章节。
    *
    * @param stageId  关卡 ID
+   * @param context  可选解锁上下文（玩家等级、总战力），由 Coordinator 提供
    * @returns        是否成功完成
    */
-  completeStage(stageId: string): boolean {
+  completeStage(stageId: string, context?: StageCompletionContext): boolean {
     this._requireInitialized();
 
     const repository = ChapterRepository.getInstance();
@@ -375,7 +514,7 @@ export class ChapterSystem extends BaseSystem {
       isChapterComplete,
     } as StageCompletedEventData);
 
-    // 章节完成 → 解锁下一章节
+    // 章节完成 → 条件解锁后续章节（统一重判入口）
     if (isChapterComplete && progress.status !== 'completed') {
       progress.status = 'completed';
       progress.completedAt = Date.now();
@@ -383,19 +522,17 @@ export class ChapterSystem extends BaseSystem {
       this._emit(ChapterSystem.CHAPTER_COMPLETED, {
         chapterId: stageConfig.chapterId,
       } as ChapterCompletedEventData);
-
-      // 查找并解锁下一章节
-      const chapterConfig = repository.getChapter(stageConfig.chapterId);
-      if (chapterConfig) {
-        const allChapters = repository.getAllChapters();
-        const nextChapter = allChapters.find(
-          (c) => c.unlockCondition.prevChapterId === stageConfig.chapterId,
-        );
-        if (nextChapter) {
-          this._unlockChapterInternal(nextChapter.id);
-        }
-      }
     }
+
+    // 统一条件重判：无论本章是否刚完成，有 context 时都执行全量重判
+    // - 章节刚完成时：解锁后续满足条件的章节
+    // - 章节已完成但后续仍有 locked 章节时：补判（例如等级变化后重打旧关）
+    // - 关卡已完成（非章节完成）时：不影响已完成章节，非破坏性操作
+    if (context) {
+      this.reevaluateUnlockConditions(context);
+    }
+    // 无 context 时：不自动解锁带额外条件的下一章节
+    // （debug/测试调用方不会传入 context，保持幂等安全的章节/关卡完成行为）
 
     return true;
   }

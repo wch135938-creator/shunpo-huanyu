@@ -8,6 +8,7 @@
 
 import { ChapterRepository } from '../chapter/ChapterRepository';
 import { ChapterSystem } from '../chapter/ChapterSystem';
+import type { StageCompletionContext } from '../chapter/ChapterSystem';
 import { EventManager } from '../core/EventManager';
 import { ConfigManager } from '../core/ConfigManager';
 import type { ChapterSaveData } from '../save/ChapterSaveData';
@@ -516,12 +517,18 @@ export class Phase9Step7DebugRunner {
   }
 
   // ==================== Test 07: Chapter Completion & Chain ====================
+  // [C1.5.9-G-B1-A5] 重构为三场景状态模型测试：
+  //   A. 等级不足 → chapter_002 保持 locked
+  //   B. 等级满足、战力不足 → chapter_002 解锁, stage_01 保持 locked
+  //   C. 全部满足 → chapter_002 及 stage_01 均解锁
+  // 本章节状态模型测试不代表账号等级成长链已存在。
 
   private async _test_07_chapter_completion_and_chain(): Promise<void> {
     const system = ChapterSystem.getInstance();
+    const repository = ChapterRepository.getInstance();
     this._clearEvents();
 
-    // 逐一完成第6～9关（普通主线关）
+    // ---- 前置：逐一完成第6～9关（普通主线关）----
     for (let i = 6; i <= 9; i++) {
       const pad = i < 10 ? `0${i}` : `${i}`;
       const sid = `chapter_001_stage_${pad}`;
@@ -536,9 +543,9 @@ export class Phase9Step7DebugRunner {
     this._assert(prog1!.completedStageIds.length === 9, 'T07.003', '已完成 9 关');
     this._assert(prog1!.status === 'unlocked', 'T07.004', '进度仍为 unlocked');
 
-    // 完成第10关（第一章大Boss）
+    // ---- 完成第10关（无 context，不触发后续章节自动解锁）----
     const resultBoss = system.completeStage('chapter_001_stage_10');
-    this._assert(resultBoss, 'T07.005', '完成第10关 Boss 成功');
+    this._assert(resultBoss, 'T07.005', '完成第10关 Boss 成功（无 context）');
 
     // 章节完成
     this._assert(system.isChapterCompleted('chapter_001'), 'T07.006', '完成第10关后章节已完成');
@@ -566,17 +573,117 @@ export class Phase9Step7DebugRunner {
     this._assert(stage6Event !== undefined, 'T07.014', '第6关完成事件存在');
     this._assert(stage6Event!.isChapterComplete === false, 'T07.015', '第6关完成时 isChapterComplete 为 false');
 
-    // 第二章应自动解锁
-    this._assert(system.isChapterUnlocked('chapter_002'), 'T07.016', '第二章自动解锁');
+    // 无 context 完成第10关后，第二章应仍为 locked（前一节已断言）
+    this._assert(!system.isChapterUnlocked('chapter_002'), 'T07.016', '无 context 时第二章未自动解锁');
 
-    const chapterUnlockEvents = this._getEventsOfType(ChapterSystem.CHAPTER_UNLOCKED);
-    const ch2Event = chapterUnlockEvents.find((e) => e.chapterId === 'chapter_002');
-    this._assert(ch2Event !== undefined, 'T07.017', '第二章解锁事件已发送');
+    // ================================================================
+    // [C1.5.9-G-B1-A5] 三场景状态模型测试
+    // 使用 reevaluateUnlockConditions() 直接测试章节状态判定逻辑。
+    // 真实配置值：
+    //   chapter_002.unlockCondition.playerLevel = 10
+    //   chapter_002_stage_01.unlockCondition.totalPower = 500
+    // ================================================================
 
-    // 第二章第一关应自动解锁
-    const stageUnlockEvents = this._getEventsOfType(ChapterSystem.STAGE_UNLOCKED);
-    const ch2Stage1 = stageUnlockEvents.find((e) => e.stageId === 'chapter_002_stage_01');
-    this._assert(ch2Stage1 !== undefined, 'T07.018', '第二章首关解锁事件已发送');
+    const chapter2Config = repository.getChapter('chapter_002');
+    const chapter2LevelReq = chapter2Config!.unlockCondition.playerLevel;
+    this._assert(chapter2LevelReq === 10, 'T07.A.001', '第二章等级要求为 10');
+
+    const stage01Config = repository.getStage('chapter_002_stage_01');
+    const stage01PowerReq = stage01Config!.unlockCondition.totalPower;
+    this._assert(stage01PowerReq === 500, 'T07.A.002', '第二章首关战力要求为 500');
+
+    // ---- 场景A：[等级不足] playerLevel=7, totalPower=9999 ----
+    // 预期：chapter_002 保持 locked，无 currentStageId
+    this._clearEvents();
+    const ctxA: StageCompletionContext = {
+      playerLevel: 7,
+      totalPower: 9999,
+    };
+    const changedA = system.reevaluateUnlockConditions(ctxA);
+    this._assert(!changedA, 'T07.A.003', '场景A 等级不足：reevaluateUnlockConditions 返回 false');
+    this._assert(!system.isChapterUnlocked('chapter_002'), 'T07.A.004', '场景A 等级不足：chapter_002 仍为 locked');
+    const prog2A = system.getChapterProgress('chapter_002');
+    this._assert(prog2A!.status === 'locked', 'T07.A.005', '场景A 等级不足：chapter_002.status = locked');
+    this._assert(prog2A!.currentStageId === '', 'T07.A.006', '场景A 等级不足：chapter_002.currentStageId 为空');
+
+    const chapterUnlockEventsA = this._getEventsOfType(ChapterSystem.CHAPTER_UNLOCKED);
+    this._assert(
+      chapterUnlockEventsA.find((e) => e.chapterId === 'chapter_002') === undefined,
+      'T07.A.007',
+      '场景A 等级不足：未发射 chapter_002 解锁事件',
+    );
+
+    console.log('[Phase9Step7Debug][A5] 场景A 通过: 等级不足(7<10) → chapter_002 保持 locked');
+
+    // ---- 场景B：[等级满足，战力不足] playerLevel=10, totalPower=499 ----
+    // 预期：chapter_002 unlocked，但 stage_01 保持 locked，currentStageId 为空
+    this._clearEvents();
+    const ctxB: StageCompletionContext = {
+      playerLevel: 10,
+      totalPower: 499,
+    };
+    const changedB = system.reevaluateUnlockConditions(ctxB);
+    this._assert(changedB, 'T07.B.001', '场景B 等级满足：reevaluateUnlockConditions 返回 true');
+    this._assert(system.isChapterUnlocked('chapter_002'), 'T07.B.002', '场景B：chapter_002 已解锁');
+    const prog2B = system.getChapterProgress('chapter_002');
+    this._assert(prog2B!.status === 'unlocked', 'T07.B.003', '场景B：chapter_002.status = unlocked');
+    this._assert(
+      prog2B!.currentStageId === '',
+      'T07.B.004',
+      '场景B 战力不足：chapter_002.currentStageId 为空（_unlockChapterStatusOnly 不设置）',
+    );
+
+    const chapterUnlockEventsB = this._getEventsOfType(ChapterSystem.CHAPTER_UNLOCKED);
+    this._assert(
+      chapterUnlockEventsB.find((e) => e.chapterId === 'chapter_002') !== undefined,
+      'T07.B.005',
+      '场景B：chapter_002 解锁事件已发射',
+    );
+
+    const stageUnlockEventsB = this._getEventsOfType(ChapterSystem.STAGE_UNLOCKED);
+    this._assert(
+      stageUnlockEventsB.find((e) => e.stageId === 'chapter_002_stage_01') === undefined,
+      'T07.B.006',
+      '场景B 战力不足：未发射 stage_01 解锁事件',
+    );
+
+    console.log('[Phase9Step7Debug][A5] 场景B 通过: 等级满足(10≥10)+战力不足(499<500) → chapter_002 unlocked, stage_01 locked');
+
+    // ---- 场景C：[全部满足] playerLevel=10, totalPower=500 ----
+    // 预期：chapter_002 unlocked（已是），stage_01 解锁，currentStageId 正确
+    this._clearEvents();
+    const ctxC: StageCompletionContext = {
+      playerLevel: 10,
+      totalPower: 500,
+    };
+    const changedC = system.reevaluateUnlockConditions(ctxC);
+    this._assert(changedC, 'T07.C.001', '场景C 全部满足：reevaluateUnlockConditions 返回 true');
+    this._assert(system.isChapterUnlocked('chapter_002'), 'T07.C.002', '场景C：chapter_002 已解锁');
+    const prog2C = system.getChapterProgress('chapter_002');
+    this._assert(prog2C!.status === 'unlocked', 'T07.C.003', '场景C：chapter_002.status = unlocked');
+    this._assert(
+      prog2C!.currentStageId === 'chapter_002_stage_01',
+      'T07.C.004',
+      '场景C：chapter_002.currentStageId = chapter_002_stage_01',
+    );
+
+    const stageUnlockEventsC = this._getEventsOfType(ChapterSystem.STAGE_UNLOCKED);
+    this._assert(
+      stageUnlockEventsC.find((e) => e.stageId === 'chapter_002_stage_01') !== undefined,
+      'T07.C.005',
+      '场景C：stage_01 解锁事件已发射',
+    );
+
+    // 幂等性：重复调用不产生额外事件
+    this._clearEvents();
+    const changedC2 = system.reevaluateUnlockConditions(ctxC);
+    this._assert(!changedC2, 'T07.C.006', '场景C 幂等：重复调用返回 false');
+    const chapterUnlockEventsC2 = this._getEventsOfType(ChapterSystem.CHAPTER_UNLOCKED);
+    this._assert(chapterUnlockEventsC2.length === 0, 'T07.C.007', '场景C 幂等：无重复章节解锁事件');
+    const stageUnlockEventsC2 = this._getEventsOfType(ChapterSystem.STAGE_UNLOCKED);
+    this._assert(stageUnlockEventsC2.length === 0, 'T07.C.008', '场景C 幂等：无重复关卡解锁事件');
+
+    console.log('[Phase9Step7Debug][A5] 场景C 通过: 全部满足(10≥10+500≥500) → chapter_002 unlocked, stage_01 unlocked, 幂等验证通过');
   }
 
   // ==================== Test 08: Snapshot ====================

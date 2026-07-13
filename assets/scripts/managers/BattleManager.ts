@@ -667,6 +667,65 @@ export class BattleManager extends BaseManager {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  // ================================================================
+  // 内部 — 首通奖励解析（供 Coordinator 调用，复用 _rollDropItem）
+  // ================================================================
+
+  /**
+   * 根据掉落池 ID 解析奖励列表。
+   *
+   * 与 _resolveRewards 共用 _rollDropItem 判定逻辑。
+   * 用于 firstDropId 等额外掉落池的独立解析。
+   *
+   * 安全性：
+   * - dropId 为空或不存在 → 返回空数组 + warn
+   * - drop_table 配置缺失 → 返回空数组 + warn
+   * - 异常捕获 → 返回空数组（不抛异常）
+   *
+   * @param dropId — 掉落池 ID（如 DROP_F001）
+   * @returns 奖励列表（配置缺失时返回空数组）
+   */
+  resolveDropById(dropId: string): BattleReward[] {
+    const rewards: BattleReward[] = [];
+
+    if (!dropId) {
+      console.warn('[BattleManager] resolveDropById: dropId 为空');
+      return rewards;
+    }
+
+    try {
+      const dropCfg = this._configManager.getConfig<DropTableConfig>(
+        'config/drops/drop_table',
+      );
+      if (!dropCfg?.data) {
+        console.warn('[BattleManager] resolveDropById: drop_table 配置为空');
+        return rewards;
+      }
+
+      const dropEntry = dropCfg.data.find((d) => d.id === dropId);
+      if (!dropEntry) {
+        console.warn(
+          `[BattleManager] resolveDropById: 掉落池不存在 dropId=${dropId}`,
+        );
+        return rewards;
+      }
+
+      for (const item of dropEntry.items) {
+        const rolled = this._rollDropItem(item);
+        if (rolled) {
+          rewards.push(rolled);
+        }
+      }
+    } catch (err) {
+      console.error(
+        `[BattleManager] resolveDropById 异常: dropId=${dropId}`,
+        err,
+      );
+    }
+
+    return rewards;
+  }
+
   // [Step12A-A] _grantEquipReward / _grantStackReward 已移除
   // BattleManager 不再直接写 Inventory — 奖励收口到 RewardSettlement
 }

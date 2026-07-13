@@ -70,6 +70,7 @@ export class ConfigManager extends BaseManager {
     'config/systems/event_pool_config': '73252f29-e8a2-462d-9ecc-771e80219dbd',
     'config/systems/global_const': '28137d42-2c97-4b09-94a2-465c917e8a28',
     'config/systems/level_config': '16777afd-62a5-4649-ad40-f75b46278705',
+    'config/systems/account_level_config': '5ee48195-4ef0-4dee-bd95-07a6c5dedb15',
     'config/systems/liveops_config': 'e5875b72-a62f-44ea-9a19-81f18b2a97d6',
     'config/systems/operations_config': '1fe542c5-62df-433a-a8f4-d3ab1b92779d',
     'config/systems/power_config': 'd01d9699-057b-43e7-bc3c-325594e7eb06',

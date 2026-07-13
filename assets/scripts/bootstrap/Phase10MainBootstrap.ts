@@ -22,6 +22,9 @@ import { UIDiagnosticCore } from '../diagnostic/UIDiagnosticCore';
 import { UIEngine } from '../ui/UIEngine';
 import { ConfigManager } from '../core/ConfigManager';
 import { HeroSnapshotBuilder } from '../hero/HeroSnapshotBuilder';
+import { FormationSystem } from '../formation/FormationSystem';
+import { ProgressSystem } from '../systems/ProgressSystem';
+import { ChapterSystem } from '../chapter/ChapterSystem';
 import type { GlobalConstConfig, GlobalPlayerEntry } from '../config/global_config';
 
 const { ccclass } = _decorator;
@@ -156,6 +159,34 @@ async function runPhase10Bootstrap(startLog: 'START' | 'START_FALLBACK' = 'START
       }
     });
     console.log('[Step12A-C1.1][Bootstrap] HeroSnapshotBuilder bonusProvider 已接线');
+
+    // ---- [C1.5.9-G-B1-A7] 加载账号等级配置 ----
+    await ProgressSystem.getInstance().loadAccountLevelConfig();
+    console.log('[Phase10MainBootstrap][A7] 账号等级配置已加载');
+
+    // ---- [C1.5.9-G-B1-A5] Bootstrap 确定性同步段：装备与阵容均已就绪 ----
+    // 顺序不可变：先重算战力 → 读取最新 playerLevel + teamPower → 章节重判 → 保存
+    const formationSystem = FormationSystem.getInstance();
+    formationSystem.recalculateAllPower();
+
+    const playerProgress = ProgressSystem.getInstance().getPlayerProgressData();
+    const pvePreset = formationSystem.getActivePreset('pve');
+
+    const chapterSystem = ChapterSystem.getInstance();
+    const unlockChanged = chapterSystem.reevaluateUnlockConditions({
+      playerLevel: playerProgress.playerLevel,
+      totalPower: pvePreset?.teamPower ?? 0,
+    });
+
+    if (unlockChanged) {
+      phase9.saveAll();
+      console.log('[Phase10MainBootstrap][A5] 启动同步重判产生新解锁，已保存');
+    }
+    console.log(
+      `[Phase10MainBootstrap][A5] 启动同步重判完成: ` +
+      `playerLevel=${playerProgress.playerLevel}, teamPower=${pvePreset?.teamPower ?? 0}, ` +
+      `changed=${unlockChanged}`,
+    );
 
     // ---- Step 6: Phase9 恢复完成 ----
     console.log('[Phase10MainBootstrap] Restore Complete');

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "levels": [
+    { "level": 1, "requiredExpToNext": 50 },
+    { "level": 2, "requiredExpToNext": 80 },
+    { "level": 3, "requiredExpToNext": 120 },
+    { "level": 4, "requiredExpToNext": 180 },
+    { "level": 5, "requiredExpToNext": 250 },
+    { "level": 6, "requiredExpToNext": 280 },
+    { "level": 7, "requiredExpToNext": 320 },
+    { "level": 8, "requiredExpToNext": 360 },
+    { "level": 9, "requiredExpToNext": 1000 },
+    { "level": 10, "requiredExpToNext": 0 }
+  ]
+}

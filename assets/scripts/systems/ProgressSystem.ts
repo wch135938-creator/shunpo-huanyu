@@ -32,6 +32,7 @@ import {
   createDefaultProgressTrackState,
   createDefaultHeroProgressStateV2,
 } from '../data/progress_types';
+import type { AccountLevelConfig, AccountLevelEntry } from '../config/account_level_config';
 
 /** 角色获得经验事件数据 */
 export interface HeroExpGainedEventData {
@@ -79,19 +80,47 @@ export interface TotalPowerChangedEventData {
   powerDelta: number;
 }
 
+/** 账号等级变化结果 */
+export interface PlayerLevelChangeResult {
+  oldLevel: number;
+  newLevel: number;
+  oldExp: number;
+  newExp: number;
+  levelsGained: number;
+  expAdded: number;
+  reachedMaxLevel: boolean;
+  source: string;
+}
+
+/** 账号等级变化事件数据 */
+export interface PlayerLevelChangedEventData {
+  oldLevel: number;
+  newLevel: number;
+  levelsGained: number;
+  remainingExp: number;
+  source: string;
+}
+
 export class ProgressSystem extends BaseSystem {
   static readonly HERO_EXP_GAINED = 'hero:expGained';
   static readonly HERO_LEVEL_UP = 'hero:levelUp';
   static readonly HERO_POWER_CHANGED = 'hero:powerChanged';
   static readonly TOTAL_POWER_CHANGED = 'hero:totalPowerChanged';
+  static readonly PLAYER_LEVEL_CHANGED = 'player:levelChanged';
 
   private static readonly LEVEL_CONFIG_PATH = `${ConfigManager.DIR_SYSTEMS}/level_config`;
   private static readonly HERO_CONFIG_PATH = `${ConfigManager.DIR_CARDS}/hero_list`;
+  private static readonly ACCOUNT_LEVEL_CONFIG_PATH = `${ConfigManager.DIR_SYSTEMS}/account_level_config`;
 
   private _heroProgressMap: Map<string, HeroProgressData> = new Map();
   private _levelConfigMap: Map<number, LevelConfig> = new Map();
   private _heroConfigMap: Map<string, HeroConfig> = new Map();
   private _playerProgressData: PlayerProgressData = this._createDefaultPlayerProgressData();
+
+  // ---- C1.5.9-G-B1-A7: 账号等级配置 ----
+  private _accountLevelConfig: AccountLevelConfig | null = null;
+  private _accountLevelMap: Map<number, AccountLevelEntry> = new Map();
+  private _accountLevelConfigLoaded = false;
 
   // ---- Phase7-Step5: V2 多轨成长数据 ----
   /** 英雄多轨成长状态（V2） */
@@ -126,6 +155,191 @@ export class ProgressSystem extends BaseSystem {
       && PowerSystem.getInstance().isConfigLoaded();
   }
 
+  /** C1.5.9-G-B1-A7: 加载并校验账号等级配置 */
+  async loadAccountLevelConfig(): Promise<void> {
+    if (this._accountLevelConfigLoaded) {
+      console.log('[ProgressSystem][A7] 账号等级配置已加载，跳过');
+      return;
+    }
+
+    const configManager = ConfigManager.getInstance();
+    try {
+      const config = await configManager.loadConfig<AccountLevelConfig>(
+        ProgressSystem.ACCOUNT_LEVEL_CONFIG_PATH,
+      );
+
+      this._validateAccountLevelConfig(config);
+      this._accountLevelConfig = config;
+      this._accountLevelMap = this._buildAccountLevelMap(config);
+
+      // A7-A2: 仅恢复账号进度，不触碰英雄数据
+      this._restorePlayerProgressFromSaveManager();
+
+      // 配置加载成功后规范化恢复数据
+      this._normalizePlayerData();
+
+      // 全部成功后标记已加载（用于重复调用安全）
+      this._accountLevelConfigLoaded = true;
+
+      console.log(
+        `[ProgressSystem][A7] 账号等级配置加载完成: ` +
+        `levels=${config.levels.length}, maxLevel=${this.getMaxAccountLevel()}`,
+      );
+    } catch (err) {
+      console.error('[ProgressSystem][A7] 账号等级配置加载失败:', err);
+      this._accountLevelConfig = null;
+      this._accountLevelMap.clear();
+      this._accountLevelConfigLoaded = false;
+      throw err;
+    }
+  }
+
+  /** 是否已加载账号等级配置 */
+  isAccountLevelConfigLoaded(): boolean {
+    return this._accountLevelConfigLoaded;
+  }
+
+  /** 获取账号等级上限 */
+  getMaxAccountLevel(): number {
+    if (!this._accountLevelConfigLoaded) return 10;
+    return Math.max(...this._accountLevelMap.keys());
+  }
+
+  /**
+   * C1.5.9-G-B1-A7: 发放账号经验。
+   *
+   * 规则：
+   * - 仅 ProgressSystem 有写入权
+   * - amount 非有限 / NaN / Infinity / <=0 → 不修改
+   * - 满级后不再累计经验
+   * - 支持单次跨多级
+   * - 同步 SaveManager 内存，不落盘
+   *
+   * @param amount  经验值（执行 Math.floor）
+   * @param source  来源标识（用于日志和事件）
+   * @returns       结构化结果
+   */
+  addPlayerExp(amount: number, source: string): PlayerLevelChangeResult {
+    if (!this._accountLevelConfigLoaded) {
+      console.error('[ProgressSystem][A7] addPlayerExp: 账号等级配置未加载，拒绝操作');
+      return this._createNoPlayerLevelChangeResult();
+    }
+
+    // 校验 source
+    let safeSource = (source ?? '').trim();
+    if (safeSource === '') {
+      safeSource = 'unknown';
+      console.warn('[ProgressSystem][A7] addPlayerExp: source 为空，使用 unknown');
+    }
+
+    // 校验 amount
+    if (!Number.isFinite(amount) || amount <= 0) {
+      if (!Number.isFinite(amount)) {
+        console.warn(`[ProgressSystem][A7] addPlayerExp: amount 无效 (${amount})，不修改`);
+      }
+      return {
+        oldLevel: this._playerProgressData.playerLevel,
+        newLevel: this._playerProgressData.playerLevel,
+        oldExp: this._playerProgressData.playerExp,
+        newExp: this._playerProgressData.playerExp,
+        levelsGained: 0,
+        expAdded: 0,
+        reachedMaxLevel: this._playerProgressData.playerLevel >= this.getMaxAccountLevel(),
+        source: safeSource,
+      };
+    }
+
+    const safeExp = Math.floor(amount);
+    const maxLevel = this.getMaxAccountLevel();
+    const oldLevel = this._playerProgressData.playerLevel;
+    const oldExp = this._playerProgressData.playerExp;
+
+    // 满级检查
+    if (oldLevel >= maxLevel) {
+      console.log(
+        `[ProgressSystem][A7] addPlayerExp: 已满级 (Lv${oldLevel})，不增加经验`,
+      );
+      return {
+        oldLevel,
+        newLevel: oldLevel,
+        oldExp: 0,
+        newExp: 0,
+        levelsGained: 0,
+        expAdded: 0,
+        reachedMaxLevel: true,
+        source: safeSource,
+      };
+    }
+
+    // 应用经验
+    this._playerProgressData.playerExp += safeExp;
+
+    // 处理升级 (while 支持跨多级)
+    let levelsGained = 0;
+    let reachedMaxLevel = false;
+
+    while (this._playerProgressData.playerLevel < maxLevel) {
+      const entry = this._accountLevelMap.get(this._playerProgressData.playerLevel);
+      if (!entry || entry.requiredExpToNext <= 0) {
+        // 到达满级
+        this._playerProgressData.playerExp = 0;
+        reachedMaxLevel = true;
+        break;
+      }
+
+      if (this._playerProgressData.playerExp < entry.requiredExpToNext) {
+        // 经验不足以升级
+        break;
+      }
+
+      // 升级
+      this._playerProgressData.playerExp -= entry.requiredExpToNext;
+      this._playerProgressData.playerLevel += 1;
+      levelsGained += 1;
+
+      // 检查是否已达满级
+      if (this._playerProgressData.playerLevel >= maxLevel) {
+        this._playerProgressData.playerExp = 0;
+        reachedMaxLevel = true;
+        break;
+      }
+    }
+
+    const newLevel = this._playerProgressData.playerLevel;
+    const newExp = this._playerProgressData.playerExp;
+
+    // 同步 SaveManager 内存（不落盘）
+    SaveManager.getInstance().savePlayerProgressData(this._playerProgressData);
+
+    // 发射等级变化事件（仅升级时）
+    if (newLevel > oldLevel) {
+      this._emitPlayerLevelChanged({
+        oldLevel,
+        newLevel,
+        levelsGained,
+        remainingExp: newExp,
+        source: safeSource,
+      });
+    }
+
+    console.log(
+      `[ProgressSystem][A7] addPlayerExp: amount=${safeExp}, source=${safeSource}, ` +
+      `Lv${oldLevel}(${oldExp}exp) → Lv${newLevel}(${newExp}exp), ` +
+      `levelsGained=${levelsGained}, reachedMax=${reachedMaxLevel}`,
+    );
+
+    return {
+      oldLevel,
+      newLevel,
+      oldExp,
+      newExp,
+      levelsGained,
+      expAdded: safeExp,
+      reachedMaxLevel,
+      source: safeSource,
+    };
+  }
+
   /** 设置或覆盖单个角色成长数据，供后续 SaveManager 接入时恢复数据 */
   setHeroProgress(data: HeroProgressData): void {
     this._heroProgressMap.set(data.heroId, { ...data });
@@ -150,6 +364,25 @@ export class ProgressSystem extends BaseSystem {
     const heroProgressList = saveManager.loadHeroProgressList();
     if (heroProgressList.length > 0) {
       this.setHeroProgressList(heroProgressList);
+    }
+  }
+
+  /**
+   * A7-A2: 仅恢复玩家账号进度，不触碰英雄数据。
+   *
+   * 与 restoreFromSaveManager() 的区别：
+   * - 只恢复 PlayerProgressData（playerLevel / playerExp / totalPower / highestStageId）
+   * - 不读取 heroProgressList
+   * - 不调用 SaveManager.save()
+   * - 不发事件
+   * - 仅供 loadAccountLevelConfig() 使用
+   */
+  private _restorePlayerProgressFromSaveManager(): void {
+    const saveManager = SaveManager.getInstance();
+    const playerProgress = saveManager.loadPlayerProgressData();
+
+    if (playerProgress) {
+      this._playerProgressData = { ...playerProgress };
     }
   }
 
@@ -780,6 +1013,217 @@ export class ProgressSystem extends BaseSystem {
     if (this._trackConfigs.size === 0) {
       throw new Error('[ProgressSystem] 轨道配置未加载，请先调用 loadTrackConfigs()');
     }
+  }
+
+  // ==================== C1.5.9-G-B1-A7: 账号等级内部方法 ====================
+
+  /** 校验账号等级配置合法性 */
+  private _validateAccountLevelConfig(config: AccountLevelConfig): void {
+    if (!config || !Array.isArray(config.levels) || config.levels.length === 0) {
+      throw new Error('[ProgressSystem][A7] account_level_config: levels 为空或缺失');
+    }
+
+    const levels = [...config.levels].sort((a, b) => a.level - b.level);
+
+    // 必须从 level 1 开始
+    if (levels[0].level !== 1) {
+      throw new Error(
+        `[ProgressSystem][A7] account_level_config: 第一个等级必须为 1，实际为 ${levels[0].level}`,
+      );
+    }
+
+    // 必须连续递增且不重复
+    for (let i = 0; i < levels.length; i++) {
+      // level 不重复检查
+      if (i > 0 && levels[i].level === levels[i - 1].level) {
+        throw new Error(
+          `[ProgressSystem][A7] account_level_config: level ${levels[i].level} 重复`,
+        );
+      }
+      // 连续递增检查
+      if (i > 0 && levels[i].level !== levels[i - 1].level + 1) {
+        throw new Error(
+          `[ProgressSystem][A7] account_level_config: level 不连续，` +
+          `${levels[i - 1].level} → ${levels[i].level}`,
+        );
+      }
+    }
+
+    const lastLevel = levels[levels.length - 1];
+
+    // 最后一级必须是 10
+    if (lastLevel.level !== 10) {
+      throw new Error(
+        `[ProgressSystem][A7] account_level_config: 最后一级必须为 10，实际为 ${lastLevel.level}`,
+      );
+    }
+
+    // 等级 10 requiredExpToNext 必须为 0
+    if (lastLevel.requiredExpToNext !== 0) {
+      throw new Error(
+        `[ProgressSystem][A7] account_level_config: Lv10 requiredExpToNext 必须为 0`,
+      );
+    }
+
+    // 1~9 级 requiredExpToNext 必须为正整数
+    for (let i = 0; i < levels.length - 1; i++) {
+      const entry = levels[i];
+      if (
+        !Number.isFinite(entry.requiredExpToNext) ||
+        entry.requiredExpToNext <= 0 ||
+        !Number.isInteger(entry.requiredExpToNext)
+      ) {
+        throw new Error(
+          `[ProgressSystem][A7] account_level_config: Lv${entry.level} ` +
+          `requiredExpToNext 必须为正整数，实际为 ${entry.requiredExpToNext}`,
+        );
+      }
+    }
+
+    // 只有最后一级 requiredExpToNext 可以为 0
+    for (let i = 0; i < levels.length - 1; i++) {
+      if (levels[i].requiredExpToNext === 0) {
+        throw new Error(
+          `[ProgressSystem][A7] account_level_config: Lv${levels[i].level} 不是最后一级，` +
+          `requiredExpToNext 不得为 0`,
+        );
+      }
+    }
+
+    console.log(
+      `[ProgressSystem][A7] account_level_config 校验通过: ` +
+      `${levels.length} 级, Lv1→Lv${lastLevel.level}, 总经验=` +
+      `${levels.filter((l) => l.level < lastLevel.level)
+        .reduce((s, l) => s + l.requiredExpToNext, 0)}`,
+    );
+  }
+
+  /** 构建账号等级映射 */
+  private _buildAccountLevelMap(config: AccountLevelConfig): Map<number, AccountLevelEntry> {
+    const map = new Map<number, AccountLevelEntry>();
+    for (const entry of config.levels) {
+      map.set(entry.level, { ...entry });
+    }
+    return map;
+  }
+
+  /**
+   * 恢复后账号数据规范化。
+   *
+   * 要求 account_level_config 已加载。
+   */
+  private _normalizePlayerData(): void {
+    const maxLevel = this.getMaxAccountLevel();
+    let changed = false;
+
+    // playerLevel 规范化
+    if (!Number.isFinite(this._playerProgressData.playerLevel) || this._playerProgressData.playerLevel < 1) {
+      console.warn(
+        `[ProgressSystem][A7] 恢复规范化: playerLevel 非法 ` +
+        `(${this._playerProgressData.playerLevel}) → 修复为 1`,
+      );
+      this._playerProgressData.playerLevel = 1;
+      changed = true;
+    }
+
+    if (this._playerProgressData.playerLevel > maxLevel) {
+      console.warn(
+        `[ProgressSystem][A7] 恢复规范化: playerLevel 超出上限 ` +
+        `(${this._playerProgressData.playerLevel} > ${maxLevel}) → 修复为 ${maxLevel}`,
+      );
+      this._playerProgressData.playerLevel = maxLevel;
+      changed = true;
+    }
+
+    // 整数化
+    if (!Number.isInteger(this._playerProgressData.playerLevel)) {
+      this._playerProgressData.playerLevel = Math.floor(this._playerProgressData.playerLevel);
+      changed = true;
+    }
+
+    // playerExp 规范化
+    if (!Number.isFinite(this._playerProgressData.playerExp) || this._playerProgressData.playerExp < 0) {
+      console.warn(
+        `[ProgressSystem][A7] 恢复规范化: playerExp 非法 ` +
+        `(${this._playerProgressData.playerExp}) → 修复为 0`,
+      );
+      this._playerProgressData.playerExp = 0;
+      changed = true;
+    }
+
+    // 整数化
+    if (!Number.isInteger(this._playerProgressData.playerExp)) {
+      this._playerProgressData.playerExp = Math.floor(this._playerProgressData.playerExp);
+      changed = true;
+    }
+
+    // 达到满级时 playerExp 强制为 0
+    if (this._playerProgressData.playerLevel >= maxLevel) {
+      if (this._playerProgressData.playerExp !== 0) {
+        this._playerProgressData.playerExp = 0;
+        changed = true;
+      }
+      if (changed) {
+        SaveManager.getInstance().savePlayerProgressData(this._playerProgressData);
+        console.log('[ProgressSystem][A7] 恢复规范化: 数据已修正并同步 SaveManager');
+      }
+      return;
+    }
+
+    // Lv1~9: 规范化经验（while 规则连续升级）
+    let levelUpDuringNormalize = false;
+    while (this._playerProgressData.playerLevel < maxLevel) {
+      const entry = this._accountLevelMap.get(this._playerProgressData.playerLevel);
+      if (!entry || entry.requiredExpToNext <= 0) {
+        break;
+      }
+
+      if (this._playerProgressData.playerExp < entry.requiredExpToNext) {
+        break;
+      }
+
+      this._playerProgressData.playerExp -= entry.requiredExpToNext;
+      this._playerProgressData.playerLevel += 1;
+      levelUpDuringNormalize = true;
+
+      if (this._playerProgressData.playerLevel >= maxLevel) {
+        this._playerProgressData.playerExp = 0;
+        break;
+      }
+    }
+
+    if (levelUpDuringNormalize) {
+      changed = true;
+      console.log(
+        `[ProgressSystem][A7] 恢复规范化: 连续升级后 playerLevel=${this._playerProgressData.playerLevel}, ` +
+        `playerExp=${this._playerProgressData.playerExp}`,
+      );
+    }
+
+    if (changed) {
+      SaveManager.getInstance().savePlayerProgressData(this._playerProgressData);
+      console.log('[ProgressSystem][A7] 恢复规范化: 数据已修正并同步 SaveManager');
+    }
+  }
+
+  /** 发射账号等级变化事件 */
+  private _emitPlayerLevelChanged(data: PlayerLevelChangedEventData): void {
+    EventManager.getInstance().emit(ProgressSystem.PLAYER_LEVEL_CHANGED, data);
+  }
+
+  /** 创建无变化结果 */
+  private _createNoPlayerLevelChangeResult(): PlayerLevelChangeResult {
+    const maxLevel = this._accountLevelConfigLoaded ? this.getMaxAccountLevel() : 10;
+    return {
+      oldLevel: this._playerProgressData.playerLevel,
+      newLevel: this._playerProgressData.playerLevel,
+      oldExp: this._playerProgressData.playerExp,
+      newExp: this._playerProgressData.playerExp,
+      levelsGained: 0,
+      expAdded: 0,
+      reachedMaxLevel: this._playerProgressData.playerLevel >= maxLevel,
+      source: '',
+    };
   }
 
   private _processLevelUp(data: HeroProgressData): HeroLevelUpEventData[] {

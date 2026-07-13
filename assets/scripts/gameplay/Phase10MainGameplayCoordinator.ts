@@ -20,14 +20,18 @@ import type { SettlementOptions } from '../reward/RewardSettlement';
 import { HeroSystem } from '../hero/HeroSystem';
 import { FormationSystem } from '../formation/FormationSystem';
 import { ChapterSystem } from '../chapter/ChapterSystem';
+import type { StageCompletionContext } from '../chapter/ChapterSystem';
 import { ChapterRepository } from '../chapter/ChapterRepository';
 import type { StageConfig } from '../chapter/ChapterTypes';
 import { Phase9Bootstrap, Phase9Event } from '../systems/Phase9Bootstrap';
+import { ProgressSystem } from '../systems/ProgressSystem';
+import type { PlayerLevelChangedEventData } from '../systems/ProgressSystem';
 import { SaveManager } from '../save/SaveManager';
-import { EquipmentService } from '../equipment/EquipmentService';
+import { EquipmentService, EquipmentEvent } from '../equipment/EquipmentService';
 import { InventoryService } from '../inventory/InventoryService';
 import type { BattleResult } from '../battle/BattleResult';
 import type { GlobalPlayerEntry, GlobalConstConfig } from '../config/global_config';
+import type { StageDataConfig } from '../config/stage_config';
 
 const { ccclass, property } = _decorator;
 
@@ -161,6 +165,20 @@ export class Phase10MainGameplayCoordinator extends Component {
   /** [C1.5] 战斗后 hero_001 的 level（用于结果 Label 显示等级变化） */
   private _heroLevelAfter: number = 0;
 
+  // ===== C1.5.9-G-B1-A7: 账号经验与等级 =====
+
+  /** 战斗结算进行中标志（防止 PLAYER_LEVEL_CHANGED 监听器重复落盘） */
+  private _isBattleSettlementInProgress: boolean = false;
+
+  /** 本场战斗获得的账号经验 */
+  private _accountExpGained: number = 0;
+
+  /** 战斗前账号等级 */
+  private _accountLevelBefore: number = 0;
+
+  /** 战斗后账号等级 */
+  private _accountLevelAfter: number = 0;
+
   // ===== 结算结果 =====
 
   private _lastResult: GameplayLastResult | null = null;
@@ -169,6 +187,9 @@ export class Phase10MainGameplayCoordinator extends Component {
 
   private _battleFinishedListener: ((...args: unknown[]) => void) | null = null;
   private _phase9RestoreListener: ((...args: unknown[]) => void) | null = null;
+  private _powerChangedListener: ((...args: unknown[]) => void) | null = null;
+  private _loadoutChangedListener: ((...args: unknown[]) => void) | null = null;
+  private _playerLevelChangedListener: ((...args: unknown[]) => void) | null = null;
   private _heroStartupDiagLogged = false;
 
   // ===== C1.5.8 章节→战斗关卡映射 =====
@@ -295,6 +316,9 @@ export class Phase10MainGameplayCoordinator extends Component {
 
     this._registerBattleEndedListener();
     this._registerPhase9RestoreListener();
+    this._registerPowerChangedListener();
+    this._registerLoadoutChangedListener();
+    this._registerPlayerLevelChangedListener();
     this._bindChallengeButton();
 
     // [C1.5] 创建极简英雄信息标签（运行时，不修改 Scene）
@@ -321,6 +345,9 @@ export class Phase10MainGameplayCoordinator extends Component {
     this._unbindChallengeButton();
     this._unregisterBattleEndedListener();
     this._unregisterPhase9RestoreListener();
+    this._unregisterPowerChangedListener();
+    this._unregisterLoadoutChangedListener();
+    this._unregisterPlayerLevelChangedListener();
     console.log('[Step12A-B][Coordinator] onDestroy — 事件注销完成');
   }
 
@@ -560,6 +587,175 @@ export class Phase10MainGameplayCoordinator extends Component {
     this._phase9RestoreListener = null;
   }
 
+  /**
+   * [C1.5.9-B1-A2] 监听阵容战力变化，触发章节解锁重判。
+   */
+  private _registerPowerChangedListener(): void {
+    if (this._powerChangedListener) return;
+
+    this._powerChangedListener = (): void => {
+      this._reevaluateChapterConditions('FORMATION_POWER_CHANGED');
+    };
+    this._eventManager.on(
+      FormationSystem.FORMATION_POWER_CHANGED,
+      this._powerChangedListener,
+      this,
+    );
+  }
+
+  private _unregisterPowerChangedListener(): void {
+    if (!this._powerChangedListener) return;
+    this._eventManager.off(
+      FormationSystem.FORMATION_POWER_CHANGED,
+      this._powerChangedListener,
+      this,
+    );
+    this._powerChangedListener = null;
+  }
+
+  /**
+   * [C1.5.9-G-B1-A5] 监听装备穿戴变化事件，触发阵容战力全量重算。
+   *
+   * EquipmentEvent.LOADOUT_CHANGED → FormationSystem.recalculateAllPower(),
+   * 只在战力值真实变化时由 FormationSystem 内部发射 FORMATION_POWER_CHANGED，
+   * 再由本 Coordinator 触发章节重判。
+   *
+   * 此监听不直接依赖 FormationSystem 事件；
+   * FormationSystem 不直接依赖 EquipmentService 事件。
+   */
+  private _registerLoadoutChangedListener(): void {
+    if (this._loadoutChangedListener) return;
+
+    this._loadoutChangedListener = (): void => {
+      this._formationSystem.recalculateAllPower();
+    };
+    this._eventManager.on(
+      EquipmentEvent.LOADOUT_CHANGED,
+      this._loadoutChangedListener,
+      this,
+    );
+    console.log('[Coordinator][A5] LOADOUT_CHANGED 监听已注册');
+  }
+
+  private _unregisterLoadoutChangedListener(): void {
+    if (!this._loadoutChangedListener) return;
+    this._eventManager.off(
+      EquipmentEvent.LOADOUT_CHANGED,
+      this._loadoutChangedListener,
+      this,
+    );
+    this._loadoutChangedListener = null;
+  }
+
+  /**
+   * [C1.5.9-G-B1-A7] 监听账号等级变化事件。
+   *
+   * 规则：
+   * - 战斗结算中：仅执行章节重判，不落盘
+   * - 非战斗结算：章节重判 + changed 时保存
+   */
+  private _registerPlayerLevelChangedListener(): void {
+    if (this._playerLevelChangedListener) return;
+
+    this._playerLevelChangedListener = (data: unknown): void => {
+      const eventData = data as PlayerLevelChangedEventData;
+      if (!eventData || !Number.isFinite(eventData.newLevel)) return;
+
+      console.log(
+        `[Coordinator][A7] PLAYER_LEVEL_CHANGED: ` +
+        `Lv${eventData.oldLevel} → Lv${eventData.newLevel}, ` +
+        `settlementInProgress=${this._isBattleSettlementInProgress}, ` +
+        `source=${eventData.source}`,
+      );
+
+      if (!this._chapterSystem.isInitialized()) {
+        return;
+      }
+
+      const context = this._buildStageCompletionContext();
+      const changed = this._chapterSystem.reevaluateUnlockConditions(context);
+
+      if (changed) {
+        console.log(`[Coordinator][A7] 等级变化触发章节重判产生新解锁`);
+        // 结算中不保存，由结算尾统一落盘
+        if (!this._isBattleSettlementInProgress) {
+          this._phase9Bootstrap.saveAll();
+        } else {
+          console.log(`[Coordinator][A7] 结算中跳过保存，由结算尾统一落盘`);
+        }
+      }
+    };
+
+    this._eventManager.on(
+      ProgressSystem.PLAYER_LEVEL_CHANGED,
+      this._playerLevelChangedListener,
+      this,
+    );
+
+    console.log('[Coordinator][A7] PLAYER_LEVEL_CHANGED 监听已注册');
+  }
+
+  /** 注销账号等级变化监听 */
+  private _unregisterPlayerLevelChangedListener(): void {
+    if (!this._playerLevelChangedListener) return;
+    this._eventManager.off(
+      ProgressSystem.PLAYER_LEVEL_CHANGED,
+      this._playerLevelChangedListener,
+      this,
+    );
+    this._playerLevelChangedListener = null;
+  }
+
+  // ================================================================
+  // 内部 — 章节解锁重判（C1.5.9-B1-A2）
+  // ================================================================
+
+  /**
+   * [C1.5.9-G-B1-A5] 构建 StageCompletionContext。
+   *
+   * playerLevel 来自 ProgressSystem 运行期内存（初始化完成后的权威来源），
+   * totalPower 来自 FormationSystem PVE 阵容当前 teamPower。
+   *
+   * 禁止使用 SaveManager 存档副本作为实时权威来源。
+   */
+  private _buildStageCompletionContext(): StageCompletionContext {
+    const playerProgress = ProgressSystem.getInstance().getPlayerProgressData();
+    const playerLevel = playerProgress?.playerLevel ?? 1;
+
+    const pvePreset = this._formationSystem.getActivePreset('pve');
+    const totalPower = pvePreset ? pvePreset.teamPower : 0;
+
+    return { playerLevel, totalPower };
+  }
+
+  /**
+   * [C1.5.9-B1-A2] 统一章节条件重判入口。
+   *
+   * 调用 ChapterSystem.reevaluateUnlockConditions()，如果产生新解锁状态则触发保存。
+   *
+   * @param trigger  触发来源（仅用于日志）
+   */
+  private _reevaluateChapterConditions(trigger: string): void {
+    if (!this._chapterSystem.isInitialized()) {
+      console.log(`[Coordinator][A5] 重判跳过（ChapterSystem 未初始化）: trigger=${trigger}`);
+      return;
+    }
+
+    const context = this._buildStageCompletionContext();
+
+    console.log(
+      `[Coordinator][A5] 触发章节重判: trigger=${trigger}, ` +
+      `playerLevel=${context.playerLevel}, totalPower=${context.totalPower}`,
+    );
+
+    const changed = this._chapterSystem.reevaluateUnlockConditions(context);
+
+    if (changed) {
+      console.log(`[Coordinator][A5] 重判产生新解锁状态，触发保存: trigger=${trigger}`);
+      this._phase9Bootstrap.saveAll();
+    }
+  }
+
   private async _onBattleFinished(result: BattleResult): Promise<void> {
     // 校验是否是当前战斗
     if (result.stageId !== this._currentBattleStageId) {
@@ -579,6 +775,11 @@ export class Phase10MainGameplayCoordinator extends Component {
     }
 
     this._state = 'settling';
+
+    // [C1.5.9-G-B1-A7] 重置账号经验追踪（防止旧数据残留到非胜利路径）
+    this._accountExpGained = 0;
+    this._accountLevelBefore = 0;
+    this._accountLevelAfter = 0;
 
     console.log(
       `[Step12A-B][Coordinator] 收到战斗结束: stageId=${result.stageId}, ` +
@@ -623,6 +824,100 @@ export class Phase10MainGameplayCoordinator extends Component {
 
     // 胜利 → 结算
     try {
+      // [C1.5.9-G-B1-A7] 标记结算进行中
+      this._isBattleSettlementInProgress = true;
+      this._accountExpGained = 0;
+      const progressBefore = ProgressSystem.getInstance().getPlayerProgressData();
+      this._accountLevelBefore = progressBefore.playerLevel;
+
+      // ================================================================
+      // [C1.5.9-G-B1-A7-A3-R2] 首通奖励缺口修复
+      // 在 completeStage() 之前以 ChapterSystem.isStageCompleted()
+      // 作为权威首通判定来源。
+      // ================================================================
+      const isFirstClear = !this._chapterSystem.isStageCompleted(
+        this._currentChapterStageId,
+      );
+
+      if (isFirstClear) {
+        // --- R2-Fix1: 接入 firstDropId（首通掉落池）---
+        const stageDataCfg = this._configManager.getConfig<StageDataConfig>(
+          'config/stages/stage_data',
+        );
+        if (stageDataCfg?.data) {
+          const battleStage = stageDataCfg.data.find(
+            (s) => s.id === this._currentBattleStageId,
+          );
+          if (battleStage?.firstDropId) {
+            const firstDropRewards = this._battleManager.resolveDropById(
+              battleStage.firstDropId,
+            );
+            if (firstDropRewards.length > 0) {
+              for (const reward of firstDropRewards) {
+                result.rewards.push(reward);
+                if (reward.itemType === 'exp') {
+                  result.expGain += reward.count;
+                } else if (reward.itemType === 'gold') {
+                  result.goldGain += reward.count;
+                }
+              }
+              console.log(
+                `[Coordinator][R2] firstDropId=${battleStage.firstDropId}, ` +
+                `追加 ${firstDropRewards.length} 条首通奖励`,
+              );
+            }
+          } else {
+            console.log(
+              `[Coordinator][R2] battleStage=${this._currentBattleStageId} ` +
+              `无 firstDropId，跳过首通掉落`,
+            );
+          }
+        }
+
+        // --- R2-Fix2: 发放章节金币（chapter_data.json stage.rewards type=gold）---
+        const chapterStageConfig = this._chapterSystem.getStage(
+          this._currentChapterStageId,
+        );
+        if (chapterStageConfig?.rewards) {
+          const goldRewards = chapterStageConfig.rewards.filter(
+            (r) => r.type === 'gold',
+          );
+          for (const gr of goldRewards) {
+            const amount = gr.amount;
+            if (Number.isFinite(amount) && amount > 0 && Number.isInteger(amount)) {
+              result.rewards.push({
+                itemId: 'ITEM_GOLD',
+                itemType: 'gold',
+                count: amount,
+                source: 'first_clear',
+              });
+              result.goldGain += amount;
+              console.log(
+                `[Coordinator][R2] chapter gold: stageId=${this._currentChapterStageId}, ` +
+                `amount=+${amount}`,
+              );
+            }
+          }
+          if (goldRewards.length === 0) {
+            console.log(
+              `[Coordinator][R2] chapterStage=${this._currentChapterStageId} ` +
+              `无 type=gold 奖励条目`,
+            );
+          }
+        } else {
+          console.log(
+            `[Coordinator][R2] chapterStage=${this._currentChapterStageId} ` +
+            `无 rewards 配置`,
+          );
+        }
+      } else {
+        console.log(
+          `[Coordinator][R2] stageId=${this._currentChapterStageId} 非首通，` +
+          `跳过 firstDropId 与 chapter gold`,
+        );
+      }
+      // ================================================================
+
       // 1. RewardSettlement 结算（含 transactionId 幂等）
       const settleOptions: SettlementOptions = {
         transactionId: this._currentTransactionId,
@@ -698,13 +993,27 @@ export class Phase10MainGameplayCoordinator extends Component {
         `[Step12A-B][Coordinator] power 刷新: before=${this._powerBefore} after=${this._powerAfter}`,
       );
 
-      // 5. 推进章节
-      const chapterCompleted = this._chapterSystem.completeStage(this._currentChapterStageId);
+      // 5. 推进章节（附带玩家等级与总战力用于条件重判）
+      const unlockContext = this._buildStageCompletionContext();
+      const chapterCompleted = this._chapterSystem.completeStage(
+        this._currentChapterStageId,
+        unlockContext,
+      );
 
       console.log(
         `[Step12A-B][Coordinator] Chapter complete: stageId=${this._currentChapterStageId}, ` +
         `result=${chapterCompleted}`,
       );
+
+      // [C1.5.9-G-B1-A7] 首次完成时发放账号经验
+      if (chapterCompleted) {
+        const stageConfig = this._chapterSystem.getStage(this._currentChapterStageId);
+        if (stageConfig) {
+          this._accountExpGained = this._readAndAwardAccountExp(stageConfig);
+        }
+      }
+      // 读取最终账号等级（可能因 addPlayerExp 而变化）
+      this._accountLevelAfter = ProgressSystem.getInstance().getPlayerProgressData().playerLevel;
 
       // 检查下一关是否解锁
       const nextStage = this._chapterSystem.getCurrentStage('chapter_001');
@@ -795,6 +1104,9 @@ export class Phase10MainGameplayCoordinator extends Component {
         nextStageUnlocked: '',
         message: `异常: ${String(err)}`,
       };
+    } finally {
+      // [C1.5.9-G-B1-A7] 确保结算标记在任何退出路径都恢复
+      this._isBattleSettlementInProgress = false;
     }
   }
 
@@ -945,6 +1257,88 @@ export class Phase10MainGameplayCoordinator extends Component {
       }
     }
     return total;
+  }
+
+  /**
+   * [C1.5.9-G-B1-A7] 从关卡配置读取 player_exp 并发放账号经验。
+   *
+   * 规则：
+   * - 每个 stage 允许 0 或 1 个 player_exp 条目
+   * - 多条目 → 记录错误，不发放
+   * - amount 无效 → 记录错误，不发放
+   * - 调用 ProgressSystem.addPlayerExp()
+   *
+   * @param stageConfig  关卡配置
+   * @returns            实际发放的账号经验值（0 表示未发放）
+   */
+  private _readAndAwardAccountExp(stageConfig: import('../chapter/ChapterTypes').StageConfig): number {
+    const TAG = '[Coordinator][A7]';
+
+    if (!stageConfig.rewards || stageConfig.rewards.length === 0) {
+      console.log(`${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, 无奖励条目`);
+      return 0;
+    }
+
+    // 找到 type=exp, id=player_exp 的条目
+    const playerExpRewards = stageConfig.rewards.filter(
+      (r) => r.type === 'exp' && r.id === 'player_exp',
+    );
+
+    if (playerExpRewards.length === 0) {
+      console.log(`${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, 无 player_exp 条目`);
+      return 0;
+    }
+
+    if (playerExpRewards.length > 1) {
+      console.error(
+        `${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, ` +
+        `player_exp 条目数=${playerExpRewards.length}（应为0或1），配置错误，不发放`,
+      );
+      return 0;
+    }
+
+    const reward = playerExpRewards[0];
+    const amount = reward.amount;
+
+    // 校验 amount
+    if (
+      !Number.isFinite(amount) ||
+      amount < 0 ||
+      !Number.isInteger(amount)
+    ) {
+      console.error(
+        `${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, ` +
+        `player_exp amount 无效 (${amount})，不发放`,
+      );
+      return 0;
+    }
+
+    if (amount === 0) {
+      console.log(`${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, player_exp=0，跳过`);
+      return 0;
+    }
+
+    console.log(
+      `${TAG} _readAndAwardAccountExp: stageId=${stageConfig.id}, ` +
+      `player_exp=${amount}`,
+    );
+
+    const progressSystem = ProgressSystem.getInstance();
+    const result = progressSystem.addPlayerExp(
+      amount,
+      `main_stage_complete:${stageConfig.id}`,
+    );
+
+    console.log(
+      `${TAG} addPlayerExp 结果: Lv${result.oldLevel}(${result.oldExp}) → ` +
+      `Lv${result.newLevel}(${result.newExp}), ` +
+      `levelsGained=${result.levelsGained}, reachedMax=${result.reachedMaxLevel}`,
+    );
+
+    // 更新等级追踪
+    this._accountLevelAfter = result.newLevel;
+
+    return result.expAdded;
   }
 
   // ================================================================
@@ -1148,9 +1542,29 @@ export class Phase10MainGameplayCoordinator extends Component {
 
   /**
    * 按钮点击回调。
+   *
+   * [C1.5.9-G-B1-A5] 在读取关卡状态前执行低频兜底：
+   * 重算阵容战力 → 构建最新 context → 章节重判 → changed 时保存。
+   * 这是挑战路径的低频安全检查，不替代装备事件桥的正式运行链。
    */
   private _onChallengeButtonClicked(): void {
-    console.log('[Step12A-C1][Entry] 按钮点击 — challengeFirstStage');
+    console.log('[Step12A-C1][Entry] 按钮点击 — 挑战前兜底');
+
+    // 1. 兜底战力重算
+    this._formationSystem.recalculateAllPower();
+
+    // 2. 构建最新 context 并执行章节重判
+    const context = this._buildStageCompletionContext();
+    const changed = this._chapterSystem.reevaluateUnlockConditions(context);
+
+    // 3. changed 时保存（幂等：如果 FORMATION_POWER_CHANGED 监听器已处理过，
+    //    reevaluateUnlockConditions 返回 false，不会重复保存）
+    if (changed) {
+      console.log('[Coordinator][A5] 挑战前兜底发现新解锁状态，触发保存');
+      this._phase9Bootstrap.saveAll();
+    }
+
+    // 4. 启动挑战
     const result = this.challengeFirstStage();
     if (!result.success) {
       console.warn('[Step12A-C1][Entry] 启动失败:', result.message);
@@ -1286,6 +1700,11 @@ export class Phase10MainGameplayCoordinator extends Component {
       if (r.expGain > 0) primary.push(`经验 +${r.expGain}`);
       if (primary.length > 0) lines.push(primary.join('  '));
 
+      // [C1.5.9-G-B1-A7] 账号经验奖励
+      if (this._accountExpGained > 0) {
+        lines.push(`账号经验 +${this._accountExpGained}`);
+      }
+
       // 其他奖励项（强化石、钻石、装备、材料等）
       const otherItems = r.rewardItems ?? [];
       if (otherItems.length > 0) {
@@ -1307,6 +1726,11 @@ export class Phase10MainGameplayCoordinator extends Component {
       // [C1.5] 等级变化（如果升级了）
       if (this._heroLevelAfter > this._heroLevelBefore) {
         lines.push(`等级 Lv${this._heroLevelBefore} → Lv${this._heroLevelAfter}`);
+      }
+
+      // [C1.5.9-G-B1-A7] 账号等级变化
+      if (this._accountLevelAfter > this._accountLevelBefore) {
+        lines.push(`账号等级 Lv${this._accountLevelBefore} → Lv${this._accountLevelAfter}`);
       }
 
       // 战力变化
