@@ -166,9 +166,9 @@
       "element": "雷",
       "level": 10,
       "hp": 4000,
-      "attack": 150,
+      "attack": 62,
       "defense": 85,
-      "speed": 100,
+      "speed": 30,
       "skillIds": [
         "SKILL_001",
         "SKILL_401",
@@ -565,6 +565,23 @@
       "dropId": "DROP_014",
       "isBoss": false,
       "faction": "朱雀"
+    },
+    {
+      "id": "ENEMY_031",
+      "name": "淬体毒刺蜂",
+      "enemyType": "normal",
+      "element": "毒",
+      "level": 2,
+      "hp": 280,
+      "attack": 38,
+      "defense": 18,
+      "speed": 70,
+      "skillIds": [
+        "SKILL_001"
+      ],
+      "dropId": "DROP_002",
+      "isBoss": false,
+      "faction": "玄武"
     },
     {
       "id": "ENEMY_BOSS_003",

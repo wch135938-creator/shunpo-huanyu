@@ -73,7 +73,14 @@
             "playerLevel": 2,
             "totalPower": 130
           },
-          "staminaCost": 6
+          "staminaCost": 6,
+          "entryRequirements": [
+            {
+              "type": "equippedEnhanceLevel",
+              "slots": ["Weapon", "Armor", "Accessory"],
+              "minLevel": 3
+            }
+          ]
         },
         {
           "id": "chapter_001_stage_04",
@@ -205,6 +212,7 @@
           "recommendedPower": 800,
           "enemyGroupId": "",
           "bossId": "boss_ch001_010",
+          "battleStageId": "STAGE_MAIN_001_010",
           "rewards": [
             { "type": "gold", "id": "currency_gold", "amount": 1000 },
             { "type": "exp", "id": "player_exp", "amount": 600 }

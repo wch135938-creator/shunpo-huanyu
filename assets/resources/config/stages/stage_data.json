@@ -47,7 +47,7 @@
       "stageIndex": 3,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_003", "ENEMY_004"],
+      "enemyIds": ["ENEMY_031", "ENEMY_004"],
       "recommendedPower": 1200,
       "staminaCost": 5,
       "dropId": "DROP_003",
@@ -370,6 +370,27 @@
       "unlockCondition": {
         "type": "prevStage",
         "prevStageId": "STAGE_MAIN_001_008"
+      },
+      "battleWave": 1
+    },
+    {
+      "id": "STAGE_MAIN_001_010",
+      "name": "第一章终·云海守护兽",
+      "nameKey": "stage_name_main_001_010",
+      "chapterId": "CHAPTER_001",
+      "stageIndex": 10,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": [
+        "ENEMY_BOSS_001"
+      ],
+      "recommendedPower": 800,
+      "staminaCost": 12,
+      "dropId": "DROP_005",
+      "firstDropId": "DROP_F005",
+      "unlockCondition": {
+        "type": "prevStage",
+        "prevStageId": "STAGE_MAIN_001_009"
       },
       "battleWave": 1
     },

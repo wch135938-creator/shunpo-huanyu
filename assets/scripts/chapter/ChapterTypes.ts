@@ -27,6 +27,26 @@ export interface StageReward {
   amount: number;
 }
 
+// ==================== 关卡准入条件 ====================
+
+/** 装备槽位类型（用于准入条件指定检查的槽位） */
+export type StageEntryEquipmentSlot =
+  | 'Weapon'
+  | 'Armor'
+  | 'Accessory';
+
+/** 已穿戴装备强化等级准入要求。
+ *  slots 中列出的每个已装备槽位都必须分别达到 minLevel。 */
+export interface EquippedEnhanceLevelRequirement {
+  type: 'equippedEnhanceLevel';
+  slots: StageEntryEquipmentSlot[];
+  minLevel: number;
+}
+
+/** 关卡准入条件联合类型 */
+export type StageEntryRequirement =
+  | EquippedEnhanceLevelRequirement;
+
 // ==================== 关卡配置 ====================
 
 /**
@@ -62,6 +82,12 @@ export interface StageConfig {
    * 可选字段 — 旧配置兼容，缺失时 Coordinator 返回"后续关卡尚未接入"。
    */
   battleStageId?: string;
+  /**
+   * [C1.5.9-G-B2-A11] 关卡准入条件列表。
+   * 可选字段 — 缺失时保持旧关卡行为（无条件准入）。
+   * 不得修改 unlockCondition 语义。
+   */
+  entryRequirements?: StageEntryRequirement[];
 }
 
 // ==================== 解锁条件 ====================

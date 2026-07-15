@@ -103,6 +103,7 @@ const ERR_NO_HERO = 'ERR_NO_HERO';
 const ERR_NO_FORMATION = 'ERR_NO_FORMATION';
 const ERR_CONFIG_MISSING = 'ERR_CONFIG_MISSING';
 const ERR_BATTLE_START_FAILED = 'ERR_BATTLE_START_FAILED';
+const ERR_ENTRY_REQUIREMENT_NOT_MET = 'ERR_ENTRY_REQUIREMENT_NOT_MET';
 
 // ==================== Phase10MainGameplayCoordinator ====================
 
@@ -416,6 +417,15 @@ export class Phase10MainGameplayCoordinator extends Component {
         `[Step12A-B][Coordinator] 关卡映射读取成功: ` +
         `chapterStage=${stageConfig.id} → battleStage=${battleStageId}`,
       );
+
+      // [C1.5.9-G-B2-A11] 核心入口准入二次校验
+      const entryBlockMessage = this._getStageEntryBlockMessage(stageConfig);
+      if (entryBlockMessage) {
+        return this._blockChallengeEntry(
+          ERR_ENTRY_REQUIREMENT_NOT_MET,
+          entryBlockMessage,
+        );
+      }
 
       // 3. 确保阵容可用
       const formationOk = this._ensurePlayableFormation();
@@ -1071,8 +1081,11 @@ export class Phase10MainGameplayCoordinator extends Component {
 
       this._state = 'settled';
       this._setChallengeButtonInteractable(true);
+
       this._renderLastResultToLabel();
+
       this._refreshCurrentStageDisplay();
+
       // [C1.5] 更新英雄信息标签（经验/等级变化后刷新显示）
       this._updateHeroInfoLabel();
 
@@ -1492,6 +1505,7 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (!label) return;
 
     const ctx = context ?? this._resolveCurrentStageContext();
+
     if (ctx.displayIndex !== null) {
       label.string = `挑战第 ${ctx.displayIndex} 关`;
     } else {
@@ -1549,6 +1563,17 @@ export class Phase10MainGameplayCoordinator extends Component {
    */
   private _onChallengeButtonClicked(): void {
     console.log('[Step12A-C1][Entry] 按钮点击 — 挑战前兜底');
+
+    // [C1.5.9-G-B2-A11] 准入预检（只读，必须位于战力重算、章节重判、saveAll 之前）
+    // A10裁决：未满足条件时只读取当前关卡配置和权威装备实例，显示提示并返回。
+    const preflightCtx = this._resolveCurrentStageContext();
+    if (preflightCtx.stageConfig) {
+      const blockMessage = this._getStageEntryBlockMessage(preflightCtx.stageConfig);
+      if (blockMessage) {
+        this._blockChallengeEntry(ERR_ENTRY_REQUIREMENT_NOT_MET, blockMessage);
+        return;
+      }
+    }
 
     // 1. 兜底战力重算
     this._formationSystem.recalculateAllPower();
@@ -1674,16 +1699,25 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (r.isDuplicate) {
       this._updateResultLabel('重复结算已拦截：\n资产和经验未重复增加');
     } else if (!r.success) {
-      // [C1.5.8-B3] 从 context 生成失败文案
-      const failText = ctx.displayIndex !== null
-        ? `第 ${ctx.displayIndex} 关挑战失败：未发放奖励`
-        : '挑战失败：未发放奖励';
+      // [C1.5.9-G-B2-A2] 失败文案使用本次实际挑战的关卡（_currentStageConfig）
+      const foughtCfg = this._currentStageConfig;
+      let failText: string;
+      if (foughtCfg && foughtCfg.stageIndex) {
+        failText = this._formatStageDisplayText(foughtCfg) + ' 挑战失败：未发放奖励';
+      } else if (ctx.displayIndex !== null) {
+        failText = `第 ${ctx.displayIndex} 关挑战失败：未发放奖励`;
+      } else {
+        failText = '挑战失败：未发放奖励';
+      }
       this._updateResultLabel(failText);
     } else {
       // [Step12A-C1.4.1] 完整奖励展示：金币、经验、强化石、钻石、装备、材料等
-      // [C1.5.8-B3] 从 context 生成胜利标题
+      // [C1.5.9-G-B2-A2] 胜利标题使用本次实际挑战的关卡（_currentStageConfig）
       let winTitle: string;
-      if (ctx.displayIndex !== null) {
+      const foughtCfg = this._currentStageConfig;
+      if (foughtCfg && foughtCfg.stageIndex) {
+        winTitle = this._formatStageDisplayText(foughtCfg) + ' 胜利';
+      } else if (ctx.displayIndex !== null) {
         if (ctx.stageName) {
           winTitle = `第 ${ctx.displayIndex} 关·${ctx.stageName} 胜利`;
         } else {
@@ -2009,4 +2043,155 @@ export class Phase10MainGameplayCoordinator extends Component {
       message,
     };
   }
+
+  // ================================================================
+  // [C1.5.9-G-B2-A11] 关卡准入条件评估
+  // ================================================================
+
+  /**
+   * [C1.5.9-G-B2-A11] 评估关卡准入条件。
+   *
+   * 遍历 stageConfig.entryRequirements，逐条检查。
+   * 全部满足时返回 null；不满足时返回中文阻断提示。
+   *
+   * 权威装备数据读取链：
+   *   initialHeroId → EquipmentService.getHeroLoadout(heroId)
+   *   → Weapon/Armor/Accessory 槽位 uniqueId
+   *   → InventoryService.getInstanceByUniqueId(uniqueId)
+   *   → InstanceItem.extraData.enhanceLevel
+   *
+   * @param stageConfig  关卡配置
+   * @returns            阻断消息（null = 通过，非 null = 阻断原因）
+   */
+  private _getStageEntryBlockMessage(stageConfig: StageConfig): string | null {
+    const requirements = stageConfig.entryRequirements;
+    if (!requirements || requirements.length === 0) {
+      return null;
+    }
+
+    // 验证服务已初始化
+    const eqService = EquipmentService.getInstance();
+    const inventory = InventoryService.getInstance();
+    if (!eqService.isInitialized()) {
+      console.warn('[Coordinator][EntryGate] EquipmentService 未初始化，闭锁挑战');
+      return '系统未就绪，请稍后再试';
+    }
+    if (!inventory.isInitialized()) {
+      console.warn('[Coordinator][EntryGate] InventoryService 未初始化，闭锁挑战');
+      return '系统未就绪，请稍后再试';
+    }
+
+    for (const req of requirements) {
+      if (req.type === 'equippedEnhanceLevel') {
+        // 校验配置
+        if (!req.slots || req.slots.length === 0) {
+          console.warn('[Coordinator][EntryGate] equippedEnhanceLevel.slots 为空，闭锁');
+          return '关卡配置异常，无法挑战';
+        }
+        if (!Number.isFinite(req.minLevel) || req.minLevel < 0) {
+          console.warn(
+            `[Coordinator][EntryGate] equippedEnhanceLevel.minLevel 非法: ${req.minLevel}，闭锁`,
+          );
+          return '关卡配置异常，无法挑战';
+        }
+
+        // 获取主角英雄 ID
+        const initialHeroId = this._getInitialHeroId();
+        if (!initialHeroId) {
+          console.warn('[Coordinator][EntryGate] 无法获取 initialHeroId，闭锁');
+          return '英雄数据未就绪，无法挑战';
+        }
+
+        // 读取装备穿戴数据
+        const loadout = eqService.getHeroLoadout(initialHeroId);
+        if (!loadout) {
+          console.warn(
+            `[Coordinator][EntryGate] heroId=${initialHeroId} 无装备穿戴数据，闭锁`,
+          );
+          return '请先将武器、护甲和饰品分别强化至+3';
+        }
+
+        // 逐槽检查强化等级
+        for (const slotType of req.slots) {
+          // 校验槽位类型
+          if (
+            slotType !== 'Weapon' &&
+            slotType !== 'Armor' &&
+            slotType !== 'Accessory'
+          ) {
+            console.warn(
+              `[Coordinator][EntryGate] 不支持的槽位类型: ${slotType}，闭锁`,
+            );
+            return '关卡配置异常，无法挑战';
+          }
+
+          const uniqueId = loadout.slots[slotType];
+          if (!uniqueId) {
+            // 槽位为空
+            return '请先将武器、护甲和饰品分别强化至+3';
+          }
+
+          const instance = inventory.getInstanceByUniqueId(uniqueId);
+          if (!instance) {
+            // 实例不存在
+            return '请先将武器、护甲和饰品分别强化至+3';
+          }
+
+          // 读取强化等级（严格防御：缺失/非法/非有限/负数 → 0）
+          const rawLevel = instance.extraData?.enhanceLevel;
+          let enhanceLevel: number;
+          if (rawLevel === undefined || rawLevel === null) {
+            enhanceLevel = 0;
+          } else {
+            const num = Number(rawLevel);
+            if (!Number.isFinite(num)) {
+              enhanceLevel = 0;
+            } else {
+              enhanceLevel = Math.floor(num);
+            }
+          }
+
+          if (enhanceLevel < req.minLevel) {
+            return '请先将武器、护甲和饰品分别强化至+3';
+          }
+        }
+      } else {
+        // 未知准入条件类型
+        console.warn(
+          `[Coordinator][EntryGate] 未知准入条件类型: ${(req as Record<string, unknown>).type}，闭锁`,
+        );
+        return '关卡配置异常，无法挑战';
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * [C1.5.9-G-B2-A11] 阻断挑战入口。
+   *
+   * 不调用 _failChallenge()，不改变 _state 为 'failed'。
+   * 不创建战斗、不生成 transactionId、不扣资源、不发放奖励。
+   *
+   * @param errorCode  错误码
+   * @param message    阻断提示文本
+   * @returns          ChallengeResult（success=false）
+   */
+  private _blockChallengeEntry(
+    errorCode: string,
+    message: string,
+  ): ChallengeResult {
+    console.warn(
+      `[Coordinator][EntryGate] 挑战入口阻断: errorCode=${errorCode}, message=${message}`,
+    );
+    this._setChallengeButtonInteractable(true);
+    this._updateResultLabel(message);
+    return {
+      success: false,
+      state: this._state,
+      errorCode,
+      message,
+    };
+  }
+
 }
