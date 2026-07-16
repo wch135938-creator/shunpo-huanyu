@@ -92,6 +92,10 @@ interface CurrentStageContext {
   chapterStageId: string | null;
   /** 解析后的 Battle 关卡 ID（映射失败时为 null） */
   battleStageId: string | null;
+  /** [C1.6-B1] 当前章节 ID，如 "chapter_001"（未就绪时为 null） */
+  chapterId: string | null;
+  /** [C1.6-B1-B-R1] 当前章节序号（1-based），用于多章节文案 */
+  chapterIndex: number | null;
 }
 
 // ==================== 错误码 ====================
@@ -184,6 +188,9 @@ export class Phase10MainGameplayCoordinator extends Component {
 
   private _lastResult: GameplayLastResult | null = null;
 
+  /** [C1.6-B1-B-R6] 结算时刻所属章节 ID（从 chapterStageId 解析，用于跨章节确认判断） */
+  private _lastResultChapterId: string | null = null;
+
   // ===== 事件监听引用 =====
 
   private _battleFinishedListener: ((...args: unknown[]) => void) | null = null;
@@ -192,27 +199,6 @@ export class Phase10MainGameplayCoordinator extends Component {
   private _loadoutChangedListener: ((...args: unknown[]) => void) | null = null;
   private _playerLevelChangedListener: ((...args: unknown[]) => void) | null = null;
   private _heroStartupDiagLogged = false;
-
-  // ===== C1.5.8 章节→战斗关卡映射 =====
-
-  /** [C1.5.8] chapter stage → battle stage 局部映射表（fallback）。
-   *  仅当 StageConfig.battleStageId 为空时使用。
-   *  映射范围以 stage_data.json 实际存在的 Battle Stage 为准。
-   *  当前覆盖 chapter_001 前 7 关。 */
-  private static readonly CHAPTER_TO_BATTLE_STAGE_MAP: Record<string, string> = {
-    'chapter_001_stage_01': 'STAGE_001',
-    'chapter_001_stage_02': 'STAGE_002',
-    'chapter_001_stage_03': 'STAGE_003',
-    'chapter_001_stage_04': 'STAGE_004',
-    // C1.5.8-E: 修正第5关映射 — 旧 STAGE_005 为高难 Boss 关 (rec 2500, ENEMY_BOSS_001)，
-    // 改为早期主线专用 stage STAGE_MAIN_001_005 (rec 400, ENEMY_004+ENEMY_005)
-    'chapter_001_stage_05': 'STAGE_MAIN_001_005',
-    // [C1.5.9-D] 第6关普通主线接入 — 复用 ENEMY_004+ENEMY_005, DROP_003
-    'chapter_001_stage_06': 'STAGE_MAIN_001_006',
-    'chapter_001_stage_07': 'STAGE_MAIN_001_007',
-    'chapter_001_stage_08': 'STAGE_MAIN_001_008',
-    'chapter_001_stage_09': 'STAGE_MAIN_001_009',
-  };
 
   // ===== 弹窗覆盖检测（Step12A-C1.2）=====
 
@@ -406,7 +392,8 @@ export class Phase10MainGameplayCoordinator extends Component {
       // 2. 解析 battleStageId 映射（使用 context 中已解析的结果）
       const battleStageId = ctx.battleStageId;
       if (!battleStageId) {
-        const stageDisplay = this._formatStageDisplayText(stageConfig);
+        // [C1.6-B1-B-R4] 多章节未接入提示（紧凑格式，避免文字重叠）
+        const stageDisplay = this._formatCompactStageDisplayForChapter(ctx);
         return this._failChallenge(
           ERR_NO_BATTLE_MAPPING,
           `${stageDisplay} 尚未接入`,
@@ -786,6 +773,10 @@ export class Phase10MainGameplayCoordinator extends Component {
 
     this._state = 'settling';
 
+    // [C1.6-B1-B-R6-A1] 从战斗启动前缓存的 _currentStageConfig 直接读取权威 chapterId，
+    // 不得通过 chapterStageId 字符串格式推导。
+    this._lastResultChapterId = this._currentStageConfig?.chapterId ?? null;
+
     // [C1.5.9-G-B1-A7] 重置账号经验追踪（防止旧数据残留到非胜利路径）
     this._accountExpGained = 0;
     this._accountLevelBefore = 0;
@@ -1025,8 +1016,11 @@ export class Phase10MainGameplayCoordinator extends Component {
       // 读取最终账号等级（可能因 addPlayerExp 而变化）
       this._accountLevelAfter = ProgressSystem.getInstance().getPlayerProgressData().playerLevel;
 
-      // 检查下一关是否解锁
-      const nextStage = this._chapterSystem.getCurrentStage('chapter_001');
+      // [C1.6-B1] 使用当前权威章节 ID 获取推进后的上下文
+      const nextChapterId = this._chapterSystem.getCurrentChapterId();
+      const nextStage = nextChapterId
+        ? this._chapterSystem.getCurrentStage(nextChapterId)
+        : null;
       const nextStageId = nextStage ? nextStage.id : '';
 
       // 6. 保存
@@ -1359,44 +1353,276 @@ export class Phase10MainGameplayCoordinator extends Component {
   // ================================================================
 
   /**
-   * [C1.5.8-B3] 解析当前章节进度上下文（统一入口）。
+   * [C1.6-B1] 解析当前章节进度上下文（统一入口）。
    *
    * challengeFirstStage() 和 _refreshCurrentStageDisplay() 共用此方法，
    * 禁止初始化显示和点击挑战各写一套不同的关卡推断逻辑。
    *
    * 返回的 displayIndex / stageName 可用于按钮和 resultLabel 文案；
    * stageConfig / battleStageId 供战斗启动使用。
+   *
+   * 解析顺序：
+   *   1. 确认 ChapterSystem 已经初始化
+   *   2. 调用 ChapterSystem.getCurrentChapterId()
+   *   3. 当前章节 ID 为空时返回不可挑战上下文
+   *   4. 调用 ChapterSystem.getCurrentStage(chapterId)
+   *   5. 当前关卡不存在时返回不可挑战上下文
+   *   6. 校验 stageConfig.chapterId === chapterId
+   *   7. 读取并 trim stageConfig.battleStageId
+   *   8. 不读取静态 Map
+   *   9. 不推导战斗关卡 ID
    */
   private _resolveCurrentStageContext(): CurrentStageContext {
-    const stageConfig = this._chapterSystem.getCurrentStage('chapter_001');
-    if (stageConfig) {
-      const battleStageId = this._resolveBattleStageId(stageConfig);
+    // 1. 确认 ChapterSystem 已经初始化
+    if (!this._chapterSystem.isInitialized()) {
       return {
-        stageConfig,
-        displayIndex: stageConfig.stageIndex,
-        stageName: stageConfig.name || null,
-        chapterStageId: stageConfig.id,
-        battleStageId,
+        stageConfig: null,
+        displayIndex: null,
+        stageName: null,
+        chapterStageId: null,
+        battleStageId: null,
+        chapterId: null,
+        chapterIndex: null,
       };
     }
+
+    // 2. 调用 ChapterSystem.getCurrentChapterId()
+    const chapterId = this._chapterSystem.getCurrentChapterId();
+
+    // 3. 当前章节 ID 为空时返回不可挑战上下文
+    if (!chapterId) {
+      return {
+        stageConfig: null,
+        displayIndex: null,
+        stageName: null,
+        chapterStageId: null,
+        battleStageId: null,
+        chapterId: null,
+        chapterIndex: null,
+      };
+    }
+
+    // 4. 调用 ChapterSystem.getCurrentStage(chapterId)
+    const stageConfig = this._chapterSystem.getCurrentStage(chapterId);
+
+    // 5. 当前关卡不存在时返回不可挑战上下文
+    if (!stageConfig) {
+      return {
+        stageConfig: null,
+        displayIndex: null,
+        stageName: null,
+        chapterStageId: null,
+        battleStageId: null,
+        chapterId,
+        chapterIndex: this._resolveChapterIndex(chapterId),
+      };
+    }
+
+    // 6. 校验 stageConfig.chapterId === chapterId（归属校验）
+    if (stageConfig.chapterId !== chapterId) {
+      console.error(
+        `[Coordinator][C1.6-B1] 归属校验失败: ` +
+        `stageConfig.chapterId=${stageConfig.chapterId} !== expected=${chapterId}, ` +
+        `chapterStageId=${stageConfig.id}`,
+      );
+      return {
+        stageConfig: null,
+        displayIndex: null,
+        stageName: null,
+        chapterStageId: null,
+        battleStageId: null,
+        chapterId,
+        chapterIndex: this._resolveChapterIndex(chapterId),
+      };
+    }
+
+    // 7-9. 读取并 trim stageConfig.battleStageId（不读取静态 Map，不推导）
+    const battleStageId = this._resolveBattleStageId(stageConfig);
+
     return {
-      stageConfig: null,
-      displayIndex: null,
-      stageName: null,
-      chapterStageId: null,
-      battleStageId: null,
+      stageConfig,
+      displayIndex: stageConfig.stageIndex,
+      stageName: stageConfig.name || null,
+      chapterStageId: stageConfig.id,
+      battleStageId,
+      chapterId,
+      chapterIndex: this._resolveChapterIndex(chapterId),
     };
   }
 
   /**
-   * [C1.5.8] 从 chapter stage 解析 battle stage ID。
-   * 优先级：StageConfig.battleStageId → 局部映射表 → null
+   * [C1.6-B1] 从 chapter stage 解析 battle stage ID。
+   * 仅使用显式配置的 battleStageId；不使用静态映射表，不推导。
+   * 缺失、空字符串、仅空白字符 → null（闭锁）。
    */
   private _resolveBattleStageId(stageConfig: StageConfig): string | null {
-    if (stageConfig.battleStageId) {
-      return stageConfig.battleStageId;
+    const raw = stageConfig.battleStageId;
+    if (!raw) {
+      return null;
     }
-    return Phase10MainGameplayCoordinator.CHAPTER_TO_BATTLE_STAGE_MAP[stageConfig.id] ?? null;
+    const trimmed = raw.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+
+  /**
+   * [C1.6-B1-B-R1] 将章节序号（number）转为中文数字字符串。
+   *
+   * 用于多章节文案显示（如 chapterIndex=2 → "二"）。
+   * 支持 1～99；超出范围时返回阿拉伯数字字符串。
+   */
+  private static _chapterIndexToChineseDisplay(n: number): string {
+    if (n <= 0 || n > 99 || !Number.isInteger(n)) return String(n);
+    const ones = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九'];
+    const t = Math.floor(n / 10);
+    const o = n % 10;
+    let result = '';
+    if (t === 1) result += '十';
+    else if (t > 1) result += ones[t] + '十';
+    if (o > 0) result += ones[o];
+    return result || '零';
+  }
+
+  /**
+   * [C1.6-B1-B-R3] 将中文数字字符串解析为阿拉伯数字。
+   *
+   * 与 _chapterIndexToChineseDisplay 互为逆操作。
+   * 支持 "一"～"九十九"；无法解析时返回 null。
+   * 内部使用，不暴露为 public。
+   */
+  private static _parseChineseNumber(s: string): number | null {
+    if (!s || s.length === 0) return null;
+    const digitMap: Record<string, number> = {
+      '一': 1, '二': 2, '三': 3, '四': 4, '五': 5,
+      '六': 6, '七': 7, '八': 8, '九': 9,
+    };
+
+    let result = 0;
+    let i = 0;
+
+    // "X十" or "X十Y" (X = 2-9)
+    if (i < s.length && digitMap[s[i]] !== undefined) {
+      const d = digitMap[s[i]];
+      if (i + 1 < s.length && s[i + 1] === '十') {
+        result += d * 10;
+        i += 2;
+        if (i < s.length && digitMap[s[i]] !== undefined) {
+          result += digitMap[s[i]];
+          i++;
+        }
+      } else {
+        result += d;
+        i++;
+      }
+    } else if (i < s.length && s[i] === '十') {
+      // "十" or "十Y"
+      result += 10;
+      i++;
+      if (i < s.length && digitMap[s[i]] !== undefined) {
+        result += digitMap[s[i]];
+        i++;
+      }
+    } else {
+      return null;
+    }
+
+    if (i !== s.length) return null;
+    if (result < 1 || result > 99) return null;
+    return result;
+  }
+
+  /**
+   * [C1.6-B1-B-R3] 识别冗余关卡名称。
+   *
+   * 当名称仅重复关卡序号，不含独立语义时返回 true。
+   * 冗余模式: "第N关", "第N关卡"（N 为中文或阿拉伯数字）。
+   *
+   * 不匹配的模式: "第一章终", "第十关·天劫之门", "毒蜂王" — 这些含独立语义。
+   *
+   * 通用规则，不硬编码具体关卡。
+   */
+  private static _isRedundantStageName(stageIndex: number, name: string): boolean {
+    if (!name || name.length === 0) return false;
+    if (name.length > 10) return false;  // 安全上限
+
+    // 必须以 "第" 开头
+    if (!name.startsWith('第')) return false;
+
+    const afterDi = name.substring(1);
+
+    // 尝试后缀 "关卡" 和 "关"
+    for (const suffix of ['关卡', '关']) {
+      if (afterDi.endsWith(suffix) && afterDi.length > suffix.length) {
+        const numPart = afterDi.substring(0, afterDi.length - suffix.length);
+        if (numPart.length === 0) continue;
+
+        // 先尝试阿拉伯数字
+        const arabic = parseInt(numPart, 10);
+        if (!isNaN(arabic) && String(arabic) === numPart && arabic === stageIndex) {
+          return true;
+        }
+
+        // 再尝试中文数字
+        const parsed = Phase10MainGameplayCoordinator._parseChineseNumber(numPart);
+        if (parsed !== null && parsed === stageIndex) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * [C1.6-B1-B-R1] 基于权威 chapterId 获取章节序号。
+   *
+   * 仅用于 UI 文案；禁止用于战斗映射、章节选择或业务权威来源。
+   */
+  private _resolveChapterIndex(chapterId: string | null): number | null {
+    if (!chapterId) return null;
+    const chapter = this._chapterSystem.getChapter(chapterId);
+    return chapter?.chapterIndex ?? null;
+  }
+
+  /**
+   * [C1.6-B1-B-R1] 生成章节感知的关卡显示文案。
+   *
+   * - 第一章（chapterIndex === 1 或 null）：使用现有 "第 X 关" 格式
+   * - 多章节（chapterIndex > 1）：使用 "第{CN}章第{index}关" 格式
+   *
+   * 仅用于按钮文案和未接入提示，不得用于战斗映射。
+   */
+  private _formatStageDisplayForChapter(ctx: CurrentStageContext): string {
+    if (ctx.displayIndex === null) return '关卡';
+    const chapterIndex = ctx.chapterIndex;
+    if (chapterIndex === null || chapterIndex === 1) {
+      // 第一章：保持现有格式，不显示章节号
+      return `第 ${ctx.displayIndex} 关`;
+    }
+    // 多章节：显示章节号
+    const cn = Phase10MainGameplayCoordinator._chapterIndexToChineseDisplay(chapterIndex);
+    return `第${cn}章第${ctx.displayIndex}关`;
+  }
+
+  /**
+   * [C1.6-B1-B-R4] 生成紧凑关卡显示文案（用于按钮和短提示场景）。
+   *
+   * - 第一章（chapterIndex === 1 或 null）：使用 "第 X 关" 格式（与 _formatStageDisplayForChapter 一致）
+   * - 多章节（chapterIndex > 1）：使用 "第{CN}章·{N}关" 格式
+   *
+   * 比 _formatStageDisplayForChapter 更紧凑：用 "·" 替代中间的 "第"，
+   * 专为按钮宽度受限和结果区域短提示场景设计。
+   * 通用多章节规则，不硬编码具体章节。
+   */
+  private _formatCompactStageDisplayForChapter(ctx: CurrentStageContext): string {
+    if (ctx.displayIndex === null) return '关卡';
+    const chapterIndex = ctx.chapterIndex;
+    if (chapterIndex === null || chapterIndex === 1) {
+      // 第一章：保持 "第 X 关" 格式
+      return `第 ${ctx.displayIndex} 关`;
+    }
+    // 多章节：紧凑格式 "第{CN}章·{N}关"
+    const cn = Phase10MainGameplayCoordinator._chapterIndexToChineseDisplay(chapterIndex);
+    return `第${cn}章·${ctx.displayIndex}关`;
   }
 
   /**
@@ -1423,8 +1649,9 @@ export class Phase10MainGameplayCoordinator extends Component {
   // ================================================================
 
   /**
-   * [C1.5.8-B] 格式化关卡显示文本。
+   * [C1.5.8-B] 格式化关卡显示文本（紧凑模式，含长度限制）。
    * 有名称且总长≤8字时返回 "第 X 关·关卡名"，否则返回 "第 X 关"。
+   * 用于按钮状态或紧凑 UI 场景；不应用于战斗结算标题。
    */
   private _formatStageDisplayText(stageConfig: StageConfig): string {
     const num = stageConfig.stageIndex;
@@ -1432,6 +1659,28 @@ export class Phase10MainGameplayCoordinator extends Component {
     if (name && name.length > 0) {
       const combined = `第 ${num} 关·${name}`;
       return combined.length <= 8 ? combined : `第 ${num} 关`;
+    }
+    return `第 ${num} 关`;
+  }
+
+  /**
+   * [C1.6-B1-B-R2] 格式化战斗结算阶段标题（无长度限制）。
+   *
+   * 与 _formatStageDisplayText 不同，此方法不因按钮宽度或紧凑状态
+   * 而截断章节终标题。优先使用 StageConfig 中已配置的正式关卡显示名称；
+   * 配置名称为空时才安全回退为 "第 N 关"。
+   *
+   * 仅用于胜利/失败结果标题；不得用于战斗映射、章节选择或按钮文案。
+   */
+  private _formatBattleResultStageTitle(stageConfig: StageConfig): string {
+    const num = stageConfig.stageIndex;
+    const name = stageConfig.name;
+    if (name && name.length > 0) {
+      // [C1.6-B1-B-R3] 过滤冗余普通名称（如 "第八关卡" → 与序号重复，无独立语义）
+      if (Phase10MainGameplayCoordinator._isRedundantStageName(num, name)) {
+        return `第 ${num} 关`;
+      }
+      return `第 ${num} 关·${name}`;
     }
     return `第 ${num} 关`;
   }
@@ -1504,10 +1753,25 @@ export class Phase10MainGameplayCoordinator extends Component {
     const label = this.challengeButton.node.getComponentInChildren(Label);
     if (!label) return;
 
+    // [C1.6-B1-B-R6] 只有待确认结算结果跨越章节时，按钮才显示"继续"。
+    // 同一章节内普通推进时直接显示当前待挑战关卡按钮文案。
+    if (this._shouldConfirmChapterTransition(context)) {
+      label.string = '继续';
+      return;
+    }
+
     const ctx = context ?? this._resolveCurrentStageContext();
 
     if (ctx.displayIndex !== null) {
-      label.string = `挑战第 ${ctx.displayIndex} 关`;
+      // [C1.6-B1-B-R4] 多章节按钮文案：
+      // 第一章保持 "挑战第 X 关"；非第一章使用紧凑格式 "第{CN}章·{N}关"
+      const chapterIndex = ctx.chapterIndex;
+      if (chapterIndex === null || chapterIndex === 1) {
+        const display = this._formatStageDisplayForChapter(ctx);
+        label.string = `挑战${display}`;
+      } else {
+        label.string = this._formatCompactStageDisplayForChapter(ctx);
+      }
     } else {
       // [C1.5.8-B3] 始终覆盖 Scene 默认文字，不留"挑战首关"
       label.string = '挑战关卡';
@@ -1523,8 +1787,11 @@ export class Phase10MainGameplayCoordinator extends Component {
   private _refreshCurrentStageDisplay(): void {
     const ctx = this._resolveCurrentStageContext();
     this._updateChallengeButtonLabel(ctx);
-    // 非战斗中/结算中状态时刷新结果标签
-    if (this._state !== 'running' && this._state !== 'settling') {
+    // [C1.6-B1-B-R1] 仅当没有已渲染的战斗结果时才刷新结果标签，
+    // 避免 settlement 后推进的下一关上下文覆盖本场结算标题。
+    // _lastResult 非 null 表示 _onBattleFinished 已直接调用
+    // _renderLastResultToLabel() 完成渲染。
+    if (!this._lastResult && this._state !== 'running' && this._state !== 'settling') {
       this._renderLastResultToLabel(ctx);
     }
   }
@@ -1563,6 +1830,17 @@ export class Phase10MainGameplayCoordinator extends Component {
    */
   private _onChallengeButtonClicked(): void {
     console.log('[Step12A-C1][Entry] 按钮点击 — 挑战前兜底');
+
+    // [C1.6-B1-B-R6] 只有待确认结算结果跨越章节时，第一次点击才清理结算态，
+    // 刷新为下一章关卡入口。同一章节内普通推进时不拦截，直接进入挑战流程。
+    if (this._shouldConfirmChapterTransition()) {
+      this._lastResult = null;
+      this._lastResultChapterId = null;
+      this._state = 'idle';
+      this._setChallengeButtonInteractable(true);
+      this._refreshCurrentStageDisplay();
+      return;
+    }
 
     // [C1.5.9-G-B2-A11] 准入预检（只读，必须位于战力重算、章节重判、saveAll 之前）
     // A10裁决：未满足条件时只读取当前关卡配置和权威装备实例，显示提示并返回。
@@ -1703,7 +1981,7 @@ export class Phase10MainGameplayCoordinator extends Component {
       const foughtCfg = this._currentStageConfig;
       let failText: string;
       if (foughtCfg && foughtCfg.stageIndex) {
-        failText = this._formatStageDisplayText(foughtCfg) + ' 挑战失败：未发放奖励';
+        failText = this._formatBattleResultStageTitle(foughtCfg) + ' 挑战失败：未发放奖励';
       } else if (ctx.displayIndex !== null) {
         failText = `第 ${ctx.displayIndex} 关挑战失败：未发放奖励`;
       } else {
@@ -1716,7 +1994,7 @@ export class Phase10MainGameplayCoordinator extends Component {
       let winTitle: string;
       const foughtCfg = this._currentStageConfig;
       if (foughtCfg && foughtCfg.stageIndex) {
-        winTitle = this._formatStageDisplayText(foughtCfg) + ' 胜利';
+        winTitle = this._formatBattleResultStageTitle(foughtCfg) + ' 胜利';
       } else if (ctx.displayIndex !== null) {
         if (ctx.stageName) {
           winTitle = `第 ${ctx.displayIndex} 关·${ctx.stageName} 胜利`;
@@ -2022,6 +2300,40 @@ export class Phase10MainGameplayCoordinator extends Component {
         `${e.configId}(${e.name}): lv${e.level} hp${e.maxHp} atk${e.attack} def${e.defense} spd${e.speed}`,
       ).join('; ')}]`,
     );
+  }
+
+  // ================================================================
+  // [C1.6-B1-B-R6] 跨章节确认判断
+  // ================================================================
+
+  /**
+   * [C1.6-B1-B-R6-A1] 判断是否需要跨章节结算确认。
+   *
+   * _lastResultChapterId 来自战斗启动前缓存的 _currentStageConfig.chapterId，
+   * 是配置中的权威章节归属，不依赖 chapterStageId 字符串格式推导。
+   *
+   * 规则：
+   *   - _lastResult 不存在 → false（无待确认结果）
+   *   - 无法获取结算 chapterId → false（安全默认）
+   *   - 无法获取当前权威 chapterId → false（安全默认）
+   *   - 结算 chapterId === 当前 chapterId → false（同一章节，直接推进）
+   *   - 结算 chapterId !== 当前 chapterId → true（跨章节，需确认）
+   *
+   * 通用规则，不依赖具体章节序号或关卡序号。
+   *
+   * @param currentContext  可选的预解析当前关卡上下文（避免重复解析）
+   */
+  private _shouldConfirmChapterTransition(
+    currentContext?: CurrentStageContext | null,
+  ): boolean {
+    if (!this._lastResult) return false;
+    if (!this._lastResultChapterId) return false;
+
+    const currentChapterId = currentContext?.chapterId
+      ?? this._chapterSystem.getCurrentChapterId();
+    if (!currentChapterId) return false;
+
+    return this._lastResultChapterId !== currentChapterId;
   }
 
   // ================================================================

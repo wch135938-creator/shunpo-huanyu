@@ -53,7 +53,8 @@
             "playerLevel": 1,
             "totalPower": 80
           },
-          "staminaCost": 5
+          "staminaCost": 5,
+          "battleStageId": "STAGE_002"
         },
         {
           "id": "chapter_001_stage_03",
@@ -80,7 +81,8 @@
               "slots": ["Weapon", "Armor", "Accessory"],
               "minLevel": 3
             }
-          ]
+          ],
+          "battleStageId": "STAGE_003"
         },
         {
           "id": "chapter_001_stage_04",
@@ -101,7 +103,8 @@
             "playerLevel": 3,
             "totalPower": 200
           },
-          "staminaCost": 8
+          "staminaCost": 8,
+          "battleStageId": "STAGE_004"
         },
         {
           "id": "chapter_001_stage_05",
@@ -121,7 +124,8 @@
             "playerLevel": 4,
             "totalPower": 300
           },
-          "staminaCost": 8
+          "staminaCost": 8,
+          "battleStageId": "STAGE_MAIN_001_005"
         },
         {
           "id": "chapter_001_stage_06",
@@ -141,7 +145,8 @@
             "playerLevel": 5,
             "totalPower": 400
           },
-          "staminaCost": 8
+          "staminaCost": 8,
+          "battleStageId": "STAGE_MAIN_001_006"
         },
         {
           "id": "chapter_001_stage_07",
@@ -161,7 +166,8 @@
             "playerLevel": 5,
             "totalPower": 470
           },
-          "staminaCost": 8
+          "staminaCost": 8,
+          "battleStageId": "STAGE_MAIN_001_007"
         },
         {
           "id": "chapter_001_stage_08",
@@ -181,7 +187,8 @@
             "playerLevel": 6,
             "totalPower": 530
           },
-          "staminaCost": 10
+          "staminaCost": 10,
+          "battleStageId": "STAGE_MAIN_001_008"
         },
         {
           "id": "chapter_001_stage_09",
@@ -201,7 +208,8 @@
             "playerLevel": 6,
             "totalPower": 600
           },
-          "staminaCost": 10
+          "staminaCost": 10,
+          "battleStageId": "STAGE_MAIN_001_009"
         },
         {
           "id": "chapter_001_stage_10",
