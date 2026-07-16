@@ -199,10 +199,12 @@ export class ProgressSystem extends BaseSystem {
     return this._accountLevelConfigLoaded;
   }
 
-  /** 获取账号等级上限 */
+  /** 获取账号等级上限（配置驱动，map 非空时从键值计算，不再硬编码 10） */
   getMaxAccountLevel(): number {
-    if (!this._accountLevelConfigLoaded) return 10;
-    return Math.max(...this._accountLevelMap.keys());
+    if (this._accountLevelMap.size > 0) {
+      return Math.max(...this._accountLevelMap.keys());
+    }
+    return 1; // map 为空时返回安全初始值 1
   }
 
   /**
@@ -254,15 +256,24 @@ export class ProgressSystem extends BaseSystem {
     const oldLevel = this._playerProgressData.playerLevel;
     const oldExp = this._playerProgressData.playerExp;
 
-    // 满级检查
+    // 满级检查：已满级时修正脏经验并返回 expAdded=0
     if (oldLevel >= maxLevel) {
+      const realOldExp = this._playerProgressData.playerExp;
+      // 满级时 playerExp 必须为 0，如有脏数据则真正归零
+      if (this._playerProgressData.playerExp !== 0) {
+        this._playerProgressData.playerExp = 0;
+        SaveManager.getInstance().savePlayerProgressData(this._playerProgressData);
+        console.log(
+          `[ProgressSystem][A7] addPlayerExp: 满级脏经验修正 oldExp=${realOldExp} → 0`,
+        );
+      }
       console.log(
         `[ProgressSystem][A7] addPlayerExp: 已满级 (Lv${oldLevel})，不增加经验`,
       );
       return {
         oldLevel,
         newLevel: oldLevel,
-        oldExp: 0,
+        oldExp: realOldExp,
         newExp: 0,
         levelsGained: 0,
         expAdded: 0,
@@ -271,34 +282,37 @@ export class ProgressSystem extends BaseSystem {
       };
     }
 
-    // 应用经验
-    this._playerProgressData.playerExp += safeExp;
-
-    // 处理升级 (while 支持跨多级)
+    // 应用经验（使用 pool 变量便于精确追踪实际接纳值）
+    let pool = oldExp + safeExp;
     let levelsGained = 0;
     let reachedMaxLevel = false;
+    let consumedInLevelUps = 0;
 
     while (this._playerProgressData.playerLevel < maxLevel) {
       const entry = this._accountLevelMap.get(this._playerProgressData.playerLevel);
       if (!entry || entry.requiredExpToNext <= 0) {
-        // 到达满级
+        // 到达满级：丢弃 pool 中剩余经验
+        pool = 0;
         this._playerProgressData.playerExp = 0;
         reachedMaxLevel = true;
         break;
       }
 
-      if (this._playerProgressData.playerExp < entry.requiredExpToNext) {
+      if (pool < entry.requiredExpToNext) {
         // 经验不足以升级
+        this._playerProgressData.playerExp = pool;
         break;
       }
 
-      // 升级
-      this._playerProgressData.playerExp -= entry.requiredExpToNext;
+      // 升级：扣除所需经验
+      pool -= entry.requiredExpToNext;
+      consumedInLevelUps += entry.requiredExpToNext;
       this._playerProgressData.playerLevel += 1;
       levelsGained += 1;
 
-      // 检查是否已达满级
+      // 检查是否已达满级：丢弃 pool 中剩余经验（溢出不储存）
       if (this._playerProgressData.playerLevel >= maxLevel) {
+        pool = 0;
         this._playerProgressData.playerExp = 0;
         reachedMaxLevel = true;
         break;
@@ -307,6 +321,12 @@ export class ProgressSystem extends BaseSystem {
 
     const newLevel = this._playerProgressData.playerLevel;
     const newExp = this._playerProgressData.playerExp;
+
+    // expAdded = 本次真正被账号等级系统接纳的经验（不含溢出丢弃部分）
+    // 公式：(newExp - oldExp) + consumedInLevelUps
+    let expAdded = (newExp - oldExp) + consumedInLevelUps;
+    if (expAdded > safeExp) expAdded = safeExp;
+    if (expAdded < 0) expAdded = 0;
 
     // 同步 SaveManager 内存（不落盘）
     SaveManager.getInstance().savePlayerProgressData(this._playerProgressData);
@@ -323,7 +343,7 @@ export class ProgressSystem extends BaseSystem {
     }
 
     console.log(
-      `[ProgressSystem][A7] addPlayerExp: amount=${safeExp}, source=${safeSource}, ` +
+      `[ProgressSystem][A7] addPlayerExp: amount=${safeExp}, expAdded=${expAdded}, source=${safeSource}, ` +
       `Lv${oldLevel}(${oldExp}exp) → Lv${newLevel}(${newExp}exp), ` +
       `levelsGained=${levelsGained}, reachedMax=${reachedMaxLevel}`,
     );
@@ -334,7 +354,7 @@ export class ProgressSystem extends BaseSystem {
       oldExp,
       newExp,
       levelsGained,
-      expAdded: safeExp,
+      expAdded,
       reachedMaxLevel,
       source: safeSource,
     };
@@ -391,9 +411,13 @@ export class ProgressSystem extends BaseSystem {
     return { ...this._playerProgressData };
   }
 
-  /** 设置账号成长、最高关卡、总战力缓存数据 */
+  /** 设置账号成长、最高关卡、总战力缓存数据。配置已可用时自动规范化。 */
   setPlayerProgressData(data: PlayerProgressData): void {
     this._playerProgressData = { ...data };
+    // 配置已可用时执行规范化（满级 playerExp 归零、超上限等级压回等）
+    if (this._accountLevelMap.size > 0) {
+      this._normalizePlayerData();
+    }
   }
 
   /** 获取单个角色成长数据副本 */
@@ -1051,17 +1075,10 @@ export class ProgressSystem extends BaseSystem {
 
     const lastLevel = levels[levels.length - 1];
 
-    // 最后一级必须是 10
-    if (lastLevel.level !== 10) {
-      throw new Error(
-        `[ProgressSystem][A7] account_level_config: 最后一级必须为 10，实际为 ${lastLevel.level}`,
-      );
-    }
-
-    // 等级 10 requiredExpToNext 必须为 0
+    // 最后一级 requiredExpToNext 必须为 0（满级标记，不再硬编码具体等级）
     if (lastLevel.requiredExpToNext !== 0) {
       throw new Error(
-        `[ProgressSystem][A7] account_level_config: Lv10 requiredExpToNext 必须为 0`,
+        `[ProgressSystem][A7] account_level_config: 最后一级 Lv${lastLevel.level} requiredExpToNext 必须为 0`,
       );
     }
 
@@ -1213,7 +1230,7 @@ export class ProgressSystem extends BaseSystem {
 
   /** 创建无变化结果 */
   private _createNoPlayerLevelChangeResult(): PlayerLevelChangeResult {
-    const maxLevel = this._accountLevelConfigLoaded ? this.getMaxAccountLevel() : 10;
+    const maxLevel = this.getMaxAccountLevel();
     return {
       oldLevel: this._playerProgressData.playerLevel,
       newLevel: this._playerProgressData.playerLevel,

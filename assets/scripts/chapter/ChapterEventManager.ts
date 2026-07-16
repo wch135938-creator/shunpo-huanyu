@@ -149,7 +149,7 @@ export class ChapterEventManager extends BaseSystem {
     const candidates: { event: ChapterEventConfig; weight: number }[] = [];
 
     for (const event of chapterEvents) {
-      // 过滤：bossOnlyStages 条件检查
+      // 过滤：bossOnlyStages 条件检查（仅精确匹配 'boss'，不包含 mini_boss）
       if (event.triggerCondition.bossOnlyStages && stageType !== 'boss') {
         continue;
       }

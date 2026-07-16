@@ -108,6 +108,7 @@ const ERR_NO_FORMATION = 'ERR_NO_FORMATION';
 const ERR_CONFIG_MISSING = 'ERR_CONFIG_MISSING';
 const ERR_BATTLE_START_FAILED = 'ERR_BATTLE_START_FAILED';
 const ERR_ENTRY_REQUIREMENT_NOT_MET = 'ERR_ENTRY_REQUIREMENT_NOT_MET';
+const ERR_ENEMY_CONFIG_INVALID = 'ERR_ENEMY_CONFIG_INVALID';
 
 // ==================== Phase10MainGameplayCoordinator ====================
 
@@ -414,13 +415,26 @@ export class Phase10MainGameplayCoordinator extends Component {
         );
       }
 
-      // 3. 确保阵容可用
+      // 3. BattleManager 无副作用预检（必须在阵容构建、快照、attemptId、transactionId 之前）
+      const preflight = this._battleManager.preflightStageBattle(battleStageId);
+      if (!preflight.success) {
+        return this._failChallenge(
+          ERR_ENEMY_CONFIG_INVALID,
+          `敌方配置异常: ${preflight.reason}`,
+        );
+      }
+
+      console.log(
+        `[Step12A-B][Coordinator] enemyIds 预检通过: battleStageId=${battleStageId}`,
+      );
+
+      // 4. 确保阵容可用
       const formationOk = this._ensurePlayableFormation();
       if (!formationOk) {
         return this._failChallenge(ERR_NO_FORMATION, '无法构建可用 PVE 阵容');
       }
 
-      // 4. 生成快照
+      // 5. 生成快照
       const teamSnapshot = this._formationSystem.generateTeamSnapshot('pve');
       if (!teamSnapshot) {
         return this._failChallenge(ERR_NO_FORMATION, 'PVE 阵容快照生成失败');
@@ -439,13 +453,13 @@ export class Phase10MainGameplayCoordinator extends Component {
       // ===== [Step12A-C1.1][RuntimeDiag] 战斗前诊断日志 =====
       this._logPreBattleDiagnostics(pvePreset.slots, teamSnapshot, battleStageId);
 
-      // 5. 注入阵容到 BattleManager
+      // 6. 注入阵容到 BattleManager
       this._battleManager.setPlayerFormation(teamSnapshot, pvePreset.slots);
 
-      // 6. 记录战力（before）
+      // 7. 记录战力（before）
       this._powerBefore = pvePreset.teamPower;
 
-      // 7. 生成 attemptId 和 transactionId
+      // 8. 生成 attemptId 和 transactionId
       this._attemptId = `attempt_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
       this._currentTransactionId = `txn_battle_${battleStageId}_${this._attemptId}`;
       this._currentChapterStageId = stageConfig.id;
@@ -455,12 +469,17 @@ export class Phase10MainGameplayCoordinator extends Component {
         `[Step12A-B][Coordinator] transactionId=${this._currentTransactionId}`,
       );
 
-      // 8. 记录 exp before（所有 PVE 阵容英雄总 exp）
+      // 9. 记录 exp before（所有 PVE 阵容英雄总 exp）
       this._expBefore = this._sumFormationExp(pvePreset.slots);
 
-      // 9. 启动战斗
+      // 10. 启动战斗
       const battleData = this._battleManager.startStageBattle(battleStageId);
       if (!battleData) {
+        // 清理本次未使用的 attemptId、transactionId 和战斗上下文字段
+        this._attemptId = '';
+        this._currentTransactionId = '';
+        this._currentChapterStageId = '';
+        this._currentBattleStageId = '';
         return this._failChallenge(ERR_BATTLE_START_FAILED, 'BattleManager 启动战斗失败');
       }
 

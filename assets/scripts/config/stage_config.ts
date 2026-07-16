@@ -7,7 +7,7 @@
 // ==================== 枚举类型 ====================
 
 /** 关卡类型 */
-export type StageType = 'normal' | 'elite' | 'boss';
+export type StageType = 'normal' | 'elite' | 'mini_boss' | 'boss';
 
 /** 解锁条件类型 */
 export type UnlockType = 'always' | 'prevStage' | 'playerLevel' | 'both';
@@ -55,7 +55,7 @@ export interface StageEntry {
   stageIndex: number;
   /** 关卡类型 */
   stageType: StageType;
-  /** 是否为 Boss 关卡（stageType 为 boss 时必为 true） */
+  /** 是否为章节最终大Boss关（stageType 为 boss 时必为 true；mini_boss 不属于章节最终大Boss关） */
   isBossStage: boolean;
   /** 敌人阵容 ID 列表，引用 ENEMY_XXX */
   enemyIds: string[];

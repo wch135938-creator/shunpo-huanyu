@@ -7,7 +7,7 @@
 // ==================== 关卡类型枚举 ====================
 
 /** 关卡类型 */
-export type StageType = 'normal' | 'boss' | 'elite';
+export type StageType = 'normal' | 'elite' | 'mini_boss' | 'boss';
 
 /** 章节状态 */
 export type ChapterStatus = 'locked' | 'unlocked' | 'completed';
@@ -65,10 +65,16 @@ export interface StageConfig {
   type: StageType;
   /** 推荐战力 */
   recommendedPower: number;
-  /** 敌方阵容组 ID（对应 enemy_data.json 中 enemyGroupId） */
-  enemyGroupId: string;
-  /** Boss ID（boss 关卡必填） */
-  bossId: string;
+  /**
+   * 敌方阵容组 ID（对应 enemy_data.json 中 enemyGroupId）
+   * @deprecated 非主玩法战斗权威来源。主玩法敌方阵容唯一权威为 stage_data.enemyIds。
+   */
+  enemyGroupId?: string;
+  /**
+   * Boss ID（boss 关卡必填）
+   * @deprecated 非主玩法战斗权威来源。主玩法敌方阵容唯一权威为 stage_data.enemyIds。
+   */
+  bossId?: string;
   /** 关卡奖励列表 */
   rewards: StageReward[];
   /** 解锁条件 */

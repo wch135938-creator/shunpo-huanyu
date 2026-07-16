@@ -78,6 +78,20 @@ export interface StageBattleFinishedEvent {
   result: BattleResult;
 }
 
+// ==================== 预检结果 ====================
+
+/** 关卡战斗预检结果（无副作用） */
+export interface PreflightStageBattleResult {
+  /** 预检是否通过 */
+  success: boolean;
+  /** 关卡 stageId */
+  battleStageId: string;
+  /** 无法解析的 enemyId 列表 */
+  missingEnemyIds: string[];
+  /** 错误原因（成功时为空字符串） */
+  reason: string;
+}
+
 // ==================== 内部常量 ====================
 
 /** 需要预加载的配置路径列表 */
@@ -210,14 +224,23 @@ export class BattleManager extends BaseManager {
       return null;
     }
 
-    // 守卫 3：构建我方阵容
+    // 守卫 3：enemyIds 预检（内部二次防守，即使 Coordinator 已调用 preflightStageBattle）
+    const preflight = this.preflightStageBattle(stageId);
+    if (!preflight.success) {
+      console.error(
+        `[BattleManager] enemyIds 预检失败: ${preflight.reason}`,
+      );
+      return null;
+    }
+
+    // 守卫 4：构建我方阵容（预检通过后才构建）
     const playerUnits = this._buildPlayerUnits();
     if (playerUnits.length === 0) {
       console.error('[BattleManager] 我方阵容为空，无法开始战斗');
       return null;
     }
 
-    // 守卫 4：构建敌方阵容
+    // 守卫 5：构建敌方阵容（全有或全无，不 warn+continue）
     const enemyUnits = this._buildEnemyUnits(stage);
     if (enemyUnits.length === 0) {
       console.error(
@@ -300,6 +323,113 @@ export class BattleManager extends BaseManager {
     return this._ready;
   }
 
+  // ===== 关卡战斗预检（无副作用）=====
+
+  /**
+   * 关卡战斗无副作用预检。
+   *
+   * 仅检查配置完整性和 enemyIds 可解析性，不构建阵容、不创建快照、
+   * 不写入 BattleManager 状态、不调用 BattleSystem。
+   *
+   * 检查顺序：
+   *   1. BattleManager 已 ready
+   *   2. stage_data 配置存在
+   *   3. stageId 存在
+   *   4. enemy_data 配置存在
+   *   5. enemyIds 是非空数组
+   *   6. 每项为非空字符串且存在于 enemy_data
+   *
+   * @param stageId — 关卡 ID
+   * @returns 结构化预检结果
+   */
+  preflightStageBattle(stageId: string): PreflightStageBattleResult {
+    // 1. 配置是否就绪
+    if (!this._ready) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds: [],
+        reason: 'BattleManager 配置未加载',
+      };
+    }
+
+    // 2. stage_data 配置存在
+    const stageCfg = this._configManager.getConfig<StageDataConfig>(
+      'config/stages/stage_data',
+    );
+    if (!stageCfg?.data) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds: [],
+        reason: 'stage_data 配置为空',
+      };
+    }
+
+    // 3. stageId 存在
+    const stage = stageCfg.data.find((s) => s.id === stageId);
+    if (!stage) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds: [],
+        reason: `关卡不存在: stageId=${stageId}`,
+      };
+    }
+
+    // 4. enemy_data 配置存在
+    const enemyCfg = this._configManager.getConfig<EnemyDataConfig>(
+      'config/stages/enemy_data',
+    );
+    if (!enemyCfg?.data) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds: [],
+        reason: 'enemy_data 配置为空',
+      };
+    }
+
+    // 5. enemyIds 是非空数组
+    if (!Array.isArray(stage.enemyIds) || stage.enemyIds.length === 0) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds: [],
+        reason: `关卡 enemyIds 为空: stageId=${stageId}`,
+      };
+    }
+
+    // 6. 每项为非空字符串且存在于 enemy_data
+    const missingEnemyIds: string[] = [];
+    for (const enemyId of stage.enemyIds) {
+      if (typeof enemyId !== 'string' || enemyId.trim() === '') {
+        missingEnemyIds.push(`(空字符串)`);
+        continue;
+      }
+      const enemy = enemyCfg.data.find((e) => e.id === enemyId);
+      if (!enemy) {
+        missingEnemyIds.push(enemyId);
+      }
+    }
+
+    if (missingEnemyIds.length > 0) {
+      return {
+        success: false,
+        battleStageId: stageId,
+        missingEnemyIds,
+        reason: `enemyIds 无法解析: stageId=${stageId}, missing=[${missingEnemyIds.join(', ')}]`,
+      };
+    }
+
+    return {
+      success: true,
+      battleStageId: stageId,
+      missingEnemyIds: [],
+      reason: '',
+    };
+  }
+
   // ===== Phase9: BattleUnitFactory 适配 =====
 
   /**
@@ -376,12 +506,16 @@ export class BattleManager extends BaseManager {
   // ================================================================
 
   /**
-   * 根据关卡配置构建敌方阵容
+   * 根据关卡配置构建敌方阵容（全有或全无，原子化）。
    *
-   * 每个 enemyId 必须存在于 EnemyConfig 中，缺失时 warn + 跳过。
+   * 第一阶段：解析全部 enemyId，收集无法解析的引用。
+   * 第二阶段：仅在所有引用有效后才创建 BattleUnit[]。
+   *
+   * 任一 enemyId 无法解析 → 整场拒绝，返回空数组。
+   * 不再 warn + continue，不再以残缺阵容启动。
    *
    * @param stage — 关卡配置
-   * @returns BattleUnit[] — 敌人单位列表
+   * @returns BattleUnit[] — 完整敌方单位列表（失败时为空数组）
    */
   private _buildEnemyUnits(stage: StageEntry): BattleUnit[] {
     const enemyCfg = this._configManager.getConfig<EnemyDataConfig>(
@@ -392,21 +526,35 @@ export class BattleManager extends BaseManager {
       return [];
     }
 
-    const units: BattleUnit[] = [];
+    // 第一阶段：解析全部 enemyId
+    const resolved: EnemyEntry[] = [];
+    const missing: string[] = [];
 
     for (let i = 0; i < stage.enemyIds.length; i++) {
       const enemyId = stage.enemyIds[i];
       const enemy = enemyCfg.data.find((e) => e.id === enemyId);
 
       if (!enemy) {
-        console.warn(
-          `[BattleManager] 敌人配置缺失: enemyId=${enemyId} (stage=${stage.id})，已跳过`,
-        );
-        continue;
+        missing.push(enemyId);
+      } else {
+        resolved.push(enemy);
       }
+    }
 
+    // 任一缺失 → 整场拒绝
+    if (missing.length > 0) {
+      console.error(
+        `[BattleManager] 敌方阵容构建失败: stageId=${stage.id}, ` +
+        `missingEnemyIds=[${missing.join(', ')}] — 整场拒绝`,
+      );
+      return [];
+    }
+
+    // 第二阶段：全部引用有效后创建 BattleUnit[]
+    const units: BattleUnit[] = [];
+    for (let i = 0; i < resolved.length; i++) {
       const slot = this._assignEnemyPosition(i);
-      const unit = this._enemyConfigToBattleUnit(enemy, slot, i);
+      const unit = this._enemyConfigToBattleUnit(resolved[i], slot, i);
       units.push(unit);
     }
 
