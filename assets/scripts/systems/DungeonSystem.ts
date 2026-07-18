@@ -27,6 +27,8 @@ import type {
   DungeonRewardData,
 } from '../data/dungeon_data';
 import type { EquipmentInstanceData } from '../data/equipment_data';
+import type { EntryCostConfig } from '../data/entry_cost_types';
+import { normalizeEntryCost } from '../data/entry_cost_types';
 
 /** 地牢进入事件数据 */
 export interface DungeonEnterEventData {
@@ -425,6 +427,25 @@ export class DungeonSystem extends BaseSystem {
   /** 获取地牢配置 */
   getDungeonConfig(dungeonId: number): DungeonConfigEntry | null {
     return this._configMap.get(dungeonId) ?? null;
+  }
+
+  /**
+   * 获取地牢入口消耗配置（C1.6-B2-D-P1-R3 非激活预留）。
+   *
+   * 规则：
+   * - 地牢配置不存在 → 返回默认免费入口
+   * - 地牢配置缺少 entryCost → 返回默认免费入口
+   * - 不实际扣除资源，仅做查询
+   *
+   * @param dungeonId  地牢 ID
+   * @returns          归一化后的入口消耗配置
+   */
+  getEntryCost(dungeonId: number): EntryCostConfig {
+    const config = this._configMap.get(dungeonId);
+    if (!config) {
+      return normalizeEntryCost(null);
+    }
+    return normalizeEntryCost(config.entryCost);
   }
 
   /** 获取当前体力 */

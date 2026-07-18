@@ -33,6 +33,8 @@ import type { EquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
 import { createDefaultEquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
 import type { OperationsSaveData } from '../operations/OperationsTypes';
 import { createDefaultOperationsSaveData } from '../operations/OperationsTypes';
+import type { PlayerResourceState } from './PlayerResourceState';
+import { createDefaultPlayerResourceState } from './PlayerResourceState';
 
 // ==================== SaveMetaV2 ====================
 
@@ -113,6 +115,13 @@ export interface SaveContainerV8 extends SaveContainer {
   equipmentData?: EquipmentSaveDataV2;
   /** 运营功能数据（邮箱 / 兑换码 / 登录奖励，可选，旧存档自动补全） */
   operationsData?: OperationsSaveData;
+  /**
+   * 玩家资源状态（C1.6-B2-D-P1-R3 非激活预留）。
+   *
+   * 包含仙力/挑战次数等未来资源系统的持久化字段。
+   * 旧存档缺失时初始化为全 0（表示系统未启用）。
+   */
+  playerResources?: PlayerResourceState;
   /** SaveV2 元数据 */
   saveMetaV2: SaveMetaV2;
 }
@@ -192,6 +201,11 @@ export function upgradeToV8(container: SaveContainer): SaveContainerV8 {
     v8.operationsData = createDefaultOperationsSaveData();
   }
 
+  // C1.6-B2-D-P1-R3: 确保玩家资源状态存在（非激活预留，全 0 默认）
+  if (!v8.playerResources) {
+    v8.playerResources = createDefaultPlayerResourceState();
+  }
+
   // 更新版本号
   v8.saveVersion = CURRENT_SAVE_VERSION;
 
@@ -220,6 +234,7 @@ export function createDefaultSaveContainerV8(): SaveContainerV8 {
   base.inventoryData = createDefaultInventorySaveData();
   base.equipmentData = createDefaultEquipmentSaveDataV2();
   base.operationsData = createDefaultOperationsSaveData();
+  base.playerResources = createDefaultPlayerResourceState();
   base.saveMetaV2 = createDefaultSaveMetaV2(0);
   base.saveVersion = CURRENT_SAVE_VERSION;
   base.timestamp = Date.now();

@@ -5,6 +5,7 @@
 // ============================================================
 
 import type { DungeonDifficulty, DungeonRewardType } from './dungeon_types';
+import type { EntryCostConfig } from './entry_cost_types';
 
 /**
  * 单条地牢配置条目（对应 dungeon_config.json data[] 中每一项）。
@@ -18,7 +19,7 @@ export interface DungeonConfigEntry {
   name: string;
   /** 地牢难度 */
   difficulty: DungeonDifficulty;
-  /** 体力消耗 */
+  /** 体力消耗（当前活跃字段） */
   staminaCost: number;
   /** 每日最大挑战次数 */
   maxAttemptsPerDay: number;
@@ -40,6 +41,14 @@ export interface DungeonConfigEntry {
     eventName: string;
     triggerProbability: number;
   };
+  /**
+   * 入口消耗配置（C1.6-B2-D-P1-R3 非激活预留）。
+   *
+   * 规则：
+   * - 旧配置缺失此字段 → 默认视为 costType=none、costAmount=0（免费）
+   * - 当前未接入实际消费，仅做结构预留
+   */
+  entryCost?: EntryCostConfig;
 }
 
 /**

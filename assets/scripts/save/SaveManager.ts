@@ -41,6 +41,7 @@ import type { HeroTalentSaveEntry } from './HeroTalentSaveData';
 import { createDefaultChapterEventSaveData } from '../chapter/ChapterEventTypes';
 import type { EquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
 import { createDefaultEquipmentSaveDataV2 } from '../equipment/EquipmentLoadoutData';
+import { ensurePlayerResourceState } from './PlayerResourceState';
 
 // ---- 存档 Key 前缀 ----
 const SAVE_KEY_PREFIX = 'game_save_v';
@@ -113,17 +114,15 @@ export class SaveManager extends BaseManager {
 
     const hasOldSave = adapter.exists(SaveManager.SAVE_KEY);
 
+    // C1.6-B2-D-P1-R3-R3: 先完成 _data 赋值，再置 _initialized=true
+    // 防止 _initialized=true 时 _data 仍为 null 导致半初始化重入风险
     if (hasOldSave) {
       const loaded = adapter.read(SaveManager.SAVE_KEY);
       if (loaded) {
-        // Phase6-Step5: 完整的迁移流程
+        // Phase6-Step5: 完整的迁移流程（此时 _initialized 为 false，
+        // 迁移过程中触发的 SAVE_MIGRATED 事件外部无法通过 _ensureReady() 检查）
         this._data = this._migrateWithBackup(loaded);
         console.log('[SaveManager] 读取旧存档成功, version:', this._data.saveVersion);
-
-        // 迁移后立即落盘（确保结构变更不丢失）
-        if (this._lastMigrationResult && this._lastMigrationResult.stepsExecuted > 0) {
-          this.save();
-        }
       } else {
         // 读取失败（数据损坏等），回退到 V8 默认
         this._data = createDefaultSaveContainerV8() as unknown as SaveContainer;
@@ -134,14 +133,25 @@ export class SaveManager extends BaseManager {
       console.log('[SaveManager] 无旧存档，创建新存档容器（V8）');
     }
 
+    // C1.6-B2-D-P1-R3-R3: _data 与 _adapter 均已就绪后，才能宣布初始化完成
     this._initialized = true;
 
-    // 新存档首次落盘
-    if (!hasOldSave) {
+    // 迁移后立即落盘（确保结构变更不丢失）
+    // C1.6-B2-D-P1-R3-R3: 此时 _initialized=true，_ensureReady() 能正常通过
+    if (hasOldSave) {
+      if ((this._lastMigrationResult && this._lastMigrationResult.stepsExecuted > 0) || this._dirty) {
+        const saved = this.save();
+        if (!saved) {
+          console.error('[SaveManager] 归一化存档落盘失败，保留 dirty 状态等待重试');
+        }
+      }
+    } else {
+      // 新存档首次落盘（_initialized 已为 true）
       this.save();
     }
 
     // Phase9-Step6: 发射 V8 加载完成事件
+    // C1.6-B2-D-P1-R3-R3: 此时 _data, _adapter, _initialized 全部就绪
     EventManager.getInstance().emit(EventManager.SAVE_V8_LOADED, {
       version: this._data?.saveVersion,
       timestamp: this._data?.timestamp,
@@ -173,10 +183,16 @@ export class SaveManager extends BaseManager {
 
     const originalVersion = container.saveVersion ?? 0;
 
-    // 版本号已是最新，仅做基础校验
+    // 版本号已是最新，执行同版本兼容归一化 + 基础校验
     if (originalVersion === CURRENT_SAVE_VERSION) {
-      console.log('[SaveManager] 存档版本已是最新，跳过迁移');
+      console.log('[SaveManager] 存档版本已是最新，跳过版本迁移');
+      // C1.6-B2-D-P1-R3-R1: 同版本归一化（修复现有V8存档缺失playerResources等问题）
+      const normalized = this._normalizeCurrentVersionFields(container);
       this._runPostMigrationValidation(container);
+      // 归一化后有变更时标记需要落盘
+      if (normalized) {
+        this._dirty = true;
+      }
       return container;
     }
 
@@ -238,11 +254,39 @@ export class SaveManager extends BaseManager {
     // Step 5: 执行迁移后校验
     this._runPostMigrationValidation(container);
 
+    // C1.6-B2-D-P1-R3-R1: 迁移后同版本归一化（确保V7→V8后的playerResources也经过归一化）
+    this._normalizeCurrentVersionFields(container);
+
     // Step 6: 迁移后立即落盘
     container.timestamp = Date.now();
     container.saveVersion = CURRENT_SAVE_VERSION;
 
     return container;
+  }
+
+  /**
+   * C1.6-B2-D-P1-R3-R1: 对当前版本存档执行同版本兼容归一化。
+   *
+   * 覆盖场景：
+   * - 现有V8存档缺少 playerResources → 补齐
+   * - 现有V8存档有 playerResources 但部分字段缺失 → 补齐缺失字段
+   * - 现有V8存档存在负数/NaN/Infinity → 归零
+   *
+   * @param container  存档容器
+   * @returns          是否有字段被修复（需要落盘）
+   */
+  private _normalizeCurrentVersionFields(container: SaveContainer): boolean {
+    let changed = false;
+
+    // playerResources 归一化
+    const v8 = container as import('./SaveContainerV8').SaveContainerV8;
+    const result = ensurePlayerResourceState(v8);
+    if (result.changed) {
+      changed = true;
+      console.log('[SaveManager] C1.6-B2-D-P1-R3-R1: playerResources 已归一化修复');
+    }
+
+    return changed;
   }
 
   /**
@@ -383,15 +427,22 @@ export class SaveManager extends BaseManager {
    * @returns 存档容器，无存档时返回 null
    */
   load(): SaveContainer | null {
-    if (!this._adapter) {
-      console.error('[SaveManager] load 失败：未初始化');
+    if (!this._ensureReady()) {
       return null;
     }
 
-    const loaded = this._adapter.read(SaveManager.SAVE_KEY);
+    const loaded = this._adapter!.read(SaveManager.SAVE_KEY);
     if (loaded) {
       this._data = this._migrateWithBackup(loaded);
-      this._dirty = false;
+      // C1.6-B2-D-P1-R3-R3: _migrateWithBackup 可能触发归一化并标记 _dirty
+      // 归一化后的数据必须真实落盘，dirty 由 save() 内部清除
+      // save() 失败时必须保留 _dirty=true，等待后续重试
+      if (this._dirty) {
+        const saved = this.save();
+        if (!saved) {
+          console.error('[SaveManager] 归一化存档落盘失败，保留 dirty 状态等待重试');
+        }
+      }
     }
     return this._data;
   }
