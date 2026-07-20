@@ -19,6 +19,11 @@ import {
   createDefaultChapterProgress,
   createEmptyChapterSnapshot,
 } from './ChapterTypes';
+import {
+  createChapterConfigFingerprint,
+  normalizeChapterProgress,
+  type NormalizationResult,
+} from './ChapterProgressMigration';
 
 // ==================== 事件数据接口 ====================
 
@@ -138,7 +143,8 @@ export class ChapterSystem extends BaseSystem {
     for (const [chapterId, progress] of Object.entries(saveData.chapterProgress)) {
       this._progressMap.set(chapterId, {
         ...progress,
-        completedStageIds: [...progress.completedStageIds],
+        completedStageIds: [...(progress.completedStageIds || [])],
+        retainedUnknownStageIds: progress.retainedUnknownStageIds ? [...progress.retainedUnknownStageIds] : undefined,
       });
     }
 
@@ -160,6 +166,7 @@ export class ChapterSystem extends BaseSystem {
       chapterProgress[chapterId] = {
         ...progress,
         completedStageIds: [...progress.completedStageIds],
+        retainedUnknownStageIds: progress.retainedUnknownStageIds ? [...progress.retainedUnknownStageIds] : undefined,
       };
     }
 
@@ -578,6 +585,7 @@ export class ChapterSystem extends BaseSystem {
     return {
       ...progress,
       completedStageIds: [...progress.completedStageIds],
+      retainedUnknownStageIds: progress.retainedUnknownStageIds ? [...progress.retainedUnknownStageIds] : undefined,
     };
   }
 
@@ -590,6 +598,7 @@ export class ChapterSystem extends BaseSystem {
       result.set(id, {
         ...progress,
         completedStageIds: [...progress.completedStageIds],
+        retainedUnknownStageIds: progress.retainedUnknownStageIds ? [...progress.retainedUnknownStageIds] : undefined,
       });
     }
     return result;
@@ -814,5 +823,74 @@ export class ChapterSystem extends BaseSystem {
   /** 发送事件 */
   private _emit(event: string, data: Record<string, unknown>): void {
     EventManager.getInstance().emit(event, data);
+  }
+
+  // ==================== 六关制旧存档迁移 ====================
+
+  /**
+   * 获取当前加载章节配置的运行时指纹。
+   *
+   * 委托给 ChapterProgressMigration.createChapterConfigFingerprint，
+   * 使用 ChapterRepository 中已加载的真实配置生成。
+   *
+   * @returns  配置指纹字符串（编码章节归属、章内顺序、章节顺序）
+   */
+  getConfigFingerprint(): string {
+    const chapters = ChapterRepository.getInstance().getAllChapters();
+    return createChapterConfigFingerprint(chapters);
+  }
+
+  /**
+   * 规范化章节进度（六关制→十关制迁移）。
+   *
+   * 在 restore() 之后、所有解锁重判之前调用。
+   * 委托给 ChapterProgressMigration.normalizeChapterProgress（单一权威实现）。
+   *
+   * 规则：
+   * 1. 合并 completedStageIds 与 retainedUnknownStageIds
+   * 2. 非字符串/空白/格式非法 → 仅入诊断
+   * 3. 当前配置存在的 Stage ID → 去重后写回 completedStageIds
+   * 4. 格式合法但不在配置中 → 去重后写入 retainedUnknownStageIds
+   * 5. 全完成 → status=completed, currentStageId=最后一关
+   * 6. 非全完成但有完成记录 → status=unlocked, currentStageId=最早未完成
+   * 7. 否则 → status=locked
+   * 8. 旧 completed 但不足十关 → legacyCompletedAt 留存
+   * 9. 不调用 completeStage/unlockStage，不发事件/奖励
+   * 10. 幂等：相同配置指纹不重复执行
+   *
+   * @param configFingerprint  当前章节配置指纹（由 getConfigFingerprint() 生成）
+   * @returns                  true 表示本轮产生了数据变更
+   */
+  normalizeProgress(configFingerprint: string): boolean {
+    this._requireInitialized();
+
+    // 构建 progressMap: Record<string, ChapterProgress>
+    const progressMap: Record<string, ChapterProgress> = {};
+    for (const [chapterId, progress] of this._progressMap.entries()) {
+      progressMap[chapterId] = progress;
+    }
+
+    const chapters = ChapterRepository.getInstance().getAllChapters();
+
+    const result = normalizeChapterProgress({
+      progressMap,
+      chapters,
+      configFingerprint,
+    });
+
+    // 输出诊断
+    for (const diag of result.diagnostics) {
+      console.log(`[ChapterSystem] ${diag}`);
+    }
+
+    if (result.changed) {
+      console.log(
+        `[ChapterSystem] 规范化完成: ` +
+        `${result.normalizedChapterIds.length} 个章节已迁移: ` +
+        result.normalizedChapterIds.join(', '),
+      );
+    }
+
+    return result.changed;
   }
 }

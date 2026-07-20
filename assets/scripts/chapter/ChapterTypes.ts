@@ -185,6 +185,23 @@ export interface ChapterProgress {
   completedAt: number;
   /** 最后更新时间戳 */
   updatedAt: number;
+  /**
+   * [R3 六关制迁移] 旧存档中格式合法但不在当前配置中的 Stage ID。
+   * 仅用于保留迁移痕迹，不参与业务完成判定。
+   */
+  retainedUnknownStageIds?: string[];
+
+  /**
+   * [R3 六关制迁移] 旧六关制全部完成时，原 completedAt 留存于此。
+   * 新 completedAt 在未完成当前十关时为 0。
+   */
+  legacyCompletedAt?: number;
+
+  /**
+   * [R3 六关制迁移] 本次规范化所使用的章节配置指纹。
+   * 用于幂等判定：相同指纹不重复迁移。
+   */
+  normalizedAgainstChapterConfigVersion?: string;
 }
 
 // ==================== 章节快照 ====================

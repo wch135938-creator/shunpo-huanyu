@@ -98,6 +98,8 @@ export class Phase9Bootstrap extends BaseManager {
   private _ready = false;
   private _restored = false;
   private _saveCallbackRegistered = false;
+  /** R3-R1: 本次启动是否执行了章节迁移且产生了数据变更（需强制落盘） */
+  private _chapterMigrationChanged = false;
 
   // ===== 构造 =====
 
@@ -266,6 +268,18 @@ export class Phase9Bootstrap extends BaseManager {
         this._chapterSystem.restore(chapterData);
         restored.push('ChapterSystem');
         console.log('[Phase9Bootstrap] 📥 ChapterSystem 从存档恢复');
+
+        // R3-R1: 六关制→十关制旧存档迁移
+        // 在 restore() 之后、任何后续解锁重判之前执行
+        const configFingerprint = this._chapterSystem.getConfigFingerprint();
+        const migrationChanged = this._chapterSystem.normalizeProgress(configFingerprint);
+        if (migrationChanged) {
+          // 迁移结果立即写入 SaveManager 内存
+          const updatedChapterData = this._chapterSystem.save();
+          this._saveManager.saveChapterData(updatedChapterData);
+          this._chapterMigrationChanged = true;
+          console.log('[Phase9Bootstrap] 🔄 旧存档章节进度已迁移至十关制');
+        }
       } else {
         console.log('[Phase9Bootstrap] 📥 ChapterSystem 无存档数据，使用默认状态');
       }
@@ -284,6 +298,17 @@ export class Phase9Bootstrap extends BaseManager {
 
       // 注册 Analytics 保存回调
       this._registerAnalyticsSaveCallback();
+
+      // R3-R1: 章节迁移变更后强制落盘
+      // 确保即使玩家无后续操作（不战斗/不切换页面/不触发保存）也能持久化
+      if (this._chapterMigrationChanged) {
+        const saved = this._saveManager.save();
+        if (saved) {
+          console.log('[Phase9Bootstrap] 💾 迁移后的章节进度已持久化落盘');
+        } else {
+          console.error('[Phase9Bootstrap] ⚠️ 迁移后的章节进度落盘失败，将在下次自动保存时重试');
+        }
+      }
 
       this._restored = true;
 
