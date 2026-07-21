@@ -10,7 +10,10 @@
       "stageIndex": 1,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_001", "ENEMY_002"],
+      "enemyIds": [
+        "ENEMY_001",
+        "ENEMY_002"
+      ],
       "recommendedPower": 500,
       "staminaCost": 5,
       "dropId": "DROP_001",
@@ -28,7 +31,10 @@
       "stageIndex": 2,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_002", "ENEMY_003"],
+      "enemyIds": [
+        "ENEMY_002",
+        "ENEMY_003"
+      ],
       "recommendedPower": 800,
       "staminaCost": 5,
       "dropId": "DROP_002",
@@ -47,7 +53,10 @@
       "stageIndex": 3,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_031", "ENEMY_004"],
+      "enemyIds": [
+        "ENEMY_031",
+        "ENEMY_004"
+      ],
       "recommendedPower": 1200,
       "staminaCost": 5,
       "dropId": "DROP_003",
@@ -66,7 +75,9 @@
       "stageIndex": 4,
       "stageType": "elite",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_006"],
+      "enemyIds": [
+        "ENEMY_006"
+      ],
       "recommendedPower": 1800,
       "staminaCost": 8,
       "dropId": "DROP_004",
@@ -85,7 +96,10 @@
       "stageIndex": 5,
       "stageType": "boss",
       "isBossStage": true,
-      "enemyIds": ["ENEMY_BOSS_001", "ENEMY_009"],
+      "enemyIds": [
+        "ENEMY_BOSS_001",
+        "ENEMY_009"
+      ],
       "recommendedPower": 2500,
       "staminaCost": 10,
       "dropId": "DROP_005",
@@ -104,7 +118,10 @@
       "stageIndex": 1,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_010", "ENEMY_011"],
+      "enemyIds": [
+        "ENEMY_010",
+        "ENEMY_011"
+      ],
       "recommendedPower": 3500,
       "staminaCost": 6,
       "dropId": "DROP_006",
@@ -124,7 +141,10 @@
       "stageIndex": 2,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_011", "ENEMY_012"],
+      "enemyIds": [
+        "ENEMY_011",
+        "ENEMY_012"
+      ],
       "recommendedPower": 5000,
       "staminaCost": 6,
       "dropId": "DROP_007",
@@ -143,7 +163,11 @@
       "stageIndex": 3,
       "stageType": "elite",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_013", "ENEMY_014", "ENEMY_015"],
+      "enemyIds": [
+        "ENEMY_013",
+        "ENEMY_014",
+        "ENEMY_015"
+      ],
       "recommendedPower": 7000,
       "staminaCost": 8,
       "dropId": "DROP_008",
@@ -162,7 +186,11 @@
       "stageIndex": 4,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_016", "ENEMY_017", "ENEMY_018"],
+      "enemyIds": [
+        "ENEMY_016",
+        "ENEMY_017",
+        "ENEMY_018"
+      ],
       "recommendedPower": 9500,
       "staminaCost": 6,
       "dropId": "DROP_009",
@@ -181,7 +209,11 @@
       "stageIndex": 5,
       "stageType": "boss",
       "isBossStage": true,
-      "enemyIds": ["ENEMY_BOSS_002", "ENEMY_019", "ENEMY_020"],
+      "enemyIds": [
+        "ENEMY_BOSS_002",
+        "ENEMY_019",
+        "ENEMY_020"
+      ],
       "recommendedPower": 13000,
       "staminaCost": 10,
       "dropId": "DROP_010",
@@ -200,7 +232,10 @@
       "stageIndex": 1,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_021", "ENEMY_022"],
+      "enemyIds": [
+        "ENEMY_021",
+        "ENEMY_022"
+      ],
       "recommendedPower": 17000,
       "staminaCost": 6,
       "dropId": "DROP_011",
@@ -220,7 +255,11 @@
       "stageIndex": 2,
       "stageType": "elite",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_023", "ENEMY_024", "ENEMY_025"],
+      "enemyIds": [
+        "ENEMY_023",
+        "ENEMY_024",
+        "ENEMY_025"
+      ],
       "recommendedPower": 22000,
       "staminaCost": 8,
       "dropId": "DROP_012",
@@ -239,7 +278,11 @@
       "stageIndex": 3,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_025", "ENEMY_026", "ENEMY_027"],
+      "enemyIds": [
+        "ENEMY_025",
+        "ENEMY_026",
+        "ENEMY_027"
+      ],
       "recommendedPower": 28000,
       "staminaCost": 6,
       "dropId": "DROP_013",
@@ -258,7 +301,12 @@
       "stageIndex": 4,
       "stageType": "elite",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_027", "ENEMY_028", "ENEMY_029", "ENEMY_030"],
+      "enemyIds": [
+        "ENEMY_027",
+        "ENEMY_028",
+        "ENEMY_029",
+        "ENEMY_030"
+      ],
       "recommendedPower": 36000,
       "staminaCost": 8,
       "dropId": "DROP_014",
@@ -277,7 +325,10 @@
       "stageIndex": 5,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_004", "ENEMY_005"],
+      "enemyIds": [
+        "ENEMY_004",
+        "ENEMY_005"
+      ],
       "recommendedPower": 400,
       "staminaCost": 8,
       "dropId": "DROP_001",
@@ -296,7 +347,10 @@
       "stageIndex": 6,
       "stageType": "normal",
       "isBossStage": false,
-      "enemyIds": ["ENEMY_004", "ENEMY_005"],
+      "enemyIds": [
+        "ENEMY_004",
+        "ENEMY_005"
+      ],
       "recommendedPower": 500,
       "staminaCost": 8,
       "dropId": "DROP_003",
@@ -402,7 +456,11 @@
       "stageIndex": 5,
       "stageType": "boss",
       "isBossStage": true,
-      "enemyIds": ["ENEMY_BOSS_003", "ENEMY_029", "ENEMY_030"],
+      "enemyIds": [
+        "ENEMY_BOSS_003",
+        "ENEMY_029",
+        "ENEMY_030"
+      ],
       "recommendedPower": 50000,
       "staminaCost": 10,
       "dropId": "DROP_015",
@@ -412,6 +470,473 @@
         "prevStageId": "STAGE_014"
       },
       "battleWave": 3
+    },
+    {
+      "id": "STAGE_MAIN_002_001",
+      "chapterId": "chapter_002",
+      "stageIndex": 1,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_001_01",
+        "ENEMY_MAIN_002_001_02"
+      ],
+      "recommendedPower": 900,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_001",
+      "firstDropId": "DROP_FIRST_MAIN_002_001",
+      "unlockCondition": {
+        "type": "playerLevel",
+        "playerLevel": 10
+      },
+      "battleWave": 1,
+      "name": "龙渊入口",
+      "nameKey": "stage_name_main_002_001"
+    },
+    {
+      "id": "STAGE_MAIN_002_002",
+      "chapterId": "chapter_002",
+      "stageIndex": 2,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_002_01",
+        "ENEMY_MAIN_002_002_02"
+      ],
+      "recommendedPower": 980,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_002",
+      "firstDropId": "DROP_FIRST_MAIN_002_002",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_001",
+        "playerLevel": 11
+      },
+      "battleWave": 1,
+      "name": "龙息回廊",
+      "nameKey": "stage_name_main_002_002"
+    },
+    {
+      "id": "STAGE_MAIN_002_003",
+      "chapterId": "chapter_002",
+      "stageIndex": 3,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_003_01",
+        "ENEMY_MAIN_002_003_02"
+      ],
+      "recommendedPower": 1100,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_003",
+      "firstDropId": "DROP_FIRST_MAIN_002_003",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_002",
+        "playerLevel": 13
+      },
+      "battleWave": 1,
+      "name": "鳞光大厅",
+      "nameKey": "stage_name_main_002_003"
+    },
+    {
+      "id": "STAGE_MAIN_002_004",
+      "chapterId": "chapter_002",
+      "stageIndex": 4,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_004_01",
+        "ENEMY_MAIN_002_004_02",
+        "ENEMY_MAIN_002_004_03"
+      ],
+      "recommendedPower": 1200,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_004",
+      "firstDropId": "DROP_FIRST_MAIN_002_004",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_003",
+        "playerLevel": 15
+      },
+      "battleWave": 1,
+      "name": "龙骨荒原",
+      "nameKey": "stage_name_main_002_004"
+    },
+    {
+      "id": "STAGE_MAIN_002_005",
+      "chapterId": "chapter_002",
+      "stageIndex": 5,
+      "stageType": "mini_boss",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MINIBOSS_002_005_01",
+        "ENEMY_MAIN_002_005_02"
+      ],
+      "recommendedPower": 1400,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_005",
+      "firstDropId": "DROP_FIRST_MAIN_002_005",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_004",
+        "playerLevel": 17
+      },
+      "battleWave": 1,
+      "name": "龙语祭坛",
+      "nameKey": "stage_name_main_002_005"
+    },
+    {
+      "id": "STAGE_MAIN_002_006",
+      "chapterId": "chapter_002",
+      "stageIndex": 6,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_006_01",
+        "ENEMY_MAIN_002_006_02"
+      ],
+      "recommendedPower": 1520,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_006",
+      "firstDropId": "DROP_FIRST_MAIN_002_006",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_005",
+        "playerLevel": 20
+      },
+      "battleWave": 1,
+      "name": "雷霆龙巢",
+      "nameKey": "stage_name_main_002_006"
+    },
+    {
+      "id": "STAGE_MAIN_002_007",
+      "chapterId": "chapter_002",
+      "stageIndex": 7,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_007_01",
+        "ENEMY_MAIN_002_007_02",
+        "ENEMY_MAIN_002_007_03"
+      ],
+      "recommendedPower": 1640,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_007",
+      "firstDropId": "DROP_FIRST_MAIN_002_007",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_006",
+        "playerLevel": 21
+      },
+      "battleWave": 1,
+      "name": "潜龙深潭",
+      "nameKey": "stage_name_main_002_007"
+    },
+    {
+      "id": "STAGE_MAIN_002_008",
+      "chapterId": "chapter_002",
+      "stageIndex": 8,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_008_01",
+        "ENEMY_MAIN_002_008_02"
+      ],
+      "recommendedPower": 1780,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_008",
+      "firstDropId": "DROP_FIRST_MAIN_002_008",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_007",
+        "playerLevel": 22
+      },
+      "battleWave": 1,
+      "name": "逆鳞石窟",
+      "nameKey": "stage_name_main_002_008"
+    },
+    {
+      "id": "STAGE_MAIN_002_009",
+      "chapterId": "chapter_002",
+      "stageIndex": 9,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_002_009_01",
+        "ENEMY_MAIN_002_009_02",
+        "ENEMY_MAIN_002_009_03"
+      ],
+      "recommendedPower": 1920,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_009",
+      "firstDropId": "DROP_FIRST_MAIN_002_009",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_008",
+        "playerLevel": 23
+      },
+      "battleWave": 1,
+      "name": "天雷龙脊",
+      "nameKey": "stage_name_main_002_009"
+    },
+    {
+      "id": "STAGE_MAIN_002_010",
+      "chapterId": "chapter_002",
+      "stageIndex": 10,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": [
+        "ENEMY_BOSS_002_010_01",
+        "ENEMY_MAIN_002_010_02"
+      ],
+      "recommendedPower": 2300,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_002_010",
+      "firstDropId": "DROP_FIRST_MAIN_002_010",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_002_009",
+        "playerLevel": 24
+      },
+      "battleWave": 1,
+      "name": "龙渊王座",
+      "nameKey": "stage_name_main_002_010"
+    },
+    {
+      "id": "STAGE_MAIN_003_001",
+      "chapterId": "chapter_003",
+      "stageIndex": 1,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_001_01",
+        "ENEMY_MAIN_003_001_02"
+      ],
+      "recommendedPower": 2350,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_001",
+      "firstDropId": "DROP_FIRST_MAIN_003_001",
+      "unlockCondition": {
+        "type": "playerLevel",
+        "playerLevel": 25
+      },
+      "battleWave": 1,
+      "name": "黄泉路口",
+      "nameKey": "stage_name_main_003_001"
+    },
+    {
+      "id": "STAGE_MAIN_003_002",
+      "chapterId": "chapter_003",
+      "stageIndex": 2,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_002_01",
+        "ENEMY_MAIN_003_002_02"
+      ],
+      "recommendedPower": 2520,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_002",
+      "firstDropId": "DROP_FIRST_MAIN_003_002",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_001",
+        "playerLevel": 26
+      },
+      "battleWave": 1,
+      "name": "忘川河畔",
+      "nameKey": "stage_name_main_003_002"
+    },
+    {
+      "id": "STAGE_MAIN_003_003",
+      "chapterId": "chapter_003",
+      "stageIndex": 3,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_003_01",
+        "ENEMY_MAIN_003_003_02"
+      ],
+      "recommendedPower": 2720,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_003",
+      "firstDropId": "DROP_FIRST_MAIN_003_003",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_002",
+        "playerLevel": 28
+      },
+      "battleWave": 1,
+      "name": "奈何桥",
+      "nameKey": "stage_name_main_003_003"
+    },
+    {
+      "id": "STAGE_MAIN_003_004",
+      "chapterId": "chapter_003",
+      "stageIndex": 4,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_004_01",
+        "ENEMY_MAIN_003_004_02",
+        "ENEMY_MAIN_003_004_03"
+      ],
+      "recommendedPower": 2950,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_004",
+      "firstDropId": "DROP_FIRST_MAIN_003_004",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_003",
+        "playerLevel": 30
+      },
+      "battleWave": 1,
+      "name": "鬼门关",
+      "nameKey": "stage_name_main_003_004"
+    },
+    {
+      "id": "STAGE_MAIN_003_005",
+      "chapterId": "chapter_003",
+      "stageIndex": 5,
+      "stageType": "mini_boss",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MINIBOSS_003_005_01",
+        "ENEMY_MAIN_003_005_02",
+        "ENEMY_MAIN_003_005_03"
+      ],
+      "recommendedPower": 3350,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_005",
+      "firstDropId": "DROP_FIRST_MAIN_003_005",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_004",
+        "playerLevel": 32
+      },
+      "battleWave": 1,
+      "name": "阎罗殿",
+      "nameKey": "stage_name_main_003_005"
+    },
+    {
+      "id": "STAGE_MAIN_003_006",
+      "chapterId": "chapter_003",
+      "stageIndex": 6,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_006_01",
+        "ENEMY_MAIN_003_006_02"
+      ],
+      "recommendedPower": 3600,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_006",
+      "firstDropId": "DROP_FIRST_MAIN_003_006",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_005",
+        "playerLevel": 35
+      },
+      "battleWave": 1,
+      "name": "轮回台",
+      "nameKey": "stage_name_main_003_006"
+    },
+    {
+      "id": "STAGE_MAIN_003_007",
+      "chapterId": "chapter_003",
+      "stageIndex": 7,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_007_01",
+        "ENEMY_MAIN_003_007_02",
+        "ENEMY_MAIN_003_007_03"
+      ],
+      "recommendedPower": 3900,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_007",
+      "firstDropId": "DROP_FIRST_MAIN_003_007",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_006",
+        "playerLevel": 36
+      },
+      "battleWave": 1,
+      "name": "彼岸花海",
+      "nameKey": "stage_name_main_003_007"
+    },
+    {
+      "id": "STAGE_MAIN_003_008",
+      "chapterId": "chapter_003",
+      "stageIndex": 8,
+      "stageType": "elite",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_008_01",
+        "ENEMY_MAIN_003_008_02",
+        "ENEMY_MAIN_003_008_03"
+      ],
+      "recommendedPower": 4250,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_008",
+      "firstDropId": "DROP_FIRST_MAIN_003_008",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_007",
+        "playerLevel": 37
+      },
+      "battleWave": 1,
+      "name": "幽都长街",
+      "nameKey": "stage_name_main_003_008"
+    },
+    {
+      "id": "STAGE_MAIN_003_009",
+      "chapterId": "chapter_003",
+      "stageIndex": 9,
+      "stageType": "normal",
+      "isBossStage": false,
+      "enemyIds": [
+        "ENEMY_MAIN_003_009_01",
+        "ENEMY_MAIN_003_009_02",
+        "ENEMY_MAIN_003_009_03"
+      ],
+      "recommendedPower": 4650,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_009",
+      "firstDropId": "DROP_FIRST_MAIN_003_009",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_008",
+        "playerLevel": 38
+      },
+      "battleWave": 1,
+      "name": "冥河尽头",
+      "nameKey": "stage_name_main_003_009"
+    },
+    {
+      "id": "STAGE_MAIN_003_010",
+      "chapterId": "chapter_003",
+      "stageIndex": 10,
+      "stageType": "boss",
+      "isBossStage": true,
+      "enemyIds": [
+        "ENEMY_BOSS_003_010_01",
+        "ENEMY_MAIN_003_010_02",
+        "ENEMY_MAIN_003_010_03"
+      ],
+      "recommendedPower": 5600,
+      "staminaCost": 0,
+      "dropId": "DROP_MAIN_003_010",
+      "firstDropId": "DROP_FIRST_MAIN_003_010",
+      "unlockCondition": {
+        "type": "both",
+        "prevStageId": "STAGE_MAIN_003_009",
+        "playerLevel": 39
+      },
+      "battleWave": 1,
+      "name": "酆都帝殿",
+      "nameKey": "stage_name_main_003_010"
     }
   ]
 }

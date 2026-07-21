@@ -1,15 +1,165 @@
 {
   "version": 1,
   "levels": [
-    { "level": 1, "requiredExpToNext": 50 },
-    { "level": 2, "requiredExpToNext": 80 },
-    { "level": 3, "requiredExpToNext": 120 },
-    { "level": 4, "requiredExpToNext": 180 },
-    { "level": 5, "requiredExpToNext": 260 },
-    { "level": 6, "requiredExpToNext": 280 },
-    { "level": 7, "requiredExpToNext": 320 },
-    { "level": 8, "requiredExpToNext": 360 },
-    { "level": 9, "requiredExpToNext": 990 },
-    { "level": 10, "requiredExpToNext": 0 }
+    {
+      "level": 1,
+      "requiredExpToNext": 50
+    },
+    {
+      "level": 2,
+      "requiredExpToNext": 80
+    },
+    {
+      "level": 3,
+      "requiredExpToNext": 120
+    },
+    {
+      "level": 4,
+      "requiredExpToNext": 180
+    },
+    {
+      "level": 5,
+      "requiredExpToNext": 260
+    },
+    {
+      "level": 6,
+      "requiredExpToNext": 280
+    },
+    {
+      "level": 7,
+      "requiredExpToNext": 320
+    },
+    {
+      "level": 8,
+      "requiredExpToNext": 360
+    },
+    {
+      "level": 9,
+      "requiredExpToNext": 990
+    },
+    {
+      "level": 10,
+      "requiredExpToNext": 300
+    },
+    {
+      "level": 11,
+      "requiredExpToNext": 320
+    },
+    {
+      "level": 12,
+      "requiredExpToNext": 350
+    },
+    {
+      "level": 13,
+      "requiredExpToNext": 380
+    },
+    {
+      "level": 14,
+      "requiredExpToNext": 410
+    },
+    {
+      "level": 15,
+      "requiredExpToNext": 440
+    },
+    {
+      "level": 16,
+      "requiredExpToNext": 480
+    },
+    {
+      "level": 17,
+      "requiredExpToNext": 510
+    },
+    {
+      "level": 18,
+      "requiredExpToNext": 560
+    },
+    {
+      "level": 19,
+      "requiredExpToNext": 600
+    },
+    {
+      "level": 20,
+      "requiredExpToNext": 650
+    },
+    {
+      "level": 21,
+      "requiredExpToNext": 700
+    },
+    {
+      "level": 22,
+      "requiredExpToNext": 760
+    },
+    {
+      "level": 23,
+      "requiredExpToNext": 820
+    },
+    {
+      "level": 24,
+      "requiredExpToNext": 880
+    },
+    {
+      "level": 25,
+      "requiredExpToNext": 950
+    },
+    {
+      "level": 26,
+      "requiredExpToNext": 1030
+    },
+    {
+      "level": 27,
+      "requiredExpToNext": 1110
+    },
+    {
+      "level": 28,
+      "requiredExpToNext": 1200
+    },
+    {
+      "level": 29,
+      "requiredExpToNext": 1290
+    },
+    {
+      "level": 30,
+      "requiredExpToNext": 1400
+    },
+    {
+      "level": 31,
+      "requiredExpToNext": 1510
+    },
+    {
+      "level": 32,
+      "requiredExpToNext": 1630
+    },
+    {
+      "level": 33,
+      "requiredExpToNext": 1760
+    },
+    {
+      "level": 34,
+      "requiredExpToNext": 1900
+    },
+    {
+      "level": 35,
+      "requiredExpToNext": 2050
+    },
+    {
+      "level": 36,
+      "requiredExpToNext": 2220
+    },
+    {
+      "level": 37,
+      "requiredExpToNext": 2400
+    },
+    {
+      "level": 38,
+      "requiredExpToNext": 2590
+    },
+    {
+      "level": 39,
+      "requiredExpToNext": 2800
+    },
+    {
+      "level": 40,
+      "requiredExpToNext": 0
+    }
   ]
 }

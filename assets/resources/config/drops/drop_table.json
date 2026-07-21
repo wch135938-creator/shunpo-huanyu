@@ -13,7 +13,7 @@
           "itemType": "gold",
           "minCount": 100,
           "maxCount": 200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -21,7 +21,7 @@
           "itemType": "exp",
           "minCount": 50,
           "maxCount": 100,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -37,7 +37,7 @@
           "itemType": "material",
           "minCount": 3,
           "maxCount": 5,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -53,7 +53,7 @@
           "itemType": "gold",
           "minCount": 120,
           "maxCount": 250,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -61,7 +61,7 @@
           "itemType": "exp",
           "minCount": 60,
           "maxCount": 120,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -85,7 +85,7 @@
           "itemType": "gold",
           "minCount": 150,
           "maxCount": 300,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -93,7 +93,7 @@
           "itemType": "exp",
           "minCount": 80,
           "maxCount": 150,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -117,7 +117,7 @@
           "itemType": "gold",
           "minCount": 300,
           "maxCount": 500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -125,7 +125,7 @@
           "itemType": "exp",
           "minCount": 150,
           "maxCount": 250,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -165,7 +165,7 @@
           "itemType": "gold",
           "minCount": 500,
           "maxCount": 800,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -173,7 +173,7 @@
           "itemType": "exp",
           "minCount": 250,
           "maxCount": 400,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -181,7 +181,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -213,7 +213,7 @@
           "itemType": "gold",
           "minCount": 300,
           "maxCount": 500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -221,7 +221,7 @@
           "itemType": "exp",
           "minCount": 150,
           "maxCount": 250,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -245,7 +245,7 @@
           "itemType": "gold",
           "minCount": 400,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -253,7 +253,7 @@
           "itemType": "exp",
           "minCount": 200,
           "maxCount": 300,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -285,7 +285,7 @@
           "itemType": "gold",
           "minCount": 800,
           "maxCount": 1200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -293,7 +293,7 @@
           "itemType": "exp",
           "minCount": 400,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -333,7 +333,7 @@
           "itemType": "gold",
           "minCount": 600,
           "maxCount": 900,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -341,7 +341,7 @@
           "itemType": "exp",
           "minCount": 300,
           "maxCount": 450,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -373,7 +373,7 @@
           "itemType": "gold",
           "minCount": 1200,
           "maxCount": 1800,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -381,7 +381,7 @@
           "itemType": "exp",
           "minCount": 600,
           "maxCount": 900,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -389,7 +389,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -429,7 +429,7 @@
           "itemType": "gold",
           "minCount": 800,
           "maxCount": 1200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -437,7 +437,7 @@
           "itemType": "exp",
           "minCount": 400,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -469,7 +469,7 @@
           "itemType": "gold",
           "minCount": 2000,
           "maxCount": 3000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -477,7 +477,7 @@
           "itemType": "exp",
           "minCount": 1000,
           "maxCount": 1500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -525,7 +525,7 @@
           "itemType": "gold",
           "minCount": 1000,
           "maxCount": 1500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -533,7 +533,7 @@
           "itemType": "exp",
           "minCount": 500,
           "maxCount": 750,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -565,7 +565,7 @@
           "itemType": "gold",
           "minCount": 2500,
           "maxCount": 3500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -573,7 +573,7 @@
           "itemType": "exp",
           "minCount": 1200,
           "maxCount": 1800,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -621,7 +621,7 @@
           "itemType": "gold",
           "minCount": 3000,
           "maxCount": 5000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -629,7 +629,7 @@
           "itemType": "exp",
           "minCount": 1500,
           "maxCount": 2500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -637,7 +637,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -677,7 +677,7 @@
           "itemType": "diamond",
           "minCount": 10,
           "maxCount": 10,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -685,7 +685,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -693,7 +693,7 @@
           "itemType": "gold",
           "minCount": 200,
           "maxCount": 500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -701,7 +701,7 @@
           "itemType": "exp",
           "minCount": 100,
           "maxCount": 200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -717,7 +717,7 @@
           "itemType": "diamond",
           "minCount": 12,
           "maxCount": 12,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -725,7 +725,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -733,7 +733,7 @@
           "itemType": "gold",
           "minCount": 250,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -741,7 +741,7 @@
           "itemType": "exp",
           "minCount": 120,
           "maxCount": 250,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -757,7 +757,7 @@
           "itemType": "diamond",
           "minCount": 15,
           "maxCount": 15,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -765,7 +765,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -773,7 +773,7 @@
           "itemType": "gold",
           "minCount": 300,
           "maxCount": 700,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -781,7 +781,7 @@
           "itemType": "exp",
           "minCount": 150,
           "maxCount": 300,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -789,7 +789,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -805,7 +805,7 @@
           "itemType": "diamond",
           "minCount": 20,
           "maxCount": 20,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -813,7 +813,7 @@
           "itemType": "gachaFragment",
           "minCount": 2,
           "maxCount": 2,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -821,7 +821,7 @@
           "itemType": "gold",
           "minCount": 500,
           "maxCount": 800,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -829,7 +829,7 @@
           "itemType": "exp",
           "minCount": 250,
           "maxCount": 400,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -837,7 +837,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -853,7 +853,7 @@
           "itemType": "diamond",
           "minCount": 30,
           "maxCount": 30,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -861,7 +861,7 @@
           "itemType": "gachaFragment",
           "minCount": 3,
           "maxCount": 3,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -869,7 +869,7 @@
           "itemType": "gold",
           "minCount": 800,
           "maxCount": 1200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -877,7 +877,7 @@
           "itemType": "exp",
           "minCount": 400,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -885,7 +885,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -893,7 +893,7 @@
           "itemType": "material",
           "minCount": 3,
           "maxCount": 5,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -909,7 +909,7 @@
           "itemType": "diamond",
           "minCount": 20,
           "maxCount": 20,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -917,7 +917,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -925,7 +925,7 @@
           "itemType": "gold",
           "minCount": 500,
           "maxCount": 800,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -933,7 +933,7 @@
           "itemType": "exp",
           "minCount": 250,
           "maxCount": 400,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -949,7 +949,7 @@
           "itemType": "diamond",
           "minCount": 25,
           "maxCount": 25,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -957,7 +957,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -965,7 +965,7 @@
           "itemType": "gold",
           "minCount": 600,
           "maxCount": 1000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -973,7 +973,7 @@
           "itemType": "exp",
           "minCount": 300,
           "maxCount": 500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -989,7 +989,7 @@
           "itemType": "diamond",
           "minCount": 40,
           "maxCount": 40,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -997,7 +997,7 @@
           "itemType": "gachaFragment",
           "minCount": 2,
           "maxCount": 2,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1005,7 +1005,7 @@
           "itemType": "gold",
           "minCount": 1200,
           "maxCount": 2000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1013,7 +1013,7 @@
           "itemType": "exp",
           "minCount": 600,
           "maxCount": 1000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1021,7 +1021,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1037,7 +1037,7 @@
           "itemType": "diamond",
           "minCount": 25,
           "maxCount": 25,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1045,7 +1045,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1053,7 +1053,7 @@
           "itemType": "gold",
           "minCount": 800,
           "maxCount": 1200,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1061,7 +1061,7 @@
           "itemType": "exp",
           "minCount": 400,
           "maxCount": 600,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1069,7 +1069,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1085,7 +1085,7 @@
           "itemType": "diamond",
           "minCount": 60,
           "maxCount": 60,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1093,7 +1093,7 @@
           "itemType": "gachaFragment",
           "minCount": 3,
           "maxCount": 3,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1101,7 +1101,7 @@
           "itemType": "gold",
           "minCount": 2000,
           "maxCount": 3000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1109,7 +1109,7 @@
           "itemType": "exp",
           "minCount": 1000,
           "maxCount": 1500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1117,7 +1117,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1125,7 +1125,7 @@
           "itemType": "material",
           "minCount": 3,
           "maxCount": 5,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1141,7 +1141,7 @@
           "itemType": "diamond",
           "minCount": 40,
           "maxCount": 40,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1149,7 +1149,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1157,7 +1157,7 @@
           "itemType": "gold",
           "minCount": 1500,
           "maxCount": 2500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1165,7 +1165,7 @@
           "itemType": "exp",
           "minCount": 750,
           "maxCount": 1250,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1181,7 +1181,7 @@
           "itemType": "diamond",
           "minCount": 80,
           "maxCount": 80,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1189,7 +1189,7 @@
           "itemType": "gachaFragment",
           "minCount": 2,
           "maxCount": 2,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1197,7 +1197,7 @@
           "itemType": "gold",
           "minCount": 3000,
           "maxCount": 5000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1205,7 +1205,7 @@
           "itemType": "exp",
           "minCount": 1500,
           "maxCount": 2500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1213,7 +1213,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1229,7 +1229,7 @@
           "itemType": "diamond",
           "minCount": 50,
           "maxCount": 50,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1237,7 +1237,7 @@
           "itemType": "gachaFragment",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1245,7 +1245,7 @@
           "itemType": "gold",
           "minCount": 2000,
           "maxCount": 3000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1253,7 +1253,7 @@
           "itemType": "exp",
           "minCount": 1000,
           "maxCount": 1500,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1261,7 +1261,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1277,7 +1277,7 @@
           "itemType": "diamond",
           "minCount": 100,
           "maxCount": 100,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1285,7 +1285,7 @@
           "itemType": "gachaFragment",
           "minCount": 2,
           "maxCount": 2,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1293,7 +1293,7 @@
           "itemType": "gold",
           "minCount": 4000,
           "maxCount": 6000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1301,7 +1301,7 @@
           "itemType": "exp",
           "minCount": 2000,
           "maxCount": 3000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1309,7 +1309,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
@@ -1325,7 +1325,7 @@
           "itemType": "diamond",
           "minCount": 150,
           "maxCount": 150,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1333,7 +1333,7 @@
           "itemType": "gachaFragment",
           "minCount": 5,
           "maxCount": 5,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1341,7 +1341,7 @@
           "itemType": "gold",
           "minCount": 5000,
           "maxCount": 8000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1349,7 +1349,7 @@
           "itemType": "exp",
           "minCount": 2500,
           "maxCount": 4000,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1357,7 +1357,7 @@
           "itemType": "equip",
           "minCount": 1,
           "maxCount": 1,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         },
         {
@@ -1365,10 +1365,1554 @@
           "itemType": "material",
           "minCount": 5,
           "maxCount": 10,
-          "dropRate": 1.0,
+          "dropRate": 1,
           "isGuaranteed": true
         }
       ]
+    },
+    {
+      "id": "DROP_MAIN_002_001",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 350,
+          "maxCount": 550,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 5,
+          "maxCount": 8,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 1·常规掉落",
+      "description": "第11关\"Stage 1\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_002",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 380,
+          "maxCount": 600,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 6,
+          "maxCount": 9,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 2·常规掉落",
+      "description": "第12关\"Stage 2\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_003",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 550,
+          "maxCount": 850,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 8,
+          "maxCount": 12,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 3·常规掉落",
+      "description": "第13关\"Stage 3\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_004",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 450,
+          "maxCount": 700,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 7,
+          "maxCount": 10,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 4·常规掉落",
+      "description": "第14关\"Stage 4\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_005",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 700,
+          "maxCount": 1100,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 5·常规掉落",
+      "description": "第15关\"Stage 5\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_006",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 650,
+          "maxCount": 1000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 9,
+          "maxCount": 14,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.25,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 6·常规掉落",
+      "description": "第16关\"Stage 6\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_007",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 550,
+          "maxCount": 850,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 8,
+          "maxCount": 12,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.12,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 7·常规掉落",
+      "description": "第17关\"Stage 7\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_008",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 750,
+          "maxCount": 1150,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.28,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.08,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 8·常规掉落",
+      "description": "第18关\"Stage 8\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_009",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 650,
+          "maxCount": 1000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 9,
+          "maxCount": 14,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 9·常规掉落",
+      "description": "第19关\"Stage 9\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_002_010",
+      "dropType": "boss",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1200,
+          "maxCount": 1800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 15,
+          "maxCount": 22,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.4,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 10·常规掉落",
+      "description": "第20关\"Stage 10\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_001",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.18,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 1·常规掉落",
+      "description": "第21关\"Stage 1\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_002",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 880,
+          "maxCount": 1350,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 11,
+          "maxCount": 16,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 2·常规掉落",
+      "description": "第22关\"Stage 2\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_003",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1100,
+          "maxCount": 1700,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 14,
+          "maxCount": 20,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.28,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.08,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 3·常规掉落",
+      "description": "第23关\"Stage 3\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_004",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1000,
+          "maxCount": 1550,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 13,
+          "maxCount": 18,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 4·常规掉落",
+      "description": "第24关\"Stage 4\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_005",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1500,
+          "maxCount": 2300,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 18,
+          "maxCount": 26,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.35,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.15,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 5·常规掉落",
+      "description": "第25关\"Stage 5\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_006",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1300,
+          "maxCount": 2000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 16,
+          "maxCount": 23,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.3,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.1,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 6·常规掉落",
+      "description": "第26关\"Stage 6\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_007",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1150,
+          "maxCount": 1750,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 14,
+          "maxCount": 20,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 7·常规掉落",
+      "description": "第27关\"Stage 7\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_008",
+      "dropType": "elite",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1500,
+          "maxCount": 2300,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 18,
+          "maxCount": 26,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.32,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 0.12,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 8·常规掉落",
+      "description": "第28关\"Stage 8\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_009",
+      "dropType": "normal",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1350,
+          "maxCount": 2050,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 16,
+          "maxCount": 23,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.22,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 9·常规掉落",
+      "description": "第29关\"Stage 9\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_MAIN_003_010",
+      "dropType": "boss",
+      "items": [
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2500,
+          "maxCount": 3800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 25,
+          "maxCount": 35,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 3,
+          "dropRate": 0.5,
+          "isGuaranteed": false
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 0.2,
+          "isGuaranteed": false
+        }
+      ],
+      "name": "Stage 10·常规掉落",
+      "description": "第30关\"Stage 10\"常规战斗掉落。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_001",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 25,
+          "maxCount": 25,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 500,
+          "maxCount": 800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 2,
+          "maxCount": 3,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 1·首通奖励",
+      "description": "首次完成第11关\"Stage 1\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_002",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 25,
+          "maxCount": 25,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 550,
+          "maxCount": 850,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 2,
+          "maxCount": 3,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 2·首通奖励",
+      "description": "首次完成第12关\"Stage 2\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_003",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 40,
+          "maxCount": 40,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 800,
+          "maxCount": 1200,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 15,
+          "maxCount": 20,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 3·首通奖励",
+      "description": "首次完成第13关\"Stage 3\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_004",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 30,
+          "maxCount": 30,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 650,
+          "maxCount": 1000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 12,
+          "maxCount": 18,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 2,
+          "maxCount": 4,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 4·首通奖励",
+      "description": "首次完成第14关\"Stage 4\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_005",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 60,
+          "maxCount": 60,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1200,
+          "maxCount": 1800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 20,
+          "maxCount": 30,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 5,
+          "maxCount": 8,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 5·首通奖励",
+      "description": "首次完成第15关\"Stage 5\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_006",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 45,
+          "maxCount": 45,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1000,
+          "maxCount": 1500,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 15,
+          "maxCount": 22,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 6·首通奖励",
+      "description": "首次完成第16关\"Stage 6\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_007",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 30,
+          "maxCount": 30,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 750,
+          "maxCount": 1100,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 12,
+          "maxCount": 18,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 4,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 7·首通奖励",
+      "description": "首次完成第17关\"Stage 7\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_008",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 50,
+          "maxCount": 50,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1100,
+          "maxCount": 1600,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 18,
+          "maxCount": 25,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 4,
+          "maxCount": 6,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 8·首通奖励",
+      "description": "首次完成第18关\"Stage 8\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_009",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 35,
+          "maxCount": 35,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 900,
+          "maxCount": 1300,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 15,
+          "maxCount": 20,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 9·首通奖励",
+      "description": "首次完成第19关\"Stage 9\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_002_010",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 100,
+          "maxCount": 100,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 30,
+          "maxCount": 40,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 8,
+          "maxCount": 12,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 2,
+          "maxCount": 3,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 10·首通奖励",
+      "description": "首次完成第20关\"Stage 10\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_001",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 50,
+          "maxCount": 50,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1200,
+          "maxCount": 1800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 18,
+          "maxCount": 25,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 4,
+          "maxCount": 6,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 1·首通奖励",
+      "description": "首次完成第21关\"Stage 1\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_002",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 50,
+          "maxCount": 50,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1300,
+          "maxCount": 1900,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 20,
+          "maxCount": 28,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 4,
+          "maxCount": 6,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 2·首通奖励",
+      "description": "首次完成第22关\"Stage 2\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_003",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 80,
+          "maxCount": 80,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1800,
+          "maxCount": 2600,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 25,
+          "maxCount": 35,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 6,
+          "maxCount": 9,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 1,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 3·首通奖励",
+      "description": "首次完成第23关\"Stage 3\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_004",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 60,
+          "maxCount": 60,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1500,
+          "maxCount": 2200,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 22,
+          "maxCount": 30,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 5,
+          "maxCount": 7,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 4·首通奖励",
+      "description": "首次完成第24关\"Stage 4\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_005",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 120,
+          "maxCount": 120,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2500,
+          "maxCount": 3800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 35,
+          "maxCount": 50,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 10,
+          "maxCount": 15,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 2,
+          "maxCount": 3,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 5·首通奖励",
+      "description": "首次完成第25关\"Stage 5\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_006",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 90,
+          "maxCount": 90,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2000,
+          "maxCount": 3000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 28,
+          "maxCount": 38,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 7,
+          "maxCount": 10,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 6·首通奖励",
+      "description": "首次完成第26关\"Stage 6\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_007",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 70,
+          "maxCount": 70,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1700,
+          "maxCount": 2500,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 22,
+          "maxCount": 32,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 5,
+          "maxCount": 8,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 7·首通奖励",
+      "description": "首次完成第27关\"Stage 7\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_008",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 100,
+          "maxCount": 100,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 2200,
+          "maxCount": 3200,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 30,
+          "maxCount": 40,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 8,
+          "maxCount": 12,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 1,
+          "maxCount": 2,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 8·首通奖励",
+      "description": "首次完成第28关\"Stage 8\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_009",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 80,
+          "maxCount": 80,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 1900,
+          "maxCount": 2800,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 25,
+          "maxCount": 35,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 6,
+          "maxCount": 9,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 9·首通奖励",
+      "description": "首次完成第29关\"Stage 9\"时结算一次的首通奖励。"
+    },
+    {
+      "id": "DROP_FIRST_MAIN_003_010",
+      "dropType": "firstClear",
+      "items": [
+        {
+          "itemId": "ITEM_DIAMOND",
+          "itemType": "diamond",
+          "minCount": 200,
+          "maxCount": 200,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_GOLD",
+          "itemType": "gold",
+          "minCount": 4000,
+          "maxCount": 6000,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_EQUIPMENT_STONE",
+          "itemType": "material",
+          "minCount": 45,
+          "maxCount": 60,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_BREAK_001",
+          "itemType": "material",
+          "minCount": 15,
+          "maxCount": 20,
+          "dropRate": 1,
+          "isGuaranteed": true
+        },
+        {
+          "itemId": "ITEM_MAT_STAR_001",
+          "itemType": "material",
+          "minCount": 3,
+          "maxCount": 5,
+          "dropRate": 1,
+          "isGuaranteed": true
+        }
+      ],
+      "name": "Stage 10·首通奖励",
+      "description": "首次完成第30关\"Stage 10\"时结算一次的首通奖励。"
     }
   ]
 }
